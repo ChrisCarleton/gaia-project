@@ -1,0 +1,14 @@
+{
+  "name": "gaia-project",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Chris Carleton <mrchriscarleton@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "lerna": "^7.2.0"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
+}

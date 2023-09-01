@@ -1,0 +1,12 @@
+{
+  "name": "@gaia-project/engine",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "author": "Chris Carleton",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  }
+}
