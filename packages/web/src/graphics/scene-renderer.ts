@@ -11,8 +11,8 @@ export class SceneRenderer {
     private readonly renderer: WebGLRenderer,
     private readonly cb: RenderCallback,
   ) {
-    this.camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    this.camera.position.set(0, -12, 50);
+    this.camera = new PerspectiveCamera(75, 800 / 600, 0.1, 1000);
+    this.camera.position.set(0, -28, 70);
     this.camera.lookAt(0, 0, 0);
 
     const directionalLight = new DirectionalLight(0xeeeeee, 1);

@@ -7,11 +7,13 @@ function parseStringCoordinates(val: string): CubeCoordinates {
   return [parseFloat(q), parseFloat(r), parseFloat(s)];
 }
 
-export function getMapTiles(): MapHex[] {
-  const hexes: MapHex[] = Object.entries(HexData[12]).map(([key, value]) => ({
-    location: parseStringCoordinates(key),
-    planet: value ? value as PlanetType : undefined,
-    isSatellite: false,
-  }));
-  return hexes;
+export function getMapTiles(): MapHex[][] {
+  return HexData.map((tile) => {
+    const hexes: MapHex[] = Object.entries(tile).map(([key, value]) => ({
+      location: parseStringCoordinates(key),
+      planet: value ? value as PlanetType : undefined,
+      isSatellite: false,
+    })); 
+    return hexes;
+  });
 }
