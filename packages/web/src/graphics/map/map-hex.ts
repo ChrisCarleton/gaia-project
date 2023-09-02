@@ -49,42 +49,42 @@ export function createMapHex(radius: number): LineSegments {
     -0.5 * radius, RootThree * radius / 2, 1,
 
 
-    -0.5 * radius, RootThree * radius / 2, 1,
-    -0.5 * radius, RootThree * radius / 2, -3,
+    // -0.5 * radius, RootThree * radius / 2, 1,
+    // -0.5 * radius, RootThree * radius / 2, -3,
 
-    -radius, 0, 1,
-    -radius, 0, -3,
+    // -radius, 0, 1,
+    // -radius, 0, -3,
 
-    -0.5 * radius, -RootThree * radius / 2, 1,
-    -0.5 * radius, -RootThree * radius / 2, -3,
+    // -0.5 * radius, -RootThree * radius / 2, 1,
+    // -0.5 * radius, -RootThree * radius / 2, -3,
 
-    0.5 * radius, -RootThree * radius / 2, 1,
-    0.5 * radius, -RootThree * radius / 2, -3,
+    // 0.5 * radius, -RootThree * radius / 2, 1,
+    // 0.5 * radius, -RootThree * radius / 2, -3,
 
-    radius, 0, 1,
-    radius, 0, -3,
+    // radius, 0, 1,
+    // radius, 0, -3,
 
-    0.5 * radius, RootThree * radius / 2, 1,
-    0.5 * radius, RootThree * radius / 2, -3,
+    // 0.5 * radius, RootThree * radius / 2, 1,
+    // 0.5 * radius, RootThree * radius / 2, -3,
 
-    -0.5 * radius, RootThree * radius / 2, -3, // Top left
-    -radius, 0, -3,
+    // -0.5 * radius, RootThree * radius / 2, -3, // Top left
+    // -radius, 0, -3,
 
-    -radius, 0, -3, // Left
-    -0.5 * radius, -RootThree * radius / 2, -3,
+    // -radius, 0, -3, // Left
+    // -0.5 * radius, -RootThree * radius / 2, -3,
 
-    -0.5 * radius, -RootThree * radius / 2, -3, // Bottom Left
-    0.5 * radius, -RootThree * radius / 2, -3,
+    // -0.5 * radius, -RootThree * radius / 2, -3, // Bottom Left
+    // 0.5 * radius, -RootThree * radius / 2, -3,
 
-    0.5 * radius, -RootThree * radius / 2, -3, // Bottom Right
-    radius, 0, -3,
+    // 0.5 * radius, -RootThree * radius / 2, -3, // Bottom Right
+    // radius, 0, -3,
 
-    radius, 0, -3, // Right
-    0.5 * radius, RootThree * radius / 2, -3,
+    // radius, 0, -3, // Right
+    // 0.5 * radius, RootThree * radius / 2, -3,
 
-    0.5 * radius, RootThree * radius / 2, -3, // Top Right
-    -0.5 * radius, RootThree * radius / 2, -3,
+    // 0.5 * radius, RootThree * radius / 2, -3, // Top Right
+    // -0.5 * radius, RootThree * radius / 2, -3,
   ]);
   geometry.setAttribute('position', new BufferAttribute(vertices, 3));
-  return new LineSegments(geometry, new LineBasicMaterial({ color: 0xffffff, opacity: 0.9 }));
+  return new LineSegments(geometry, new LineBasicMaterial({ color: 0x555555, opacity: 0.9 }));
 }

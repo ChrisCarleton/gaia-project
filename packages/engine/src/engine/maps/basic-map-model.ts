@@ -70,11 +70,11 @@ const ThreeOrFourPlayerTilePositions: TilePositionSchema = [
   },
   {
     tile: 5,
-    position: [5, -6, -8],
+    position: [10, -4, -6],
   },
   {
     tile: 4,
-    position: [11, -6, 0],
+    position: [10, -6, 0],
   },
 ];
 

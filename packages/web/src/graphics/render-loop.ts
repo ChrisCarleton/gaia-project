@@ -1,10 +1,10 @@
 import { BasicMapModel } from '@gaia-project/engine/src/engine/maps';
-import { Material, Matrix4, MeshBasicMaterial, MeshPhysicalMaterial, Scene, Vector3 } from 'three';
+import { Material, Matrix4, MeshPhysicalMaterial, Scene, Vector3 } from 'three';
 import { createMapHex } from './map';
 import { createPlanet } from './map';
 import { PlanetType } from '@gaia-project/engine/src/interfaces';
 
-const PlanetMaterials: Partial<Record<PlanetType, Material>> = {
+const PlanetMaterials: Record<PlanetType, Material> = {
   [PlanetType.Desert]: new MeshPhysicalMaterial({ color: 0xe4ed66, reflectivity: 0.9, emissive: 0.2 }),
   [PlanetType.Gaia]: new MeshPhysicalMaterial({ color: 0x57e031, reflectivity: 0.9, emissive: 0.8 }),
   [PlanetType.Ice]: new MeshPhysicalMaterial({ color: 0xffffff, reflectivity: 0.9, emissive: 0.8 }),
@@ -15,13 +15,19 @@ const PlanetMaterials: Partial<Record<PlanetType, Material>> = {
   [PlanetType.Transdim]: new MeshPhysicalMaterial({ color: 0x8414f5, reflectivity: 0.9, emissive: 0.2 }),
   [PlanetType.Volcanic]: new MeshPhysicalMaterial({ color: 0xff6912, reflectivity: 0.9, emissive: 1 }),
 }
-const DefaultPlanetMaterial = new MeshBasicMaterial({ color: 0xffffff, reflectivity: 0.9 });
 
-const Root = 0.707106781186548;
+// const Root = 0.707106781186548;
+// const UnitVectors = {
+//   Q: [(2/3) * 5, 0, 0],
+//   R: [-Root * (2/3) * 10, -Root * (2/3) * 10, 0],
+//   S: [-Root * (2/3) * 10, Root * (2/3) * 10, 0],
+// } as const;
+const HorizontalOffset = (3/2) * 2.5;
+const VerticalOffset = Math.sqrt(3) * 2.5;
 const UnitVectors = {
-  Q: [(2/3) * 5, 0, 0],
-  R: [-Root * (2/3) * 10, -Root * (2/3) * 10, 0],
-  S: [-Root * (2/3) * 10, Root * (2/3) * 10, 0],
+  Q: [HorizontalOffset, 0, 0],
+  R: [-HorizontalOffset, -VerticalOffset, 0],
+  S: [-HorizontalOffset, VerticalOffset, 0],
 } as const;
 
 const TranslationMatrix = new Matrix4(
@@ -44,7 +50,7 @@ export function renderLoop(scene: Scene) {
     scene.add(hex);
 
     if (mapHex.planet) {
-      const planet = createPlanet(3.5, PlanetMaterials[mapHex.planet] ?? DefaultPlanetMaterial);
+      const planet = createPlanet(3.5, PlanetMaterials[mapHex.planet]);
       planet.position.set(v.x, v.y, v.z);
       scene.add(planet);
     }

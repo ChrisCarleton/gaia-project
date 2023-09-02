@@ -12,8 +12,8 @@ export class SceneRenderer {
     private readonly cb: RenderCallback,
   ) {
     this.camera = new PerspectiveCamera(75, 800 / 600, 0.1, 1000);
-    this.camera.position.set(0, -28, 70);
-    this.camera.lookAt(0, 0, 0);
+    this.camera.position.set(28, -28, 90);
+    this.camera.lookAt(28, 0, 0);
 
     const directionalLight = new DirectionalLight(0xeeeeee, 1);
     directionalLight.lookAt(0, 0, 0);
