@@ -5,6 +5,9 @@
   "author": "Chris Carleton",
   "license": "MIT",
   "private": true,
+  "scripts": {
+    "build": "rm -rf dist/ && tsc"
+  },
   "devDependencies": {
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"

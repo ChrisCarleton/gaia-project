@@ -1,3 +1,6 @@
+import { EventType } from './events/event-args';
+import { EventHandler } from './events/observer';
+
 // Map
 export enum PlanetType {
   Desert = 'desert',
@@ -11,16 +14,13 @@ export enum PlanetType {
   Volcanic = 'volcanic',
 }
 
-export interface Planet {
-  type: PlanetType;
-}
-
 export type CubeCoordinates = [number, number, number];
 
 export interface MapHex {
   location: CubeCoordinates;
   planet?: PlanetType;
   player?: Player;
+  structure?: StructureType;
   isSatellite: boolean;
 }
 
@@ -32,6 +32,10 @@ export interface Map {
   hexes(): ReadonlyArray<MapHex>;
 }
 
+export enum MapModelType {
+  Standard = 'standard',
+}
+
 export interface MapModel {
   createMap(players: number): Map;
 }
@@ -39,6 +43,16 @@ export interface MapModel {
 export interface FederationToken {}
 
 export interface TechTile {}
+
+export enum StructureType {
+  Mine = 'mine',
+  TradingStation = 'tradingStation',
+  ResearchLab = 'researchLab',
+  Academy = 'academy',
+  PlanetaryInstitute = 'planetaryInstitute',
+  Gaiaformer = 'gaiaformer',
+  Satellite = 'satellite',
+}
 
 export enum ResearchArea {
   Terraforming = 'terraforming',
@@ -49,40 +63,148 @@ export enum ResearchArea {
   Science = 'science',
 }
 
-export interface Faction {
-  homeWorld: PlanetType;
+export enum FactionType {
+  Terrans = 'terrans',
+  Lantids = 'lantids',
+  Xenos = 'xenos',
+  Gleens = 'gleens',
+  Taklons = 'taklons',
+  Ambas = 'ambas',
+  HadschHallas = 'hadschHallas',
+  Ivits = 'ivits',
+  Geodens = 'geodens',
+  BalTaks = 'balTAks',
+  Firaks = 'firaks',
+  Bescods = 'bescods',
+  Nevlas = 'nevlas',
+  Itars = 'itars',
 }
 
-// Players
+export interface Resources {
+  credits: number;
+  ore: number;
+  knowledge: number;
+  qic: number;
+}
+
+export interface PowerCycle {
+  level1: number;
+  level2: number;
+  level3: number;
+  gaia: number;
+}
+
+export type ResearchProgress = {
+  [key in ResearchArea]: number;
+};
+
+export interface Faction {
+  readonly factionType: FactionType;
+  readonly homeWorld: PlanetType;
+  readonly startingPowerCycle: Readonly<PowerCycle>;
+  readonly startingResources: Readonly<Resources>;
+  readonly startingResearch: Readonly<ResearchProgress>;
+  readonly startingStructures: Readonly<Record<StructureType, number>>;
+}
+
+// export interface Structure {
+//   type: StructureType;
+//   location?: MapHex;
+// }
+
+export interface PlayerStructureData {
+  available: number;
+  locations: Readonly<MapHex[]>;
+
+  setMax(max: number): void;
+  place(location: MapHex): void;
+  remove(location: MapHex): void;
+}
+
+export type PlayerStructures = {
+  [key in StructureType]: Pick<PlayerStructureData, 'available' | 'locations'>;
+};
+
+export type ScoringTrackPositions = {
+  trackA: number;
+  trackB: number;
+};
+
 export interface Player {
   faction: Faction;
-
-  credits: number;
-  knowledge: number;
-  ore: number;
-  power: [number, number, number];
-  qic: number;
-  research: {
-    [key in ResearchArea]: number;
-  }
+  name: string;
+  powerCycle: Readonly<PowerCycle>;
+  resources: Readonly<Resources>;
+  research: Readonly<ResearchProgress>;
+  structures: Readonly<PlayerStructures>;
+  roundBooster?: RoundBooster;
+  scoringTrackPositions: Readonly<ScoringTrackPositions>;
+  vp: number;
 }
 
 export interface ResearchBoard {
   terraformingFederationToken: FederationToken;
-  researchAreasMastered: {
-    [key in ResearchArea]: boolean;
-  }
+  researchTracks: {
+    [key in ResearchArea]: {
+      mastered: boolean;
+      advancedTechTile: TechTile;
+      standardTechTiles: TechTile[];
+    };
+  };
 }
 
 export interface RoundBooster {}
 
+export interface RoundScoringTile {}
+
+export interface FinalScoringTile {}
+
 export interface Round {
-  booster: RoundBooster;
+  scoringTile: RoundScoringTile;
 }
 
-export interface Game {
-  players: Player[];
-  rounds: Round[];
-  currentRound: number;
-  state: unknown;
+export interface GameContext {
+  readonly currentRound: number;
+  readonly rounds: Readonly<Round[]>;
+  readonly roundBoosters: Readonly<RoundBooster[]>;
+  map: Map;
+  readonly players: Readonly<Player[]>;
+  researchBoard: ResearchBoard;
+}
+
+export enum GameState {
+  BuildFirstMines = 'pickFirstMines',
+}
+
+export enum GameAction {
+  BuildMine = 'buildMine',
+}
+
+export interface State {
+  readonly currentState: GameState;
+
+  // Player actions
+  buildMine(location: MapHex): void;
+
+  startGaiaProject(): void;
+  upgradeStructure(): void;
+  formFederation(): void;
+  advanceResearch(): void;
+  powerOrQicAction(): void;
+  specialAction(): void;
+  freeAction(): void;
+  pass(): void;
+
+  // Maintenance
+  doIncome(): void;
+  completeGaiaProjects(): void;
+  doRoundCleanup(): void;
+  doEndGameScoring(): void;
+}
+
+export interface Game extends State {
+  readonly context: Readonly<GameContext>;
+
+  abortGame(): void;
+  subscribeToEvent(event: EventType, handler: EventHandler): void;
 }
