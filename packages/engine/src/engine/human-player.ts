@@ -1,3 +1,5 @@
+import { EventArgs, EventType } from '../events/event-args';
+import { Observer } from '../events/observer';
 import {
   Faction,
   Player,
@@ -10,11 +12,9 @@ import {
   ScoringTrackPositions,
   StructureType,
 } from '../interfaces';
-import { EventArgs, EventType } from '../events/event-args';
-import { Observer } from '../events/observer';
 import { PlayerStructureDataInstance } from './player-structure-data';
 
-export class PlayerInstance implements Player {
+export class HumanPlayer implements Player {
   private readonly _research: ResearchProgress;
   private readonly _resources: Resources;
   private readonly _structures: Record<StructureType, PlayerStructureData>;

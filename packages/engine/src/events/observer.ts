@@ -1,4 +1,3 @@
-import { GameContext } from '../interfaces';
 import { EventArgs, EventType } from './event-args';
 
 export type EventHandler = (e: EventArgs) => void | Promise<void>;

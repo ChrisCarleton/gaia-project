@@ -1,10 +1,10 @@
+import { Observer } from '../events/observer';
+import { FactionFactory } from '../factions';
 import { FactionType, Game, MapModelType, Player } from '../interfaces';
 import { ErrorCode, GPError } from './errors';
-import { FactionFactory } from '../factions';
 import { GameInstance } from './game';
+import { HumanPlayer } from './human-player';
 import { BasicMapModel } from './maps';
-import { Observer } from '../events/observer';
-import { PlayerInstance } from './player-instance';
 
 export class Lobby {
   private readonly players: Player[];
@@ -33,7 +33,7 @@ export class Lobby {
       );
     }
 
-    const player = new PlayerInstance(
+    const player = new HumanPlayer(
       name,
       this.factionFactory.createFaction(faction, this.events),
       this.events,

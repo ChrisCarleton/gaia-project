@@ -1,4 +1,4 @@
-import { CubeCoordinates } from "./interfaces";
+import { CubeCoordinates } from './interfaces';
 
 const DirectionVectors: ReadonlyArray<CubeCoordinates> = [
   [1, 0, -1],
@@ -11,7 +11,7 @@ const DirectionVectors: ReadonlyArray<CubeCoordinates> = [
 
 type MapTile = {
   [key: string]: string | null;
-}
+};
 
 function cubeScale(hex: CubeCoordinates, factor: number): CubeCoordinates {
   const [q, r, s] = hex;
@@ -44,10 +44,10 @@ function makeAMapTile(): MapTile {
     '0,0,0': null,
   };
 
-  cubeRing([0,0,0], 1).forEach(([q, r, s]) => {
+  cubeRing([0, 0, 0], 1).forEach(([q, r, s]) => {
     tiles[`${q},${r},${s}`] = null;
   });
-  cubeRing([0,0,0], 2).forEach(([q, r, s]) => {
+  cubeRing([0, 0, 0], 2).forEach(([q, r, s]) => {
     tiles[`${q},${r},${s}`] = null;
   });
 
@@ -56,3 +56,5 @@ function makeAMapTile(): MapTile {
 
 const mapTiles = new Array<MapTile>(13).fill(makeAMapTile());
 console.log(JSON.stringify(mapTiles, null, 2));
+
+export * from './interfaces';
