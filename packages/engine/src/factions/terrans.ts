@@ -1,13 +1,13 @@
-import { Observer } from '../events/observer';
 import {
-  FactionType,
+  Observer,
   PlanetType,
   PowerCycle,
   ResearchProgress,
   Resources,
   StructureType,
-} from '../interfaces';
+} from '..';
 import { FactionBase } from './faction-base';
+import { FactionType } from './faction-type';
 
 export class Terrans extends FactionBase {
   constructor(events: Observer) {

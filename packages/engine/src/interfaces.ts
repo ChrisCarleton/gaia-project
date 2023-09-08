@@ -1,5 +1,5 @@
-import { EventType } from './events/event-args';
-import { EventHandler } from './events/observer';
+import { EventHandler, EventType } from './events';
+import { FactionType } from './factions';
 
 // Map
 export enum PlanetType {
@@ -61,23 +61,6 @@ export enum ResearchArea {
   Gaia = 'gaia',
   Economics = 'economics',
   Science = 'science',
-}
-
-export enum FactionType {
-  Terrans = 'terrans',
-  Lantids = 'lantids',
-  Xenos = 'xenos',
-  Gleens = 'gleens',
-  Taklons = 'taklons',
-  Ambas = 'ambas',
-  HadschHallas = 'hadschHallas',
-  Ivits = 'ivits',
-  Geodens = 'geodens',
-  BalTaks = 'balTAks',
-  Firaks = 'firaks',
-  Bescods = 'bescods',
-  Nevlas = 'nevlas',
-  Itars = 'itars',
 }
 
 export interface Resources {

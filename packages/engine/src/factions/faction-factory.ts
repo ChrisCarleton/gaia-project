@@ -1,5 +1,5 @@
-import { Faction, FactionType } from '../interfaces';
-import { Observer } from '../events/observer';
+import { Faction, Observer } from '..';
+import { FactionType } from './faction-type';
 import { Terrans } from './terrans';
 
 export class FactionFactory {

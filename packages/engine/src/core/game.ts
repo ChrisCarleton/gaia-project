@@ -1,17 +1,19 @@
-import { ErrorCode, GPError } from '../errors';
-import { EventType } from '../events/event-args';
-import { EventHandler, Observer } from '../events/observer';
 import {
+  ErrorCode,
+  EventHandler,
+  EventType,
   FactionType,
+  GPError,
   Game,
   GameContext,
   GameState,
   MapHex,
   MapModel,
+  Observer,
   PlanetType,
   Player,
   State,
-} from '../interfaces';
+} from '..';
 import { BuildFirstMinesState } from '../states/build-first-mines-state';
 import { GameContextInstance } from './game-context';
 

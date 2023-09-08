@@ -1,7 +1,13 @@
-import { ErrorCode, GPError } from '../errors';
-import { Observer } from '../events/observer';
-import { FactionFactory } from '../factions';
-import { FactionType, Game, MapModelType, Player } from '../interfaces';
+import {
+  ErrorCode,
+  FactionFactory,
+  FactionType,
+  GPError,
+  Game,
+  MapModelType,
+  Observer,
+  Player,
+} from '..';
 import { HumanPlayer } from '../players';
 import { GameInstance } from './game';
 import { BasicMapModel } from './maps';

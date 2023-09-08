@@ -1,14 +1,13 @@
 import {
   Faction,
   FactionType,
+  Observer,
   PlanetType,
-  PlayerStructures,
   PowerCycle,
   ResearchProgress,
   Resources,
   StructureType,
-} from '../interfaces';
-import { Observer } from '../events/observer';
+} from '..';
 
 const DefaultStructures: Record<StructureType, number> = {
   [StructureType.Academy]: 2,
