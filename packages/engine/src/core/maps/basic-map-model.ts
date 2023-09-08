@@ -1,8 +1,11 @@
-import { getMapTiles } from "./map-tiles";
-import { CubeCoordinates, Map, MapHex, MapModel } from "../../interfaces";
-import { GameMap } from "./game-map";
+import { CubeCoordinates, Map, MapHex, MapModel } from '../../interfaces';
+import { GameMap } from './game-map';
+import { getMapTiles } from './map-tiles';
 
-type TilePositionSchema = ReadonlyArray<{ tile: number, position: CubeCoordinates }>;
+type TilePositionSchema = ReadonlyArray<{
+  tile: number;
+  position: CubeCoordinates;
+}>;
 
 const TwoPlayerTilePositions: TilePositionSchema = [
   {
@@ -93,7 +96,7 @@ export class BasicMapModel implements MapModel {
         const tileHexes: MapHex[] = tiles[tilePosition.tile];
         for (const hex of tileHexes) {
           const [qh, rh, sh] = hex.location;
-          const [qp, rp, sp] = tilePosition.position
+          const [qp, rp, sp] = tilePosition.position;
           hex.location = [qh + qp, rh + rp, sh + sp];
         }
         hexes.push(...tileHexes);
@@ -103,13 +106,13 @@ export class BasicMapModel implements MapModel {
         const tileHexes: MapHex[] = tiles[tilePosition.tile];
         for (const hex of tileHexes) {
           const [qh, rh, sh] = hex.location;
-          const [qp, rp, sp] = tilePosition.position
+          const [qp, rp, sp] = tilePosition.position;
           hex.location = [qh + qp, rh + rp, sh + sp];
         }
         hexes.push(...tileHexes);
       }
     }
-    
+
     return new GameMap(hexes);
   }
 }

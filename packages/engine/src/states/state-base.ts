@@ -1,6 +1,6 @@
-import { GameContext, GameState, MapHex, State } from '../interfaces';
-import { ErrorCode, GPError } from '../engine/errors';
+import { ErrorCode, GPError } from '../errors';
 import { Observer } from '../events';
+import { GameContext, GameState, MapHex, State } from '../interfaces';
 
 const ActionNotSupportedError = new GPError(
   ErrorCode.ActionNotSupportedNow,

@@ -1,7 +1,8 @@
-import { EventArgs, EventType } from '../events/event-args';
-import { Observer } from '../events/observer';
 import {
+  EventArgs,
+  EventType,
   Faction,
+  Observer,
   Player,
   PlayerStructureData,
   PlayerStructures,
@@ -11,21 +12,20 @@ import {
   RoundBooster,
   ScoringTrackPositions,
   StructureType,
-} from '../interfaces';
+} from '..';
 import { PlayerStructureDataInstance } from './player-structure-data';
 
-export class HumanPlayer implements Player {
-  private readonly _research: ResearchProgress;
-  private readonly _resources: Resources;
-  private readonly _structures: Record<StructureType, PlayerStructureData>;
-  private readonly _powerCycle: PowerCycle;
-  private _roundBooster?: RoundBooster;
-  private _vp: number;
-  private scoringTrackPositionA: number;
-  private scoringTrackPositionB: number;
+export abstract class PlayerBase implements Player {
+  protected readonly _research: ResearchProgress;
+  protected readonly _resources: Resources;
+  protected readonly _structures: Record<StructureType, PlayerStructureData>;
+  protected readonly _powerCycle: PowerCycle;
+  protected _roundBooster?: RoundBooster;
+  protected _vp: number;
+  protected scoringTrackPositionA: number;
+  protected scoringTrackPositionB: number;
 
   constructor(
-    readonly name: string,
     readonly faction: Faction,
     events: Observer,
   ) {
@@ -64,6 +64,8 @@ export class HumanPlayer implements Player {
     events.subscribe(EventType.ResourcesGained, this.onResourcesChanged);
     events.subscribe(EventType.ResourcesSpent, this.onResourcesChanged);
   }
+
+  abstract name: string;
 
   get powerCycle(): Readonly<PowerCycle> {
     return this._powerCycle;

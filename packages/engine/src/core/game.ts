@@ -1,19 +1,19 @@
+import { ErrorCode, GPError } from '../errors';
+import { EventType } from '../events/event-args';
+import { EventHandler, Observer } from '../events/observer';
 import {
   FactionType,
-  GameContext,
-  MapModel,
-  State,
-  PlanetType,
-  Player,
   Game,
+  GameContext,
   GameState,
   MapHex,
+  MapModel,
+  PlanetType,
+  Player,
+  State,
 } from '../interfaces';
-import { ErrorCode, GPError } from './errors';
-import { EventType } from '../events/event-args';
-import { GameContextInstance } from './game-context';
-import { EventHandler, Observer } from '../events/observer';
 import { BuildFirstMinesState } from '../states/build-first-mines-state';
+import { GameContextInstance } from './game-context';
 
 export class GameInstance implements Game {
   readonly _context: GameContext;

@@ -1,5 +1,6 @@
 import { CubeCoordinates } from './interfaces';
 
+// TODO: Clean this up and move it somewhere useful!
 const DirectionVectors: ReadonlyArray<CubeCoordinates> = [
   [1, 0, -1],
   [1, -1, 0],
@@ -54,7 +55,9 @@ function makeAMapTile(): MapTile {
   return tiles;
 }
 
-const mapTiles = new Array<MapTile>(13).fill(makeAMapTile());
-console.log(JSON.stringify(mapTiles, null, 2));
-
+export * from './errors';
 export * from './interfaces';
+
+export * from './events';
+export * from './core';
+export * from './factions';

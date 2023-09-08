@@ -20,7 +20,13 @@ export class Observer {
   }
 
   unsubscribe(eventType: EventType, handler: EventHandler) {
-    // TODO
+    const index = this.subscriptions[eventType]?.findIndex(
+      (h) => h === handler,
+    );
+
+    if (typeof index === 'number' && index > -1) {
+      this.subscriptions[eventType]?.splice(index, 1);
+    }
   }
 
   publish(e: EventArgs) {

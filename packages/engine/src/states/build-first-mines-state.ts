@@ -1,7 +1,7 @@
-import { GameContext, GameState, MapHex, Player, State } from '../interfaces';
-import { ErrorCode, GPError } from '../engine/errors';
+import { ErrorCode, GPError } from '../errors';
 import { EventType } from '../events/event-args';
 import { Observer } from '../events/observer';
+import { GameContext, GameState, MapHex, Player, State } from '../interfaces';
 import { StateBase } from './state-base';
 
 export class BuildFirstMinesState extends StateBase {

@@ -1,13 +1,12 @@
+import { Observer } from '../events/observer';
 import {
   FactionType,
   PlanetType,
-  PlayerStructures,
   PowerCycle,
   ResearchProgress,
   Resources,
   StructureType,
 } from '../interfaces';
-import { Observer } from '../events/observer';
 import { FactionBase } from './faction-base';
 
 export class Terrans extends FactionBase {
