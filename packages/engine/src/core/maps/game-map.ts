@@ -1,22 +1,22 @@
-import { CubeCoordinates, Map, MapHex } from '../../interfaces';
+import { AxialCoordinates, Map, MapHex } from '../../interfaces';
 
 export class GameMap implements Map {
   private readonly grid: Record<string, MapHex> = {};
 
   constructor(hexes: MapHex[]) {
     hexes.forEach((hex) => {
-      const [q, r, s] = hex.location;
-      this.grid[`${q},${r},${s}`] = hex;
+      const [q, r] = hex.location;
+      this.grid[`${q},${r}`] = hex;
     });
   }
 
-  at(pt: CubeCoordinates): MapHex | undefined {
+  at(pt: AxialCoordinates): MapHex | undefined {
     throw new Error('Method not implemented.');
   }
-  distance(from: CubeCoordinates, to: CubeCoordinates): number {
+  distance(from: AxialCoordinates, to: AxialCoordinates): number {
     throw new Error('Method not implemented.');
   }
-  inRange(from: CubeCoordinates, distance: number): MapHex[] {
+  inRange(from: AxialCoordinates, distance: number): MapHex[] {
     throw new Error('Method not implemented.');
   }
 

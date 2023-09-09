@@ -91,10 +91,10 @@ export function renderLoop(scene: Scene) {
   const map = mapModel.createMap(3);
 
   const hexes = map.hexes().map((mapHex) => {
-    const [q, r, s] = mapHex.location;
+    const [q, r] = mapHex.location;
     const hex = createMapHex(5);
 
-    const v = new Vector3(q, r, s).applyMatrix4(TranslationMatrix);
+    const v = new Vector3(q, r, -q - r).applyMatrix4(TranslationMatrix);
     hex.position.set(v.x, v.y, v.z);
     scene.add(hex);
 

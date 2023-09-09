@@ -1,9 +1,9 @@
-import { CubeCoordinates, MapHex, PlanetType } from '../../interfaces';
+import { AxialCoordinates, MapHex, PlanetType } from '../../interfaces';
 import HexData from './map-tiles.json';
 
-function parseStringCoordinates(val: string): CubeCoordinates {
-  const [q, r, s] = val.split(',');
-  return [parseFloat(q), parseFloat(r), parseFloat(s)];
+function parseStringCoordinates(val: string): AxialCoordinates {
+  const [q, r] = val.split(',');
+  return [parseFloat(q), parseFloat(r)];
 }
 
 export function getMapTiles(): MapHex[][] {

@@ -14,10 +14,11 @@ export enum PlanetType {
   Volcanic = 'volcanic',
 }
 
-export type CubeCoordinates = [number, number, number];
+// export type CubeCoordinates = [number, number, number];
+export type AxialCoordinates = [number, number];
 
 export interface MapHex {
-  location: CubeCoordinates;
+  location: AxialCoordinates;
   planet?: PlanetType;
   player?: Player;
   structure?: StructureType;
@@ -25,9 +26,9 @@ export interface MapHex {
 }
 
 export interface Map {
-  at(pt: CubeCoordinates): MapHex | undefined;
-  distance(from: CubeCoordinates, to: CubeCoordinates): number;
-  inRange(from: CubeCoordinates, distance: number): MapHex[];
+  at(pt: AxialCoordinates): MapHex | undefined;
+  distance(from: AxialCoordinates, to: AxialCoordinates): number;
+  inRange(from: AxialCoordinates, distance: number): MapHex[];
 
   hexes(): ReadonlyArray<MapHex>;
 }
