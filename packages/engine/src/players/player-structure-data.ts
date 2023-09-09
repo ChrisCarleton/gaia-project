@@ -17,6 +17,10 @@ export class PlayerStructureDataInstance implements PlayerStructureData {
     return this.max - this.locations.length;
   }
 
+  get active(): number {
+    return this.locations.length;
+  }
+
   get locations(): Readonly<MapHex[]> {
     return this._locations;
   }

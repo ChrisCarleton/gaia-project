@@ -1,6 +1,6 @@
 import {
   GameAction,
-  GameState,
+  Income,
   MapHex,
   Player,
   Resources,
@@ -8,8 +8,9 @@ import {
 } from '../interfaces';
 
 export enum EventType {
+  AwaitingPlayerInput = 'awaitingPlayerInput',
   MineBuilt = 'mineBuilt',
-  ResourcesGained = 'resourcesGained',
+  IncomeGained = 'incomeGained',
   ResourcesSpent = 'resourcesSpent',
   StructureBuilt = 'structureBuilt',
 }
@@ -18,8 +19,8 @@ export type EventArgsBase = {
   player: Player;
 };
 
-export type AwaitingActionEventArgs = EventArgsBase & {
-  currentState: GameState;
+export type AwaitingPlayerInputEventArgs = EventArgsBase & {
+  type: EventType.AwaitingPlayerInput;
   allowedActions: GameAction[];
 };
 
@@ -35,12 +36,19 @@ export type StructureBuiltEventArgs = EventArgsBase & {
   previousStructure?: StructureType;
 };
 
-export type ResourcesEventArgs = EventArgsBase & {
-  type: EventType.ResourcesGained | EventType.ResourcesSpent;
+export type IncomeGainedEventArgs = EventArgsBase & {
+  type: EventType.IncomeGained;
+  income: Income;
+};
+
+export type ResourcesSpentEventArgs = EventArgsBase & {
+  type: EventType.ResourcesSpent;
   resources: Partial<Resources>;
 };
 
 export type EventArgs =
+  | AwaitingPlayerInputEventArgs
+  | IncomeGainedEventArgs
   | MineBuiltEventArgs
-  | ResourcesEventArgs
+  | ResourcesSpentEventArgs
   | StructureBuiltEventArgs;

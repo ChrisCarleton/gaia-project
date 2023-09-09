@@ -2,12 +2,6 @@
  * For a detailed explanation regarding each configuration property, visit:
  * https://jestjs.io/docs/configuration
  */
-const path = require('path');
-const { pathsToModuleNameMapper } = require('ts-jest');
-const paths = {
-  '@src/*': ['./*', './*.ts', './$1/index.ts'],
-  '@src': ['./index.ts'],
-};
 
 /** @type {import('jest').Config} */
 const config = {
@@ -90,7 +84,6 @@ const config = {
   // ],
 
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
-  moduleNameMapper: pathsToModuleNameMapper(paths),
   // moduleNameMapper: {
   //   '^@src/(.*)$': '<rootDir>/src/$1',
   // },

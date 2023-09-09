@@ -1,14 +1,18 @@
 import { Mock } from 'moq.ts';
 
 import { MapHex, Player } from '../../../src';
-import { EventType, Observer, ResourcesEventArgs } from '../../../src/events';
+import {
+  EventType,
+  IncomeGainedEventArgs,
+  Observer,
+} from '../../../src/events';
 
 describe('Observer class', () => {
   const player = new Mock<Player>().object();
-  const e: ResourcesEventArgs = {
-    type: EventType.ResourcesGained,
+  const e: IncomeGainedEventArgs = {
+    type: EventType.IncomeGained,
     player,
-    resources: {
+    income: {
       ore: 2,
     },
   };

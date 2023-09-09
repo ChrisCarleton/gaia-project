@@ -70,6 +70,11 @@ export interface Resources {
   qic: number;
 }
 
+export interface Income extends Partial<Resources> {
+  powerNodes?: number;
+  chargePower?: number;
+}
+
 export interface PowerCycle {
   level1: number;
   level2: number;
@@ -77,9 +82,42 @@ export interface PowerCycle {
   gaia: number;
 }
 
+export interface PowerCycleManager extends Readonly<PowerCycle> {
+  readonly totalUncharged: number;
+  addNodes(nodes: number): void;
+  removeNodes(nodes: number): void;
+  chargeNodes(nodes: number): number;
+}
+
 export type ResearchProgress = {
   [key in ResearchArea]: number;
 };
+
+type IncomeArray = ReadonlyArray<Readonly<Income>>;
+export type FactionIncome = {
+  [StructureType.Mine]: IncomeArray;
+  [StructureType.TradingStation]: IncomeArray;
+  [StructureType.ResearchLab]: IncomeArray;
+  [StructureType.PlanetaryInstitute]: Readonly<Income>;
+};
+
+export enum FreeAction {
+  GenerateQIC = 'generateQIC',
+}
+
+export enum AcadamyBonusType {
+  Income = 'income',
+  Action = 'action',
+}
+export type AcadamyBonus =
+  | {
+      type: AcadamyBonusType.Income;
+      income: Income;
+    }
+  | {
+      type: AcadamyBonusType.Action;
+      action: FreeAction;
+    };
 
 export interface Faction {
   readonly factionType: FactionType;
@@ -88,15 +126,13 @@ export interface Faction {
   readonly startingResources: Readonly<Resources>;
   readonly startingResearch: Readonly<ResearchProgress>;
   readonly startingStructures: Readonly<Record<StructureType, number>>;
+  readonly acadamyBonuses: [Readonly<AcadamyBonus>, Readonly<AcadamyBonus>];
+  readonly income: Readonly<FactionIncome>;
 }
-
-// export interface Structure {
-//   type: StructureType;
-//   location?: MapHex;
-// }
 
 export interface PlayerStructureData {
   available: number;
+  active: number;
   locations: Readonly<MapHex[]>;
 
   setMax(max: number): void;
@@ -168,7 +204,6 @@ export interface State {
 
   // Player actions
   buildMine(location: MapHex): void;
-
   startGaiaProject(): void;
   upgradeStructure(): void;
   formFederation(): void;

@@ -1,4 +1,5 @@
 import { Faction, Observer } from '..';
+import { Ambas } from './ambas';
 import { FactionType } from './faction-type';
 import { Terrans } from './terrans';
 
@@ -7,6 +8,7 @@ export class FactionFactory {
   private static readonly FactionMap: Partial<
     Record<FactionType, (events: Observer) => Faction>
   > = {
+    [FactionType.Ambas]: (e) => new Ambas(e),
     [FactionType.Terrans]: (e) => new Terrans(e),
   };
 

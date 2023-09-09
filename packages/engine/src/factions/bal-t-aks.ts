@@ -4,26 +4,27 @@ import {
   PowerCycle,
   ResearchProgress,
   Resources,
+  StructureType,
 } from '..';
 import { FactionBase } from './faction-base';
 import { FactionType } from './faction-type';
 
-export class Ambas extends FactionBase {
+export class BalTAks extends FactionBase {
   constructor(events: Observer) {
     super(events);
   }
 
   get factionType(): FactionType {
-    return FactionType.Ambas;
+    return FactionType.BalTaks;
   }
 
   get homeWorld(): PlanetType {
-    return PlanetType.Swamp;
+    return PlanetType.Volcanic;
   }
 
   get startingPowerCycle(): Readonly<PowerCycle> {
     return {
-      level1: 2,
+      level1: 4,
       level2: 4,
       level3: 0,
       gaia: 0,
@@ -33,8 +34,8 @@ export class Ambas extends FactionBase {
   get startingResearch(): Readonly<ResearchProgress> {
     return {
       ai: 0,
-      gaia: 0,
-      navigation: 1,
+      gaia: 1,
+      navigation: 0,
       terraforming: 0,
       science: 0,
       economics: 0,
@@ -47,6 +48,13 @@ export class Ambas extends FactionBase {
       ore: 4,
       knowledge: 3,
       qic: 1,
+    };
+  }
+
+  get startingStructures(): Readonly<Record<StructureType, number>> {
+    return {
+      ...super.startingStructures,
+      gaiaformer: 1,
     };
   }
 }

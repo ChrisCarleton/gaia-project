@@ -16,7 +16,7 @@ export abstract class StateBase implements State {
 
   abstract readonly currentState: GameState;
 
-  buildMine(location: MapHex): void {
+  buildMine(_location: MapHex): void {
     throw ActionNotSupportedError;
   }
 
