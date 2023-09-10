@@ -2,84 +2,21 @@ import { AxialCoordinates, Map, MapHex, MapModel } from '../../interfaces';
 import { GameMap } from './game-map';
 import { getMapTiles } from './map-tiles';
 
-type TilePositionSchema = ReadonlyArray<{
-  tile: number;
-  position: AxialCoordinates;
-}>;
-
-const TwoPlayerTilePositions: TilePositionSchema = [
-  {
-    tile: 2,
-    position: [0, 0],
-  },
-  {
-    tile: 0,
-    position: [-2, -3],
-  },
-  {
-    tile: 1,
-    position: [-5, 2],
-  },
-  {
-    tile: 3,
-    position: [-3, 5],
-  },
-  {
-    tile: 12,
-    position: [2, 3],
-  },
-  {
-    tile: 11,
-    position: [5, -2],
-  },
-  {
-    tile: 10,
-    position: [3, -5],
-  },
+const TileTranslations: AxialCoordinates[] = [
+  [0, 0],
+  [-2, -3],
+  [-5, 2],
+  [-3, 5],
+  [2, 3],
+  [5, -2],
+  [3, -5],
+  [7, 1],
+  [10, -4],
+  [8, -7],
 ];
 
-const ThreeOrFourPlayerTilePositions: TilePositionSchema = [
-  {
-    tile: 1,
-    position: [0, 0],
-  },
-  {
-    tile: 9,
-    position: [-2, -3],
-  },
-  {
-    tile: 8,
-    position: [-5, 2],
-  },
-  {
-    tile: 7,
-    position: [-3, 5],
-  },
-  {
-    tile: 3,
-    position: [2, 3],
-  },
-  {
-    tile: 2,
-    position: [5, -2],
-  },
-  {
-    tile: 0,
-    position: [3, -5],
-  },
-  {
-    tile: 6,
-    position: [7, 1],
-  },
-  {
-    tile: 5,
-    position: [10, -4],
-  },
-  {
-    tile: 4,
-    position: [8, -7],
-  },
-];
+const TwoPlayerTiles = [2, 0, 1, 3, 12, 11, 10];
+const ThreeOrFourPlayerTiles = [1, 9, 8, 7, 3, 2, 0, 6, 5, 4];
 
 export class BasicMapModel implements MapModel {
   createMap(players: number): Map {
@@ -92,21 +29,21 @@ export class BasicMapModel implements MapModel {
     const hexes: MapHex[] = [];
 
     if (players === 2) {
-      for (const tilePosition of TwoPlayerTilePositions) {
-        const tileHexes: MapHex[] = tiles[tilePosition.tile];
+      for (let i = 0; i < TwoPlayerTiles.length; i++) {
+        const tileHexes: MapHex[] = tiles[TwoPlayerTiles[i]];
         for (const hex of tileHexes) {
           const [qh, rh] = hex.location;
-          const [qp, rp] = tilePosition.position;
+          const [qp, rp] = TileTranslations[i];
           hex.location = [qh + qp, rh + rp];
         }
         hexes.push(...tileHexes);
       }
     } else {
-      for (const tilePosition of ThreeOrFourPlayerTilePositions) {
-        const tileHexes: MapHex[] = tiles[tilePosition.tile];
+      for (let i = 0; i < ThreeOrFourPlayerTiles.length; i++) {
+        const tileHexes: MapHex[] = tiles[ThreeOrFourPlayerTiles[i]];
         for (const hex of tileHexes) {
           const [qh, rh] = hex.location;
-          const [qp, rp] = tilePosition.position;
+          const [qp, rp] = TileTranslations[i];
           hex.location = [qh + qp, rh + rp];
         }
         hexes.push(...tileHexes);
