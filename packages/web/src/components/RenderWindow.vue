@@ -3,14 +3,13 @@
 </template>
 
 <script lang="ts" setup>
-import { RenderCallback, SceneRenderer } from '@/graphics';
+import { SceneRenderer } from '@/graphics';
 import { WebGLRenderer } from 'three';
 import { onMounted } from 'vue';
 
 interface RenderWindowProps {
   width: number;
   height: number;
-  render: RenderCallback;
 }
 
 const props = withDefaults(defineProps<RenderWindowProps>(), {

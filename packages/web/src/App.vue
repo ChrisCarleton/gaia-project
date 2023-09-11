@@ -1,9 +1,8 @@
 <template>
-  <RenderWindow :render="renderLoop" />
+  <RenderWindow />
 </template>
 
 <script lang="ts" setup>
-import { renderLoop } from './graphics';
 import RenderWindow from '@/components/RenderWindow.vue';
 </script>
 
