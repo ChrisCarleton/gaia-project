@@ -1,31 +1,39 @@
 import {
   ErrorCode,
-  FactionFactory,
   FactionType,
   GPError,
   Game,
+  MapModel,
   MapModelType,
   Observer,
-  Player,
+  PlayerFactory,
 } from '..';
-import { HumanPlayer } from '../players';
 import { GameInstance } from './game';
 import { BasicMapModel } from './maps';
 
+const MapModels: Record<MapModelType, () => MapModel> = {
+  [MapModelType.Standard]: () => new BasicMapModel(),
+} as const;
+
+export type LobbyPlayer = {
+  name: string;
+  faction: FactionType;
+};
+
 export class Lobby {
-  private readonly _players: Player[];
+  private readonly _players: LobbyPlayer[];
   private readonly events: Observer;
   private game?: Game;
 
   constructor(
-    private readonly factionFactory: FactionFactory,
+    private readonly playerFactory: PlayerFactory,
     events?: Observer,
   ) {
     this.events = events ?? new Observer();
     this._players = [];
   }
 
-  addPlayer(name: string, faction: FactionType): Player {
+  addPlayer(name: string, faction: FactionType): void {
     if (this.game) {
       throw new GPError(
         ErrorCode.GameAlreadyBegun,
@@ -39,16 +47,10 @@ export class Lobby {
       );
     }
 
-    const player = new HumanPlayer(
-      name,
-      this.factionFactory.createFaction(faction, this.events),
-      this.events,
-    );
-    this._players.push(player);
-    return player;
+    this._players.push({ name, faction });
   }
 
-  removePlayer(player: Player) {
+  removePlayer(player: LobbyPlayer) {
     if (this.game) {
       // TODO: Once we have AI built in, this can be done more gracefully by replacing the human player with an AI-controlled replacement.
       throw new GPError(
@@ -64,9 +66,11 @@ export class Lobby {
   }
 
   beginGame(mapAlgorithm: MapModelType): Game {
-    // TODO: Decide on algorithm based on type.
-    const mapModel = new BasicMapModel();
-    this.game = new GameInstance(this._players, mapModel, this.events);
+    const mapModel = MapModels[mapAlgorithm]();
+    const players = this._players.map((player) =>
+      this.playerFactory.createPlayer(player.faction, player.name),
+    );
+    this.game = new GameInstance(players, mapModel, this.events);
     return this.game;
   }
 
@@ -74,7 +78,7 @@ export class Lobby {
     return this.game;
   }
 
-  get players(): Readonly<Player[]> {
+  get players(): Readonly<LobbyPlayer[]> {
     return [...this._players];
   }
 }

@@ -1,34 +1,41 @@
-import { It, Mock } from 'moq.ts';
-
 import {
-  Faction,
-  FactionFactory,
   FactionType,
   Lobby,
+  LobbyPlayer,
   Observer,
+  PlayerFactory,
 } from '../../../src';
 
-class TestFactionFactory implements FactionFactory {
-  createFaction(type: FactionType, events: Observer): Faction {
-    return new Mock<Faction>()
-      .setup((f) => f.factionType)
-      .returns(type)
-      .object();
-  }
-}
+jest.mock('../../../src/players/player-factory');
 
 describe('Game lobby', () => {
-  const factionFactory = new TestFactionFactory();
+  const events = new Observer();
+  let playerFactory: PlayerFactory;
   let lobby: Lobby;
 
   beforeEach(() => {
-    lobby = new Lobby(factionFactory);
+    events.reset();
+    lobby = new Lobby(playerFactory, events);
   });
 
-  it.skip('will add a player', () => {
+  it('will add a player', () => {
     const name = 'Rick';
-    const player = lobby.addPlayer(name, FactionType.Ambas);
-    expect(player).toBeDefined();
-    expect(lobby.players).toContain(player);
+    const faction = FactionType.Ambas;
+    lobby.addPlayer(name, faction);
+    const [player] = lobby.players;
+    expect(player).toEqual({ name, faction });
   });
+
+  it('Will add up to four players', () => {
+    const players: LobbyPlayer[] = [
+      { name: 'Rob', faction: FactionType.Itars },
+      { name: 'Jess', faction: FactionType.Bescods },
+      { name: 'Tim', faction: FactionType.Gleens },
+      { name: 'Sara', faction: FactionType.Terrans },
+    ];
+    players.forEach((p) => lobby.addPlayer(p.name, p.faction));
+    expect(lobby.players).toEqual(players);
+  });
+
+  it('Will remove a player from the lobby');
 });
