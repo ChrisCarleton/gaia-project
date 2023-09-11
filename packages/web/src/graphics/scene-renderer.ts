@@ -53,7 +53,7 @@ const PlanetMaterials: Record<PlanetType, Material> = {
     emissive: 0.2,
   }),
   [PlanetType.Terra]: new MeshPhongMaterial({
-    map: textureLoader.load('/earth.jpg'),
+    map: textureLoader.load('/earth2.jpg'),
     reflectivity: 0.8,
     emissive: 0.8,
   }),
@@ -67,10 +67,12 @@ const PlanetMaterials: Record<PlanetType, Material> = {
     reflectivity: 0.9,
     emissive: 0.7,
   }),
-  [PlanetType.Transdim]: new MeshPhysicalMaterial({
+  [PlanetType.Transdim]: new MeshPhongMaterial({
+    transparent: true,
+    opacity: 0.5,
     color: 0x8414f5,
     reflectivity: 0.9,
-    emissive: 0.2,
+    emissive: 1,
   }),
   [PlanetType.Volcanic]: new MeshPhysicalMaterial({
     color: 0xff6912,
@@ -117,10 +119,15 @@ export class SceneRenderer {
 
   constructor(
     private readonly renderer: WebGLRenderer,
-    private readonly cb: RenderCallback,
+    viewSize: { width: number; height: number },
   ) {
     this.scene = new Scene();
-    this.camera = new PerspectiveCamera(75, 800 / 600, 0.1, 1000);
+    this.camera = new PerspectiveCamera(
+      75,
+      viewSize.width / viewSize.height,
+      0.1,
+      1000,
+    );
     this.camera.position.set(28, -28, 90);
     this.camera.lookAt(28, 0, 0);
 
@@ -137,7 +144,7 @@ export class SceneRenderer {
     this.scene.background = StarryBackground;
     this.scene.backgroundIntensity = 0.05;
 
-    const hexes = map.hexes().map((mapHex) => {
+    map.hexes().forEach((mapHex) => {
       const [q, r] = mapHex.location;
       const hex = createMapHex(5);
 
@@ -150,8 +157,6 @@ export class SceneRenderer {
         this.sprites.push(planet);
         this.scene.add(planet.mesh);
       }
-
-      return hex;
     });
 
     this.environmentLights.forEach((light) => {

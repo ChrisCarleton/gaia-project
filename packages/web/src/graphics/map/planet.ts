@@ -1,4 +1,3 @@
-import { AxialCoordinates } from '@gaia-project/engine';
 import { Material, Mesh, SphereGeometry, Vector3 } from 'three';
 
 import { Sprite } from '..';
@@ -7,7 +6,7 @@ class PlanetSprite implements Sprite {
   constructor(readonly mesh: Mesh) {}
 
   animate(): void {
-    this.mesh.rotateY(0.01);
+    this.mesh.rotateY(0.005);
   }
 }
 

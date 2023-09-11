@@ -50,7 +50,7 @@ export class Lobby {
     this._players.push({ name, faction });
   }
 
-  removePlayer(player: LobbyPlayer) {
+  removePlayer(player: number) {
     if (this.game) {
       // TODO: Once we have AI built in, this can be done more gracefully by replacing the human player with an AI-controlled replacement.
       throw new GPError(
@@ -59,10 +59,13 @@ export class Lobby {
       );
     }
 
-    const index = this._players.findIndex((p) => p === player);
-    if (index > -1) {
-      this._players.splice(index, 1);
+    if (player < 0 || player >= this._players.length) {
+      throw new Error(
+        `Unable to return player at position ${player}: No such player.`,
+      );
     }
+
+    this._players.splice(player, 1);
   }
 
   beginGame(mapAlgorithm: MapModelType): Game {

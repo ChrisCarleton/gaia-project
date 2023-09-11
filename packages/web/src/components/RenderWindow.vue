@@ -1,31 +1,30 @@
 <template>
-  <div id="render"></div>
+  <div id="render" />
 </template>
 
 <script lang="ts" setup>
+import { RenderCallback, SceneRenderer } from '@/graphics';
 import { WebGLRenderer } from 'three';
 import { onMounted } from 'vue';
-
-import { RenderCallback, SceneRenderer } from '@/graphics';
 
 interface RenderWindowProps {
   width: number;
   height: number;
-  render: RenderCallback,
+  render: RenderCallback;
 }
 
-const props = withDefaults(
-  defineProps<RenderWindowProps>(),
-  {
-    width: 800,
-    height: 600,
-  }
-);
- 
+const props = withDefaults(defineProps<RenderWindowProps>(), {
+  width: 1920,
+  height: 1080,
+});
+
 const webGL = new WebGLRenderer();
 webGL.setSize(props.width, props.height);
 
-const renderer = new SceneRenderer(webGL, props.render);
+const renderer = new SceneRenderer(webGL, {
+  width: props.width,
+  height: props.height,
+});
 
 onMounted(() => {
   document.getElementById('render')?.appendChild(webGL.domElement);
