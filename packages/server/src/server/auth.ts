@@ -5,6 +5,7 @@ import {
   Strategy as GoogleStrategy,
   Profile,
 } from 'passport-google-oauth20';
+
 import config from '../config';
 import { User, UserManager } from '../users';
 
