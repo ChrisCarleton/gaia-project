@@ -27,6 +27,7 @@ export class Lobby {
 
   constructor(
     private readonly playerFactory: PlayerFactory,
+    readonly id: string,
     events?: Observer,
   ) {
     this.events = events ?? new Observer();

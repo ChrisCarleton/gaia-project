@@ -6,14 +6,18 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "format": "prettier --write --ignore-unknown .",
     "lint": "eslint .",
-    "prepare": "husky install"
+    "build": "lerna run build",
+    "prepare": "husky install",
+    "test": "lerna run test"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",
     "@typescript-eslint/eslint-plugin": "^6.6.0",
     "@typescript-eslint/parser": "^6.6.0",
     "eslint": "^8.48.0",
+    "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-vue": "^9.17.0",
     "husky": "^8.0.3",
     "lerna": "^7.2.0",

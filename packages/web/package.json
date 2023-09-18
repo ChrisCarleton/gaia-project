@@ -8,10 +8,14 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
-    "core-js": "^3.8.3",
     "@gaia-project/engine": "~1.0.0",
+    "@vuelidate/core": "^2.0.3",
+    "@vuelidate/validators": "^2.0.4",
+    "core-js": "^3.8.3",
+    "prettier": "^3.0.3",
     "three": "^0.156.0",
-    "vue": "^3.2.13"
+    "vue": "^3.2.13",
+    "vue-router": "4"
   },
   "devDependencies": {
     "@types/jest": "^27.0.1",
@@ -23,7 +27,9 @@
     "@vue/test-utils": "^2.0.0-0",
     "@vue/vue3-jest": "^27.0.0-alpha.1",
     "babel-jest": "^27.0.6",
+    "crypto-browserify": "^3.12.0",
     "jest": "^27.0.5",
+    "node-polyfill-webpack-plugin": "^2.0.1",
     "ts-jest": "^27.0.4",
     "typescript": "~4.5.5"
   }
