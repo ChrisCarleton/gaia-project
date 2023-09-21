@@ -16,7 +16,7 @@ class AppConfig {
   readonly google = new GoogleConfig();
 
   get baseUrl(): string {
-    return process.env.GP_BASE_URL ?? 'http://localhost:3020/';
+    return process.env.GP_BASE_URL ?? 'http://localhost:8080/';
   }
 
   get cookieName(): string {

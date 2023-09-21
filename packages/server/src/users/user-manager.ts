@@ -30,6 +30,7 @@ export class UserManagerInstance implements UserManager {
       emailLowered: options.email.toLocaleLowerCase(),
       displayName: options.displayName,
       googleId: options.googleId,
+      memberSince: new Date(),
     };
 
     const user = new UserInstance(this.mongoClient, this.log, data);

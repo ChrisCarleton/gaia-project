@@ -5,8 +5,8 @@ import { configureErrorHandlerRoutes } from './errors';
 import { configureHealthCheckRoute } from './health';
 
 export function configureRouter(app: Express) {
-  configureHealthCheckRoute(app);
   configureAuthRoutes(app);
+  configureHealthCheckRoute(app);
 
   // Error handlers need to be added last to work correctly!!
   configureErrorHandlerRoutes(app);

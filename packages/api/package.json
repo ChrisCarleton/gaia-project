@@ -1,0 +1,13 @@
+{
+  "name": "@gaia-project/api",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "author": "Chris Carleton",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "zod": "^3.22.2"
+  }
+}

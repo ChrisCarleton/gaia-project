@@ -1,3 +1,4 @@
+import { UserDTO } from '@gaia-project/api';
 import { z } from 'zod';
 
 import { UserSchema } from '../data';
@@ -10,16 +11,10 @@ export const CreateUserOptionsSchema = UserSchema.pick({
 });
 export type CreateUserOptions = z.infer<typeof CreateUserOptionsSchema>;
 
-export type UserDTO = {
-  avatar?: string;
-  displayName?: string;
-  id: string;
-  email: string;
-};
-
 export interface User {
   readonly id: string;
-  email: string;
+  readonly email: string;
+  readonly memberSince: Date;
 
   avatar?: string;
   displayName?: string;

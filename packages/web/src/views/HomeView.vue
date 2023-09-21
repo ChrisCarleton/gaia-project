@@ -1,6 +1,4 @@
 <template>
-  <PageTitle title="Gaia Project" subtitle="Play it now!!!!"></PageTitle>
-
   <section class="section">
     <div class="container">
       <JoinGameDialog

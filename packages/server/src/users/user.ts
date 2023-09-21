@@ -1,3 +1,4 @@
+import { UserDTO } from '@gaia-project/api';
 import Logger from 'bunyan';
 import { Collection, MongoClient } from 'mongodb';
 
@@ -5,7 +6,7 @@ import { EmailSchema } from '../constants';
 import { CollectionNames, UserDocument, UserSchema } from '../data';
 import { ConflictError } from '../errors';
 import { assertValid } from '../utils';
-import { User, UserDTO } from './interfaces';
+import { User } from './interfaces';
 
 export class UserInstance implements User {
   private readonly users: Collection<UserDocument>;
@@ -24,6 +25,10 @@ export class UserInstance implements User {
 
   get email(): string {
     return this.data.email;
+  }
+
+  get memberSince(): Date {
+    return this.data.memberSince;
   }
 
   get displayName(): string | undefined {
@@ -89,7 +94,11 @@ export class UserInstance implements User {
 
   async save(): Promise<void> {
     this.data = assertValid(this.data, UserSchema);
-    await this.users.updateOne({ _id: this.data._id }, this.data);
+    await this.users.updateOne(
+      { _id: this.data._id },
+      { $set: this.data },
+      { upsert: true },
+    );
   }
 
   toJSON(): UserDTO {
@@ -98,6 +107,7 @@ export class UserInstance implements User {
       displayName: this.displayName,
       id: this.id,
       email: this.email,
+      memberSince: this.memberSince,
     };
   }
 }

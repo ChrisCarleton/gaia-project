@@ -9,6 +9,7 @@ export const UserSchema = z.object({
   emailLowered: EmailSchema.toLowerCase(),
   displayName: z.string().trim().max(100).optional(),
   googleId: z.string().optional(),
+  memberSince: z.coerce.date(),
 });
 
 export type UserDocument = z.infer<typeof UserSchema>;
