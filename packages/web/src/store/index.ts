@@ -5,12 +5,18 @@ import {
   useStore as useStoreInternal,
 } from 'vuex';
 
+import { actions } from './actions';
+import { mutations } from './mutations';
 import { GaiaProjectState } from './state';
 
-const DefaultState: GaiaProjectState = {};
+const DefaultState: GaiaProjectState = {
+  toasts: {},
+};
 
 export const StoreInjectionKey: InjectionKey<Store<GaiaProjectState>> =
   Symbol();
+
+export * from './types';
 
 export function createStore(
   initialState?: Partial<GaiaProjectState>,
@@ -20,6 +26,9 @@ export function createStore(
       ...DefaultState,
       ...initialState,
     }),
+
+    actions,
+    mutations,
   });
 }
 

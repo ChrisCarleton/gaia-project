@@ -1,9 +1,9 @@
+import { ErrorResponse } from '@gaia-project/api';
 import { Express, NextFunction, Request, Response } from 'express';
 
 import config from '../../config';
 import {
   ConflictError,
-  ErrorResponse,
   ForbiddenError,
   NotFoundError,
   UnauthorizedError,
@@ -32,18 +32,11 @@ export function globalErrorHandler(
     message: err.message,
     method: req.method,
     path: req.originalUrl,
+    ...(req.user
+      ? { user: { id: req.user.id, email: req.user.email } }
+      : undefined),
+    ...(config.isProduction ? { stack: err.stack } : undefined),
   };
-
-  if (req.user) {
-    response.user = {
-      id: req.user.id,
-      email: req.user.email,
-    };
-  }
-
-  if (!config.isProduction) {
-    response.stack = err.stack;
-  }
 
   if (err instanceof ValidationError) {
     response.status = 400;

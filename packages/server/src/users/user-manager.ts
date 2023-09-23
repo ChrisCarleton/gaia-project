@@ -26,6 +26,7 @@ export class UserManagerInstance implements UserManager {
     options = assertValid(options, CreateUserOptionsSchema);
     const data: UserDocument = {
       _id: uuid(),
+      avatar: options.avatar,
       email: options.email,
       emailLowered: options.email.toLocaleLowerCase(),
       displayName: options.displayName,

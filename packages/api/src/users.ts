@@ -14,3 +14,9 @@ export const CurrentUserDTOSchema = z.discriminatedUnion('anonymous', [
   UserDTOSchema.merge(z.object({ anonymous: z.literal(false) })),
 ]);
 export type CurrentUserDTO = z.infer<typeof CurrentUserDTOSchema>;
+
+export const ProfileUpdateSchema = UserDTOSchema.pick({
+  avatar: true,
+  displayName: true,
+});
+export type ProfileUpdate = z.infer<typeof ProfileUpdateSchema>;

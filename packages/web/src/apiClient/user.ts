@@ -1,4 +1,4 @@
-import { UserDTO } from '@gaia-project/api';
+import { ProfileUpdate, UserDTO, UserDTOSchema } from '@gaia-project/api';
 import { SuperAgentStatic } from 'superagent';
 
 import { User } from './interfaces';
@@ -6,12 +6,22 @@ import { User } from './interfaces';
 export class UserInstance implements User {
   constructor(
     private readonly agent: SuperAgentStatic,
-    private readonly data: UserDTO,
+    private data: UserDTO,
   ) {}
 
   async changeEmail(newEmail: string): Promise<void> {}
 
-  async save(): Promise<void> {}
+  async save(): Promise<void> {
+    const update: ProfileUpdate = {
+      avatar: this.avatar,
+      displayName: this.displayName,
+    };
+
+    const { body } = await this.agent
+      .put(`/api/profile/${this.id}`)
+      .send(update);
+    this.data = UserDTOSchema.parse(body);
+  }
 
   get avatar(): string | undefined {
     return this.data.avatar;
@@ -33,5 +43,9 @@ export class UserInstance implements User {
 
   get email(): string {
     return this.data.email;
+  }
+
+  get memberSince(): Date {
+    return this.data.memberSince;
   }
 }

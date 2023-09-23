@@ -1,6 +1,7 @@
 export interface User {
   readonly id: string;
   readonly email: string;
+  readonly memberSince: Date;
   avatar?: string;
   displayName?: string;
   changeEmail(newEmail: string): Promise<void>;

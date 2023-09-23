@@ -1,8 +1,4 @@
-export type ValidationIssue = {
-  code: string;
-  message: string;
-  path: string;
-};
+import { ValidationIssue } from '@gaia-project/api';
 
 export class ValidationError extends Error {
   constructor(

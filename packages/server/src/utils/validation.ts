@@ -1,6 +1,7 @@
+import { ValidationIssue } from '@gaia-project/api';
 import { ZodIssue, z } from 'zod';
 
-import { ValidationError, ValidationIssue } from '../errors';
+import { ValidationError } from '../errors';
 
 export function zodIssueToValidationIssue(issue: ZodIssue): ValidationIssue {
   return {

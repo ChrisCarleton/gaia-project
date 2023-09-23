@@ -1,29 +1,37 @@
 <template>
-  <PageLoading v-if="isLoading" />
-  <div v-else>
-    <LoginForm />
-    <!-- <RouterView></RouterView> -->
-  </div>
+  <PageLoading v-if="isLoading"></PageLoading>
+  <v-else>
+    <NavBar></NavBar>
+    <RouterView></RouterView>
+  </v-else>
+  <ToastGroup></ToastGroup>
 </template>
 
 <script lang="ts" setup>
-import LoginForm from '@/components/LoginForm.vue';
+import NavBar from '@/components/NavBar.vue';
 import PageLoading from '@/components/PageLoading.vue';
+import ToastGroup from '@/components/ToastGroup.vue';
 import { ApiClientKey } from '@/injection-keys';
 import { inject } from '@/utils';
-import { onMounted, ref } from 'vue';
+import { nextTick, onMounted, ref } from 'vue';
 
+import { Mutation, useStore } from './store';
+
+const store = useStore();
 const client = inject(ApiClientKey);
 const isLoading = ref(true);
 
 onMounted(async () => {
   try {
-    const currentUser = await client.users.getCurrentUser();
-    console.log('Current user', currentUser);
+    const user = await client.users.getCurrentUser();
+    store.commit(Mutation.SignInUser, user);
   } catch (error) {
     console.error(error);
+    // TODO: Need a server error page.
   } finally {
-    isLoading.value = false;
+    nextTick(() => {
+      isLoading.value = false;
+    });
   }
 });
 </script>

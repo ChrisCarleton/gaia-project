@@ -3,6 +3,7 @@ import { Express, NextFunction, Request, Response } from 'express';
 import passport from 'passport';
 
 import config from '../../config';
+import { UnauthorizedError } from '../../errors';
 import { issueAuthCookie } from '../auth';
 
 const GoogleAuthRoute = '/api/auth/google';
@@ -23,10 +24,19 @@ export function getCurrentUser(req: Request, res: Response) {
   res.json(json);
 }
 
-export function logout(req: Request, res: Response, next: NextFunction) {
-  req.logout({ keepSessionInfo: false }, (error) => {
-    next(error);
-  });
+export function logout(_req: Request, res: Response) {
+  res.clearCookie(config.cookieName);
+  res.redirect('/');
+}
+
+export function requireAuth(req: Request, _res: Response, next: NextFunction) {
+  if (!req.user) {
+    throw new UnauthorizedError(
+      'You must be logged in to perform the requested action. Check that your JWT token is present and valid.',
+    );
+  }
+
+  next();
 }
 
 export function configureAuthRoutes(app: Express) {
