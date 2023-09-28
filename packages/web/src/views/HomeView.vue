@@ -9,11 +9,15 @@
               <div class="message-body">
                 <div class="field">
                   <div class="control has-text-centered">
-                    <RouterLink to="/lobby/new">
-                      <button class="button is-primary is-large">
-                        Create Lobby
-                      </button>
-                    </RouterLink>
+                    <button
+                      :class="`button is-primary is-large${
+                        isCreatingLobby ? ' is-loading' : ''
+                      }`"
+                      :disabled="isCreatingLobby"
+                      @click="onCreateLobby"
+                    >
+                      Create Lobby
+                    </button>
                   </div>
                 </div>
               </div>
@@ -52,17 +56,32 @@
 import JoinGameDialog from '@/components/JoinGameDialog.vue';
 import PageTitle from '@/components/PageTitle.vue';
 import RequireAuth from '@/components/RequireAuth.vue';
+import { ApiClientKey } from '@/injection-keys';
+import { inject, useErrorHandling } from '@/utils';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
+const client = inject(ApiClientKey);
 const router = useRouter();
 const showJoinGameDialog = ref(false);
+const isCreatingLobby = ref(false);
+const handleError = useErrorHandling();
 
-async function onJoinLobby(gameId: string) {
-  console.log(gameId);
+async function onJoinLobby(lobbyId: string) {
   showJoinGameDialog.value = false;
-  router.push(`/lobby/${gameId}`);
+  router.push(`/lobby/${lobbyId}`);
 }
 
-async function onCreateLobby(): Promise<void> {}
+async function onCreateLobby(): Promise<void> {
+  isCreatingLobby.value = true;
+
+  try {
+    const { id } = await client.lobbies.createLobby();
+    await router.push(`/lobby/${id}`);
+  } catch (error) {
+    await handleError(error);
+  } finally {
+    isCreatingLobby.value = false;
+  }
+}
 </script>

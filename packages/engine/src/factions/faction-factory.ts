@@ -1,6 +1,7 @@
+import { FactionType } from '@gaia-project/api';
+
 import { Faction, Observer } from '..';
 import { Ambas } from './ambas';
-import { FactionType } from './faction-type';
 import { Terrans } from './terrans';
 
 export class FactionFactory {

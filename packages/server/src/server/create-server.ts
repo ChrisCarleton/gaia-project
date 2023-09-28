@@ -5,6 +5,7 @@ import express, { Express } from 'express';
 import userAgent from 'express-useragent';
 import { v4 as uuid } from 'uuid';
 
+import config from '../config';
 import { configureAuth } from './auth';
 import { ServerDependencies } from './create-dependencies';
 import { configureRouter } from './routes';
@@ -12,8 +13,10 @@ import { configureRouter } from './routes';
 export async function createServer(
   createDependencies: () => Promise<ServerDependencies>,
 ): Promise<Express> {
-  const { logger, userManager } = await createDependencies();
+  const { createHttpServer, lobbyManager, logger, userManager } =
+    await createDependencies();
   const app = express();
+  const httpServer = createHttpServer(app);
 
   logger.debug('[APP] Initializing body, cookie, and user agent parsing...');
   app.use(bodyParser.json());
@@ -35,6 +38,7 @@ export async function createServer(
   app.use((req, _res, next) => {
     req.log = logger;
     req.users = userManager;
+    req.lobbies = lobbyManager;
     next();
   });
 
@@ -61,6 +65,9 @@ export async function createServer(
 
   logger.debug('[APP] Registering API routes...');
   configureRouter(app);
+
+  logger.debug('[APP] Starting HTTP server...');
+  httpServer.listen(config.port);
 
   return app;
 }

@@ -3,6 +3,7 @@ import { Express, NextFunction, Request, Response } from 'express';
 
 import config from '../../config';
 import {
+  BadRequestError,
   ConflictError,
   ForbiddenError,
   NotFoundError,
@@ -37,6 +38,10 @@ export function globalErrorHandler(
       : undefined),
     ...(config.isProduction ? { stack: err.stack } : undefined),
   };
+
+  if (err instanceof BadRequestError) {
+    response.status = 400;
+  }
 
   if (err instanceof ValidationError) {
     response.status = 400;

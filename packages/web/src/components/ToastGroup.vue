@@ -1,12 +1,12 @@
 <template>
-  <div class="toast-group">
+  <TransitionGroup class="toast-group" name="toast" tag="div">
     <ToastMessage
       v-for="toast in toasts"
       :key="toast.id"
       :toast="toast"
       @dismiss="() => onDismiss(toast.id)"
-    ></ToastMessage>
-  </div>
+    />
+  </TransitionGroup>
 </template>
 
 <script lang="ts" setup>
@@ -34,5 +34,15 @@ function onDismiss(toastId: string) {
   z-index: 1; /* Add a z-index if needed */
   right: 150px; /* Center the snackbar */
   bottom: 30px; /* 30px from the bottom */
+}
+
+.toast-enter-active,
+.toast-leave-active {
+  transition: all 0.5s ease;
+}
+.toast-enter-from,
+.toast-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
 }
 </style>

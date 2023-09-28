@@ -1,8 +1,9 @@
+import { FactionType } from '@gaia-project/api';
+
 import {
   ErrorCode,
   EventHandler,
   EventType,
-  FactionType,
   GPError,
   Game,
   GameContext,

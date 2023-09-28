@@ -5,3 +5,4 @@ export enum CollectionNames {
 }
 
 export * from './users';
+export * from './games';

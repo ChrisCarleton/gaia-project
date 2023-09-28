@@ -1,4 +1,6 @@
-import { FactionFactory, FactionType, Observer, Player } from '..';
+import { FactionType } from '@gaia-project/api';
+
+import { FactionFactory, Observer, Player } from '..';
 import { AIPlayer } from './ai-player';
 import { HumanPlayer } from './human-player';
 

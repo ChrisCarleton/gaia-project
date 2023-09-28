@@ -1,9 +1,10 @@
+import { FactionType } from '@gaia-project/api';
+
 import {
   AcadamyBonus,
   AcadamyBonusType,
   Faction,
   FactionIncome,
-  FactionType,
   FreeAction,
   Observer,
   PlanetType,

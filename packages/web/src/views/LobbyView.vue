@@ -1,19 +1,40 @@
 <template>
-  <PageTitle
-    title="Game Lobby"
-    :subtitle="`Game ID: ${route.params.gameId}`"
-  ></PageTitle>
-  <section class="section">
-    <div class="container">Lobby</div>
-  </section>
+  <PageTitle title="Game Lobby" />
+  <RequireAuth>
+    <PageLoading v-if="isLoading" />
+    <section v-else-if="lobby" class="section">
+      <div class="container">
+        <LobbyHub :lobby="lobby" />
+      </div>
+    </section>
+  </RequireAuth>
 </template>
 
 <script lang="ts" setup>
+import { Lobby } from '@/apiClient';
+import LobbyHub from '@/components/LobbyHub.vue';
+import PageLoading from '@/components/PageLoading.vue';
 import PageTitle from '@/components/PageTitle.vue';
-import { computed, onMounted, ref } from 'vue';
+import RequireAuth from '@/components/RequireAuth.vue';
+import { ApiClientKey } from '@/injection-keys';
+import { inject, useErrorHandling } from '@/utils';
+import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
+const errorHandler = useErrorHandling();
+const client = inject(ApiClientKey);
 
-onMounted(() => {});
+const isLoading = ref(true);
+const lobby = ref<Lobby | undefined>();
+
+onMounted(async () => {
+  try {
+    lobby.value = await client.lobbies.getLobby(route.params.gameId as string);
+  } catch (error) {
+    await errorHandler(error);
+  } finally {
+    isLoading.value = false;
+  }
+});
 </script>

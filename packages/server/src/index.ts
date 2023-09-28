@@ -7,9 +7,10 @@ const logger = createLogger(config.logLevel);
 
 logger.debug('[APP] Starting application...');
 createServer(() => createDependencies(logger))
-  .then((app) => {
-    app.listen(config.port);
-    logger.info(`[APP] Application started. Listening on port ${config.port}`);
+  .then(() => {
+    logger.info(
+      `[APP] 🎉 Application started. Listening on port ${config.port}. 🎉`,
+    );
   })
   .catch((error) => {
     logger.fatal(error);
