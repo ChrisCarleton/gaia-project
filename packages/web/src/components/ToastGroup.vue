@@ -5,7 +5,7 @@
       :key="toast.id"
       :toast="toast"
       @dismiss="() => onDismiss(toast.id)"
-    />
+    ></ToastMessage>
   </TransitionGroup>
 </template>
 

@@ -68,7 +68,7 @@
           </p>
 
           <p class="block">
-            <QRCode :value="lobbyUrl" :size="128" background="#eef6fc" />
+            <QRCode :value="lobbyUrl" :size="128" background="#eef6fc"></QRCode>
           </p>
 
           <p class="content block">Or give them the lobby code:</p>

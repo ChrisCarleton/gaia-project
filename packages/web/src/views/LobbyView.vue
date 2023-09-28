@@ -1,10 +1,10 @@
 <template>
-  <PageTitle title="Game Lobby" />
+  <PageTitle title="Game Lobby"></PageTitle>
   <RequireAuth>
-    <PageLoading v-if="isLoading" />
+    <PageLoading v-if="isLoading"></PageLoading>
     <section v-else-if="lobby" class="section">
       <div class="container">
-        <LobbyHub :lobby="lobby" />
+        <LobbyHub :lobby="lobby"></LobbyHub>
       </div>
     </section>
   </RequireAuth>
