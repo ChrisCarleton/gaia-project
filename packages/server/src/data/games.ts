@@ -4,7 +4,7 @@ import { z } from 'zod';
 export const GameSchema = z.object({
   _id: z.string(),
   createdOn: z.date(),
-  lastUpdated: z.date().optional(),
+  updatedOn: z.date(),
   owner: z.string(),
   players: z
     .object({

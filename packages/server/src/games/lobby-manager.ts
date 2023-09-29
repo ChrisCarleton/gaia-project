@@ -23,9 +23,11 @@ export class LobbyManagerInstance implements LobbyManager {
       .substring(0, 6)
       .toUpperCase();
 
+    const now = new Date();
     const game: GameDocument = {
       _id: id,
-      createdOn: new Date(),
+      createdOn: now,
+      updatedOn: now,
       owner: owner.id,
       players: [{ playerId: owner.id }],
     };

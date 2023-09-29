@@ -3,5 +3,5 @@
     "ts": "ts-node"
   },
   "ext": "ts,json",
-  "watch": ["src/", "package.json"]
+  "watch": ["src/", "package.json", "../api/src/", "../engine/src/"]
 }

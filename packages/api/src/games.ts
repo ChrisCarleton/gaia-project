@@ -3,6 +3,7 @@ import { z } from 'zod';
 
 export const PlayerDTOSchema = z.object({
   id: z.string(),
+  memberSince: z.coerce.date(),
   displayName: z.string(),
   avatar: z.string().optional(),
   faction: z.nativeEnum(FactionType).nullable().optional(),

@@ -1,11 +1,11 @@
 <template>
-  <div class="columns">
+  <div class="columns block">
     <div class="column is-8-tablet">
       <p class="title">Players</p>
 
       <span>{{ JSON.stringify(lobby, null, 2) }}</span>
 
-      <div v-for="player in lobby.players" :key="player.id" class="card">
+      <div v-for="player in lobby.players" :key="player.id" class="card block">
         <div class="card-content">
           <div class="media">
             <div class="media-left">
@@ -16,7 +16,9 @@
 
             <div class="media-content">
               <p class="title">{{ player.displayName }}</p>
-              <p class="subtitle">Joined ??</p>
+              <p class="subtitle">
+                Joined {{ dayjs(player.memberSince).fromNow() }}
+              </p>
             </div>
 
             <div class="media-right">
@@ -33,10 +35,16 @@
           <a href="#" class="card-footer-item has-text-danger">Leave Lobby</a>
         </div>
       </div>
+
+      <div class="field is-grouped is-grouped-centered">
+        <div class="control">
+          <button class="button is-large is-primary">Start Game</button>
+        </div>
+      </div>
     </div>
 
     <div class="column is-4-tablet">
-      <div class="message is-info has-text-centered">
+      <div class="message is-link has-text-centered">
         <div class="message-header">
           <p class="message-title">Lobby URL</p>
         </div>

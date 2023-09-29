@@ -14,6 +14,7 @@ export interface LobbyPlayer {
 export interface Lobby {
   readonly id: string;
   readonly createdOn: Date;
+  readonly updatedOn: Date;
   owner(): Promise<User>;
 
   readonly players: Readonly<LobbyPlayer[]>;

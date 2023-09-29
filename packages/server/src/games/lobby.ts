@@ -42,6 +42,7 @@ export class LobbyPlayerInstance implements LobbyPlayer {
   toJSON(): PlayerDTO {
     return {
       id: this.id,
+      memberSince: this._user?.memberSince ?? new Date(),
       displayName: this._user?.displayName ?? '',
       avatar: this._user?.avatar,
       faction: this.faction,
@@ -80,6 +81,10 @@ export class LobbyInstance implements Lobby {
 
   get createdOn(): Date {
     return this.data.createdOn;
+  }
+
+  get updatedOn(): Date {
+    return this.data.updatedOn;
   }
 
   get players(): Readonly<LobbyPlayer[]> {
