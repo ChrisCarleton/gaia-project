@@ -1,4 +1,5 @@
-import { FactionType, LobbyDTO, PlayerDTO } from '@gaia-project/api';
+import { LobbyDTO, PlayerDTO } from '@gaia-project/api';
+import { FactionType } from '@gaia-project/engine';
 import Logger from 'bunyan';
 import { Collection, MongoClient } from 'mongodb';
 

@@ -1,11 +1,12 @@
 {
   "name": "@gaia-project/engine",
   "version": "1.0.0",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
   "author": "Chris Carleton",
   "license": "MIT",
   "private": true,
   "scripts": {
+    "clean": "rm -rf dist/",
     "build": "rm -rf dist/ && tsc",
     "test": "jest"
   },

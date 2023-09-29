@@ -1,5 +1,3 @@
-import { FactionType } from '@gaia-project/api';
-
 import {
   AcadamyBonus,
   AcadamyBonusType,
@@ -13,6 +11,7 @@ import {
   Resources,
   StructureType,
 } from '..';
+import { FactionType } from './faction-type';
 
 const DefaultStructures: Record<StructureType, number> = {
   [StructureType.Academy]: 2,

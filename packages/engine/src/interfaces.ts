@@ -1,6 +1,5 @@
-import { FactionType } from '@gaia-project/api';
-
 import { EventHandler, EventType } from './events';
+import { FactionType } from './factions';
 
 // Map
 export enum PlanetType {

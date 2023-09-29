@@ -1,0 +1,38 @@
+FROM node:18-bullseye AS base
+
+WORKDIR /app
+
+COPY package.json yarn.lock lerna.json nx.json ./
+
+COPY packages/server/package.json packages/server/tsconfig.json ./packages/server/
+COPY packages/server/src/ ./packages/server/src/
+
+COPY packages/api/package.json packages/api/tsconfig.json ./packages/api/
+COPY packages/api/src/ ./packages/api/src/
+
+COPY packages/engine/package.json packages/engine/tsconfig.json ./packages/engine/
+COPY packages/engine/src/ ./packages/engine/src/
+
+RUN yarn && yarn build --scope @gaia-project/server
+
+FROM node:18-alpine AS deps
+
+WORKDIR /app
+
+COPY --from=base /app/package.json /app/yarn.lock /app/lerna.json /app/nx.json ./
+COPY --from=base /app/packages/server/package.json ./packages/server/
+COPY --from=base /app/packages/server/dist/ ./packages/server/dist/
+COPY --from=base /app/packages/engine/package.json ./packages/engine/
+COPY --from=base /app/packages/engine/dist/ ./packages/engine/dist/
+COPY --from=base /app/packages/api/package.json ./packages/api/
+COPY --from=base /app/packages/api/dist/ ./packages/api/dist/
+
+RUN yarn install --production
+
+FROM node:18-alpine
+
+COPY --from=deps /app /app
+WORKDIR /app/packages/server
+
+ENTRYPOINT [ "node", "dist/index.js" ]
+EXPOSE 3020

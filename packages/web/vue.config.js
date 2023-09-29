@@ -21,4 +21,8 @@ module.exports = defineConfig({
       },
     },
   },
+
+  // Required to prevent errors while building the Docker container.
+  // Feel free to enhance this so that it is only false when containerized.
+  parallel: false,
 });

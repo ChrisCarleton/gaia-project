@@ -6,7 +6,11 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "clean": "lerna run clean",
     "format": "prettier --write --ignore-unknown .",
+    "docker:build": "docker-compose build",
+    "docker:build:server": "docker build -t gaia-project/server -f Dockerfile.server .",
+    "docker:build:web": "docker build -t gaia-project/web -f Dockerfile.web .",
     "lint": "eslint .",
     "build": "lerna run build",
     "prepare": "husky install",

@@ -1,4 +1,4 @@
-import { FactionType } from '@gaia-project/api';
+import { FactionType } from '@gaia-project/engine';
 import { z } from 'zod';
 
 export const GameSchema = z.object({

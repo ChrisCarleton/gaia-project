@@ -3,9 +3,21 @@
     "default": {
       "runner": "nx/tasks-runners/default",
       "options": {
-        "cacheableOperations": []
+        "cacheableOperations": ["build", "test", "migrate", "test:unit"]
       }
     }
   },
-  "targetDefaults": {}
+  "targetDefaults": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["{projectRoot}/dist/"]
+    },
+    "test": {
+      "dependsOn": ["^test"],
+      "outputs": ["{projectRoot}/coverage/"]
+    },
+    "serve": {
+      "dependsOn": ["^build", "^serve"]
+    }
+  }
 }

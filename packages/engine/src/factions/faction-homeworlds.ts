@@ -1,6 +1,5 @@
-import { FactionType } from '@gaia-project/api';
-
 import { PlanetType } from '..';
+import { FactionType } from './faction-type';
 
 export const FactionHomeWorlds: Record<FactionType, PlanetType> = {
   [FactionType.Ambas]: PlanetType.Swamp,

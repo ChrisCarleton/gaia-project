@@ -1,5 +1,4 @@
-import { FactionType } from '@gaia-project/api';
-
+import { FactionType } from '..';
 import {
   ErrorCode,
   EventHandler,

@@ -1,5 +1,3 @@
-import { FactionType } from '@gaia-project/api';
-
 import {
   Observer,
   PlanetType,
@@ -9,6 +7,7 @@ import {
   StructureType,
 } from '..';
 import { FactionBase } from './faction-base';
+import { FactionType } from './faction-type';
 
 export class Terrans extends FactionBase {
   constructor(events: Observer) {
