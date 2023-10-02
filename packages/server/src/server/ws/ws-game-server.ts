@@ -1,3 +1,4 @@
+import { Message, MessageType, StateChangeCode } from '@gaia-project/api';
 import Logger from 'bunyan';
 import { IncomingMessage } from 'http';
 import jwt from 'jsonwebtoken';
@@ -10,14 +11,7 @@ import config from '../../config';
 import { UnauthorizedError } from '../../errors';
 import { LobbyManager } from '../../games';
 import { UserManager } from '../../users';
-import {
-  GameClient,
-  GameServer,
-  Message,
-  MessageType,
-  PubSubService,
-  StateChangeCode,
-} from './interfaces';
+import { GameClient, GameServer, PubSubService } from './interfaces';
 import { WSGameClient } from './ws-game-client';
 
 const JwtSubjectSchema = z.object({

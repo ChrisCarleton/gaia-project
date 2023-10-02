@@ -1,3 +1,4 @@
+import { PlayerCommandMessage } from '@gaia-project/api';
 import { FactionType } from '@gaia-project/engine';
 import Logger from 'bunyan';
 import { v4 as uuid } from 'uuid';
@@ -5,12 +6,7 @@ import { WebSocket } from 'ws';
 
 import { Lobby } from '../../games';
 import { User } from '../../users';
-import {
-  GameClient,
-  MessageType,
-  PlayerCommand,
-  PlayerCommandMessage,
-} from './interfaces';
+import { GameClient } from './interfaces';
 
 export class WSGameClient implements GameClient {
   readonly id: string;

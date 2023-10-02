@@ -1,59 +1,7 @@
+import { Message, PlayerCommandMessage } from '@gaia-project/api';
 import { FactionType } from '@gaia-project/engine';
 import { IncomingMessage } from 'http';
 import { Duplex } from 'stream';
-
-export enum MessageType {
-  Error = 'error',
-  StateChange = 'state',
-  PlayerCommand = 'command',
-}
-
-export enum PlayerCommand {
-  SelectFaction = 'selectFaction',
-}
-
-export enum StateChangeCode {
-  playerConnect = 'connection',
-  playerDisconnect = 'disconnect',
-}
-
-export type MessageHeader = {
-  fromServer: string;
-  lobby?: string;
-  user?: string;
-};
-
-export type ErrorMessage = {
-  type: MessageType.Error;
-  code: string;
-  message: string;
-};
-
-export type PlayerConnectStateUpdateMessage = {
-  type: MessageType.StateChange;
-  code: StateChangeCode.playerConnect;
-  connection: {
-    lobby: string;
-    user: string;
-  };
-};
-
-export type StateUpdateMessage = PlayerConnectStateUpdateMessage;
-
-export type PlayerCommandSelectFaction = {
-  command: PlayerCommand.SelectFaction;
-  faction: FactionType | null;
-};
-
-export type PlayerCommandMessage = {
-  type: MessageType.PlayerCommand;
-} & PlayerCommandSelectFaction;
-
-export type MessagePayload =
-  | PlayerCommandMessage
-  | ErrorMessage
-  | StateUpdateMessage;
-export type Message = MessageHeader & MessagePayload;
 
 export interface GameClient {
   readonly id: string;
