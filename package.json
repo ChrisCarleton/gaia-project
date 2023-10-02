@@ -13,16 +13,17 @@
     "docker:build:web": "docker build -t gaia-project/web -f Dockerfile.web .",
     "lint": "eslint .",
     "build": "lerna run build",
-    "prepare": "husky install",
     "test": "lerna run test"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^5.0.0",
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",
     "@typescript-eslint/eslint-plugin": "^6.6.0",
     "@typescript-eslint/parser": "^6.6.0",
     "eslint": "^8.48.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-vue": "^9.17.0",
+    "graphql": "^16.8.1",
     "husky": "^8.0.3",
     "lerna": "^7.2.0",
     "lint-staged": "^14.0.1",

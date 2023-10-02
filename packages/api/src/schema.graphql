@@ -1,0 +1,7 @@
+type UserDTO {
+  id: ID!
+}
+
+type Query {
+  users: [UserDTO]
+}
