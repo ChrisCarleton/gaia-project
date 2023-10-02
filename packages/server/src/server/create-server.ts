@@ -3,6 +3,8 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { Express } from 'express';
 import userAgent from 'express-useragent';
+import { IncomingMessage } from 'http';
+import { Duplex } from 'stream';
 import { v4 as uuid } from 'uuid';
 
 import config from '../config';
@@ -44,6 +46,17 @@ export async function createServer(
 
   logger.debug('[APP] Initializing Passport.js and adding auth routes...');
   configureAuth(app);
+
+  httpServer.on(
+    'upgrade',
+    (req: IncomingMessage, socket: Duplex, head: Buffer) => {
+      // TODO: Validate the request and authenticate the user.
+      //  - User must be logged in.
+      //  - A lobby must be requested
+      //  - User must have access to that lobby.
+      // TODO: Call GameServer.connect() if request is valid.
+    },
+  );
 
   // Add middleware to do debug-level logging of all requests as well as create a child logger with
   // request metadata attached.

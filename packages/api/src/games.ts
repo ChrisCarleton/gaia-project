@@ -17,3 +17,9 @@ export const LobbyDTOSchema = z.object({
   players: PlayerDTOSchema.array(),
 });
 export type LobbyDTO = z.infer<typeof LobbyDTOSchema>;
+
+export const JoinLobbyResponseSchema = z.object({
+  token: z.string(),
+  webSocketUri: z.string(),
+});
+export type JoinLobbyResponse = z.infer<typeof JoinLobbyResponseSchema>;

@@ -1,5 +1,8 @@
+import { JoinLobbyResponse } from '@gaia-project/api';
 import { Express, NextFunction, Request, Response } from 'express';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
+import config from '../../config';
 import { ForbiddenError, NotFoundError } from '../../errors';
 import { requireAuth } from './auth';
 
@@ -26,8 +29,29 @@ export async function joinLobby(req: Request, res: Response): Promise<void> {
     throw new Error('No lobby loaded or no user logged in.');
   }
 
+  // TODO: Implement this!!
   await req.currentLobby.join(req.user);
-  res.json(req.currentLobby);
+
+  const now = Date.now();
+  const payload: JwtPayload = {
+    exp: 120 + now,
+    sub: JSON.stringify({
+      lobby: req.currentLobby.id,
+      user: req.user.id,
+    }),
+  };
+  const token = await new Promise<string>((resolve, reject) => {
+    jwt.sign(payload, config.sessionSecret, (error, token) => {
+      if (error) reject(error);
+      else resolve(token!);
+    });
+  });
+
+  const response: JoinLobbyResponse = {
+    token,
+    webSocketUri: '', // TODO: Generate this.
+  };
+  res.json(response);
 }
 
 export async function loadLobby(
