@@ -30,3 +30,10 @@ export const ErrorResponseSchema = z.object({
   stack: z.string().optional(),
 });
 export type ErrorResponse = z.infer<typeof ErrorResponseSchema>;
+
+export enum InternalErrorCodes {
+  ConflictError = 'CONFLICT_ERROR',
+  ForbiddenError = 'FORBIDDEN_ERROR',
+  UnauthorizedError = 'UNAUTHORIZED_ERROR',
+  ValidationError = 'VALIDATION_ERROR',
+}

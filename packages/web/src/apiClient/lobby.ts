@@ -1,11 +1,10 @@
 import { LobbyDTO, PlayerDTO } from '@gaia-project/api';
-import { SuperAgentStatic } from 'superagent';
 
-import { Lobby } from './interfaces';
+import { GqlClient, Lobby } from './interfaces';
 
 export class LobbyInstance implements Lobby {
   constructor(
-    private readonly agent: SuperAgentStatic,
+    private readonly client: GqlClient,
     private dto: LobbyDTO,
   ) {}
 

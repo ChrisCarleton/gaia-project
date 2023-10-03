@@ -1,27 +1,16 @@
-import { ProfileUpdateDto, UserDto } from '@gaia-project/api';
-import { SuperAgentStatic } from 'superagent';
+import { UserDto } from '@gaia-project/api';
 
-import { User } from './interfaces';
+import { GqlClient, User } from './interfaces';
 
 export class UserInstance implements User {
   constructor(
-    private readonly agent: SuperAgentStatic,
+    private readonly client: GqlClient,
     private data: UserDto,
   ) {}
 
   async changeEmail(newEmail: string): Promise<void> {}
 
-  async save(): Promise<void> {
-    const update: ProfileUpdateDto = {
-      avatar: this.avatar,
-      displayName: this.displayName,
-    };
-
-    const { body } = await this.agent
-      .put(`/api/profile/${this.id}`)
-      .send(update);
-    this.data = body;
-  }
+  async save(): Promise<void> {}
 
   get avatar(): string | undefined {
     return this.data.avatar?.valueOf();

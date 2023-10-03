@@ -53,5 +53,6 @@ type Query {
 }
 
 type Mutation {
+  usersChangeEmail(user: ID!, newEmail: String!): UserDTO!
   usersUpdateProfile(update: ProfileUpdateDTO!): UserDTO!
 }

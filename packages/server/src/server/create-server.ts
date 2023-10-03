@@ -10,6 +10,7 @@ import config from '../config';
 import { configureAuth } from './auth';
 import { ServerDependencies } from './create-dependencies';
 import { createGraphqlServer } from './graphql';
+import { configureRouter } from './routes';
 
 export async function createServer(
   createDependencies: () => Promise<ServerDependencies>,
@@ -64,10 +65,12 @@ export async function createServer(
     next();
   });
 
-  // logger.debug('[APP] Registering API routes...');
-  // configureRouter(app);
+  logger.debug('[APP] Registering REST auth API routes...');
+  configureRouter(app);
 
+  logger.debug('[APP] Starting GraphQL server...');
   const graphqlServer = await createGraphqlServer(httpServer);
+  await graphqlServer.start();
   app.use(
     '/api',
     expressMiddleware(graphqlServer, {

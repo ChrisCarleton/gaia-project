@@ -1,3 +1,4 @@
+import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
 import { PlayerDTO } from '@gaia-project/api';
 
 export interface User {
@@ -29,3 +30,5 @@ export interface ApiClient {
   readonly users: UserManager;
   readonly lobbies: LobbyManager;
 }
+
+export type GqlClient = ApolloClient<NormalizedCacheObject>;

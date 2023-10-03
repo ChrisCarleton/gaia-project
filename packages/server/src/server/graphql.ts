@@ -5,6 +5,7 @@ import { Request } from 'express';
 import { Server } from 'http';
 
 import config from '../config';
+import { formatError } from '../errors';
 import { UserQueries } from './resolvers';
 
 export async function createGraphqlServer(
@@ -23,6 +24,7 @@ export async function createGraphqlServer(
     typeDefs,
     introspection: !config.isProduction,
     resolvers,
+    formatError,
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   });
 }

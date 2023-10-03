@@ -1,20 +1,20 @@
-import { CurrentUserDTOSchema } from '@gaia-project/api';
-import { SuperAgentStatic } from 'superagent';
+import { CurrentUserDto } from '@gaia-project/api';
+import gql from 'graphql-tag';
 
-import { User, UserManager } from './interfaces';
+import { GqlClient, User, UserManager } from './interfaces';
 import { UserInstance } from './user';
 
 export class UserManagerInstance implements UserManager {
-  constructor(private readonly agent: SuperAgentStatic) {}
+  private static readonly GetCurrentUserQuery = gql``;
+  constructor(private readonly gqlClient: GqlClient) {}
 
   async getCurrentUser(): Promise<User | undefined> {
-    const { body } = await this.agent.get(`/api/auth/me`);
-    const currentUser = CurrentUserDTOSchema.parse(body);
+    const { data, errors } = await this.gqlClient.query<CurrentUserDto>({
+      query: UserManagerInstance.GetCurrentUserQuery,
+    });
 
-    if (!currentUser.anonymous) {
-      return new UserInstance(this.agent, currentUser);
-    }
+    if (data.anonymous) return undefined;
 
-    return undefined;
+    return new UserInstance(this.gqlClient, data.user!);
   }
 }
