@@ -4,11 +4,9 @@ import { configureAuthRoutes } from './auth';
 import { configureErrorHandlerRoutes } from './errors';
 import { configureGamesRoutes } from './games';
 import { configureHealthCheckRoute } from './health';
-import { configureUserRoutes } from './users';
 
 export function configureRouter(app: Express) {
   configureAuthRoutes(app);
-  configureUserRoutes(app);
   configureHealthCheckRoute(app);
   configureGamesRoutes(app);
 

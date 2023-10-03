@@ -1,7 +1,57 @@
+"""
+Represents a date and time. Serializes to an ISO string.
+"""
+scalar Date
+
+"""
+Represents a user in the system.
+"""
 type UserDTO {
+  """
+  The user's globally-unique ID.
+  """
   id: ID!
+
+  """
+  A URL to the user's avatar.
+  """
+  avatar: String
+
+  """
+  The display name to show to represent the user in the UI.
+  """
+  displayName: String!
+
+  """
+  The user's email address.
+  """
+  email: String!
+
+  """
+  The date and time at which the user's account was first created.
+  """
+  memberSince: Date!
+}
+
+"Represents the currently logged in user."
+type CurrentUserDTO {
+  "Indicates whether or not the current user is browsing anonymously (not logged in)."
+  anonymous: Boolean!
+
+  "If the user is logged in, this will represent the current user."
+  user: UserDTO
+}
+
+input ProfileUpdateDTO {
+  avatar: String
+  displayName: String
 }
 
 type Query {
-  users: [UserDTO]
+  "Gets the currently logged in user."
+  usersGetCurrent: CurrentUserDTO!
+}
+
+type Mutation {
+  usersUpdateProfile(update: ProfileUpdateDTO!): UserDTO!
 }

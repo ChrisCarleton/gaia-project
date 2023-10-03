@@ -1,4 +1,4 @@
-import { UserDTO } from '@gaia-project/api';
+import { UserDto } from '@gaia-project/api';
 import { z } from 'zod';
 
 import { UserSchema } from '../data';
@@ -22,7 +22,7 @@ export interface User {
 
   changeEmail(newEmail: string): Promise<void>;
   save(): Promise<void>;
-  toJSON(): UserDTO;
+  toJSON(): UserDto;
 }
 
 export interface UserManager {

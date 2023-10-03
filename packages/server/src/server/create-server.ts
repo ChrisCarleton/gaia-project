@@ -1,16 +1,15 @@
+import { expressMiddleware } from '@apollo/server/express4';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { Express } from 'express';
 import userAgent from 'express-useragent';
-import { IncomingMessage } from 'http';
-import { Duplex } from 'stream';
 import { v4 as uuid } from 'uuid';
 
 import config from '../config';
 import { configureAuth } from './auth';
 import { ServerDependencies } from './create-dependencies';
-import { configureRouter } from './routes';
+import { createGraphqlServer } from './graphql';
 
 export async function createServer(
   createDependencies: () => Promise<ServerDependencies>,
@@ -65,8 +64,16 @@ export async function createServer(
     next();
   });
 
-  logger.debug('[APP] Registering API routes...');
-  configureRouter(app);
+  // logger.debug('[APP] Registering API routes...');
+  // configureRouter(app);
+
+  const graphqlServer = await createGraphqlServer(httpServer);
+  app.use(
+    '/api',
+    expressMiddleware(graphqlServer, {
+      context: async ({ req }) => req,
+    }),
+  );
 
   logger.debug('[APP] Starting HTTP server...');
   httpServer.listen(config.port);

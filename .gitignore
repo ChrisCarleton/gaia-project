@@ -131,3 +131,7 @@ dist
 
 # MacOS Finder files
 .DS_Store
+
+# Generated files
+/packages/api/graphql.schema.json
+/packages/api/src/graphql.ts

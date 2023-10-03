@@ -1,4 +1,4 @@
-import { CurrentUserDTO } from '@gaia-project/api';
+import { CurrentUserDto } from '@gaia-project/api';
 import { Express, NextFunction, Request, Response } from 'express';
 import passport from 'passport';
 
@@ -10,10 +10,10 @@ const GoogleAuthRoute = '/api/auth/google';
 const GoogleAuthCallbackRoute = `${GoogleAuthRoute}/callback`;
 
 export function getCurrentUser(req: Request, res: Response) {
-  const json: CurrentUserDTO = req.user
+  const json: CurrentUserDto = req.user
     ? {
         anonymous: false,
-        ...req.user.toJSON(),
+        user: req.user.toJSON(),
       }
     : { anonymous: true };
 

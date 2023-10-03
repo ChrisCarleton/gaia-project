@@ -1,4 +1,4 @@
-import { UserDTO } from '@gaia-project/api';
+import { UserDto } from '@gaia-project/api';
 import Logger from 'bunyan';
 import { Collection, MongoClient } from 'mongodb';
 
@@ -101,10 +101,10 @@ export class UserInstance implements User {
     );
   }
 
-  toJSON(): UserDTO {
+  toJSON(): UserDto {
     return {
       avatar: this.avatar,
-      displayName: this.displayName,
+      displayName: this.displayName ?? '',
       id: this.id,
       email: this.email,
       memberSince: this.memberSince,
