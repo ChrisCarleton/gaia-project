@@ -1,6 +1,6 @@
 import { ApolloServer } from '@apollo/server';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
-import { DateScalar, Resolvers, loadTypeDefs } from '@gaia-project/api';
+import { DateScalar, Resolvers, typeDefs } from '@gaia-project/api';
 import { Request } from 'express';
 import { Server } from 'http';
 
@@ -11,8 +11,6 @@ import { UserQueries } from './resolvers';
 export async function createGraphqlServer(
   httpServer: Server,
 ): Promise<ApolloServer<Request>> {
-  const typeDefs = await loadTypeDefs();
-
   const resolvers: Resolvers<Request> = {
     Date: DateScalar,
     Query: {

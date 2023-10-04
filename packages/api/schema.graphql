@@ -1,35 +1,21 @@
-"""
-Represents a date and time. Serializes to an ISO string.
-"""
+"Represents a date and time. Serializes to an ISO string."
 scalar Date
 
-"""
-Represents a user in the system.
-"""
+"Represents a user in the system."
 type UserDTO {
-  """
-  The user's globally-unique ID.
-  """
+  "The user's globally-unique ID."
   id: ID!
 
-  """
-  A URL to the user's avatar.
-  """
+  "A URL to the user's avatar."
   avatar: String
 
-  """
-  The display name to show to represent the user in the UI.
-  """
+  "The display name to show to represent the user in the UI."
   displayName: String!
 
-  """
-  The user's email address.
-  """
+  "The user's email address."
   email: String!
 
-  """
-  The date and time at which the user's account was first created.
-  """
+  "The date and time at which the user's account was first created."
   memberSince: Date!
 }
 

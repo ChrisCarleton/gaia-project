@@ -5,8 +5,10 @@
   "author": "Chris Carleton",
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
-    "codegen": "graphql-codegen --config codegen.ts"
+    "clean": "rm -rf src/generated/",
+    "build": "yarn codegen && tsc",
+    "codegen": "graphql-codegen --config codegen.ts",
+    "prepare": "yarn codegen"
   },
   "dependencies": {
     "@gaia-project/engine": "1.0.0",
@@ -16,8 +18,10 @@
     "@graphql-codegen/cli": "5.0.0",
     "@graphql-codegen/introspection": "4.0.0",
     "@graphql-codegen/typescript": "4.0.1",
-    "@graphql-codegen/typescript-document-nodes": "4.0.1",
     "@graphql-codegen/typescript-resolvers": "4.0.1",
+    "@graphql-tools/utils": "^10.0.6",
+    "graphql": "^16.8.1",
+    "graphql-tag": "^2.12.6",
     "typescript": "^5.2.2"
   }
 }
