@@ -1,4 +1,4 @@
-import { LobbyDTO, PlayerDTO } from '@gaia-project/api';
+import { LobbyDto, LobbyPlayerDto } from '@gaia-project/api';
 import { FactionType } from '@gaia-project/engine';
 import Logger from 'bunyan';
 import { Collection, MongoClient } from 'mongodb';
@@ -39,12 +39,14 @@ export class LobbyPlayerInstance implements LobbyPlayer {
     return this._user;
   }
 
-  toJSON(): PlayerDTO {
+  toJSON(): LobbyPlayerDto {
     return {
-      id: this.id,
-      memberSince: this._user?.memberSince ?? new Date(),
-      displayName: this._user?.displayName ?? '',
-      avatar: this._user?.avatar,
+      user: {
+        id: this.id,
+        memberSince: this._user?.memberSince ?? new Date(),
+        displayName: this._user?.displayName ?? '',
+        avatar: this._user?.avatar,
+      },
       faction: this.faction,
     };
   }
@@ -151,19 +153,24 @@ export class LobbyInstance implements Lobby {
 
   async save(): Promise<void> {}
 
-  toJSON(): LobbyDTO {
+  toJSON(): LobbyDto {
     return {
       id: this.id,
       createdOn: this.createdOn,
-      ownerId: this.data.owner,
+      owner: this._owner?.toJSON() ?? {
+        id: this.data.owner,
+        displayName: this.data.owner,
+        memberSince: new Date(),
+      },
       players: this.players.map((player) => player.toJSON()),
     };
   }
 
   private async getUser(id: string): Promise<User> {
     const data = await this.users.findOne({ _id: id });
-    if (!data)
+    if (!data) {
       throw new Error(`Unable to find record of user with ID "${id}".`);
+    }
 
     return new UserInstance(this.mongoClient, this.log, data);
   }

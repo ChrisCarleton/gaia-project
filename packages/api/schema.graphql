@@ -13,7 +13,7 @@ type UserDTO {
   displayName: String!
 
   "The user's email address."
-  email: String!
+  email: String
 
   "The date and time at which the user's account was first created."
   memberSince: Date!
@@ -28,17 +28,53 @@ type CurrentUserDTO {
   user: UserDTO
 }
 
+"Represents a player in a game lobby."
+type LobbyPlayerDTO {
+  "The player's user profile."
+  user: UserDTO!
+
+  "The player's selected faction."
+  faction: String
+}
+
+"Represents a game lobby where players can join a game before it begins."
+type LobbyDTO {
+  "The lobby's globally-unique identifier."
+  id: ID!
+
+  "Date and time on which this lobby was first created."
+  createdOn: Date!
+
+  "The user who created the lobby. (They will be the lobby admins.)"
+  owner: UserDTO!
+
+  "The players who are currently in the lobby."
+  players: [LobbyPlayerDTO!]!
+}
+
 input ProfileUpdateDTO {
+  "The user's new avatar URL. Omit to leave unchanged."
   avatar: String
+
+  "The user's new display name. Omit to leave unchanged."
   displayName: String
 }
 
 type Query {
+  "Attempts to get a lobby by its ID. Will return null if lobby is not found."
+  lobbiesGetLobby(id: ID!): LobbyDTO
+
   "Gets the currently logged in user."
   usersGetCurrent: CurrentUserDTO!
 }
 
 type Mutation {
+  "Creates a new lobby and returns the DTO."
+  lobbiesCreateLobby: LobbyDTO!
+
+  "Requests that a user's email address be changed."
   usersChangeEmail(user: ID!, newEmail: String!): UserDTO!
+
+  "Updates a user's profile info."
   usersUpdateProfile(update: ProfileUpdateDTO!): UserDTO!
 }

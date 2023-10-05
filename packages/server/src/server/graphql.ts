@@ -6,7 +6,7 @@ import { Server } from 'http';
 
 import config from '../config';
 import { formatError } from '../errors';
-import { UserQueries } from './resolvers';
+import { LobbyQueries, UserMutations, UserQueries } from './resolvers';
 
 export async function createGraphqlServer(
   httpServer: Server,
@@ -15,6 +15,10 @@ export async function createGraphqlServer(
     Date: DateScalar,
     Query: {
       ...UserQueries,
+      ...LobbyQueries,
+    },
+    Mutation: {
+      ...UserMutations,
     },
   };
 

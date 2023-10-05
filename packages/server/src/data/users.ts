@@ -7,7 +7,7 @@ export const UserSchema = z.object({
   avatar: z.string().url().optional(),
   email: EmailSchema,
   emailLowered: EmailSchema.toLowerCase(),
-  displayName: z.string().trim().max(100).optional(),
+  displayName: z.string().trim().max(100),
   googleId: z.string().optional(),
   memberSince: z.coerce.date(),
 });

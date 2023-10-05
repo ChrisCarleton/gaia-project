@@ -1,4 +1,4 @@
-import { LobbyDTO, PlayerDTO } from '@gaia-project/api';
+import { LobbyDto, LobbyPlayerDto } from '@gaia-project/api';
 import { FactionType } from '@gaia-project/engine';
 
 import { User } from '../users';
@@ -8,7 +8,7 @@ export interface LobbyPlayer {
   faction: FactionType | null;
   user(): Promise<User>;
 
-  toJSON(): PlayerDTO;
+  toJSON(): LobbyPlayerDto;
 }
 
 export interface Lobby {
@@ -24,7 +24,7 @@ export interface Lobby {
   delete(): Promise<boolean>;
   save(): Promise<void>;
 
-  toJSON(): LobbyDTO;
+  toJSON(): LobbyDto;
 }
 
 export interface LobbyManager {
