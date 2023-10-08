@@ -65,18 +65,18 @@ export async function createServer(
     next();
   });
 
-  logger.debug('[APP] Registering REST auth API routes...');
-  configureRouter(app);
-
   logger.debug('[APP] Starting GraphQL server...');
   const graphqlServer = await createGraphqlServer(httpServer);
   await graphqlServer.start();
   app.use(
-    '/api',
+    '/api/graphql',
     expressMiddleware(graphqlServer, {
       context: async ({ req }) => req,
     }),
   );
+
+  logger.debug('[APP] Registering REST auth API routes...');
+  configureRouter(app);
 
   logger.debug('[APP] Starting HTTP server...');
   httpServer.listen(config.port);

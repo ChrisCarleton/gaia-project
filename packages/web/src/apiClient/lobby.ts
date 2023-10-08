@@ -1,11 +1,12 @@
-import { LobbyDTO, PlayerDTO } from '@gaia-project/api';
+import { LobbyDto } from '@gaia-project/api';
 
-import { GqlClient, Lobby } from './interfaces';
+import { GqlClient, Lobby, LobbyPlayer } from './interfaces';
+import { LobbyPlayerInstance } from './lobby-player';
 
 export class LobbyInstance implements Lobby {
   constructor(
     private readonly client: GqlClient,
-    private dto: LobbyDTO,
+    private dto: LobbyDto,
   ) {}
 
   get id(): string {
@@ -13,10 +14,12 @@ export class LobbyInstance implements Lobby {
   }
 
   get ownerId(): string {
-    return this.dto.ownerId;
+    return this.dto.owner.id;
   }
 
-  get players(): Readonly<PlayerDTO[]> {
-    return this.dto.players;
+  get players(): Readonly<LobbyPlayer[]> {
+    return this.dto.players.map(
+      (dto) => new LobbyPlayerInstance(this.client, dto),
+    );
   }
 }

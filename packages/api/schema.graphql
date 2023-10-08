@@ -1,6 +1,24 @@
 "Represents a date and time. Serializes to an ISO string."
 scalar Date
 
+"An enumeration representing the faction that a player is playing as."
+enum FactionType {
+  Ambas
+  BalTaks
+  Bescods
+  Firaks
+  Geodens
+  Gleens
+  HadschHallas
+  Itars
+  Ivits
+  Nevlas
+  Lantids
+  Taklons
+  Terrans
+  Xenos
+}
+
 "Represents a user in the system."
 type UserDTO {
   "The user's globally-unique ID."
@@ -34,7 +52,7 @@ type LobbyPlayerDTO {
   user: UserDTO!
 
   "The player's selected faction."
-  faction: String
+  faction: FactionType
 }
 
 "Represents a game lobby where players can join a game before it begins."
@@ -72,8 +90,8 @@ type Mutation {
   "Creates a new lobby and returns the DTO."
   lobbiesCreateLobby: LobbyDTO!
 
-  "Requests that a user's email address be changed."
-  usersChangeEmail(user: ID!, newEmail: String!): UserDTO!
+  "Requests that the current user's email address be changed."
+  usersChangeEmail(newEmail: String!): Boolean!
 
   "Updates a user's profile info."
   usersUpdateProfile(update: ProfileUpdateDTO!): UserDTO!

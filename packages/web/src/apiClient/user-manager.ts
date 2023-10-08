@@ -1,20 +1,15 @@
-import { CurrentUserDto } from '@gaia-project/api';
-import gql from 'graphql-tag';
+import { Operations } from '@gaia-project/api';
 
 import { GqlClient, User, UserManager } from './interfaces';
 import { UserInstance } from './user';
 
 export class UserManagerInstance implements UserManager {
-  private static readonly GetCurrentUserQuery = gql``;
   constructor(private readonly gqlClient: GqlClient) {}
 
-  async getCurrentUser(): Promise<User | undefined> {
-    const { data, errors } = await this.gqlClient.query<CurrentUserDto>({
-      query: UserManagerInstance.GetCurrentUserQuery,
-    });
-
-    if (data.anonymous) return undefined;
-
-    return new UserInstance(this.gqlClient, data.user!);
+  async getCurrentUser(): Promise<User | null> {
+    const { usersGetCurrent: data } = await this.gqlClient.query(
+      Operations.GetCurrentUserDocument,
+    );
+    return data.anonymous ? null : new UserInstance(this.gqlClient, data.user!);
   }
 }

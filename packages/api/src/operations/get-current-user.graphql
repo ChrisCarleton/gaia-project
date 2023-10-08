@@ -1,0 +1,12 @@
+query GetCurrentUser {
+  usersGetCurrent {
+    anonymous
+    user {
+      avatar
+      displayName
+      email
+      id
+      memberSince
+    }
+  }
+}

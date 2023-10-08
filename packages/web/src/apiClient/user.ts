@@ -1,4 +1,4 @@
-import { UserDto } from '@gaia-project/api';
+import { Operations, ProfileUpdateDto, UserDto } from '@gaia-project/api';
 
 import { GqlClient, User } from './interfaces';
 
@@ -8,18 +8,30 @@ export class UserInstance implements User {
     private data: UserDto,
   ) {}
 
-  async changeEmail(newEmail: string): Promise<void> {}
-
-  async save(): Promise<void> {}
-
-  get avatar(): string | undefined {
-    return this.data.avatar?.valueOf();
+  async changeEmail(newEmail: string): Promise<void> {
+    await this.client.mutate(Operations.UpdateEmailDocument, {
+      userId: this.id,
+      newEmail: newEmail,
+    });
   }
-  set avatar(value: string | undefined) {
+
+  async save(): Promise<void> {
+    const update: ProfileUpdateDto = {
+      avatar: this.avatar,
+      displayName: this.displayName,
+    };
+
+    await this.client.mutate(Operations.UpdateProfileDocument, { update });
+  }
+
+  get avatar(): string | null {
+    return this.data.avatar ?? null;
+  }
+  set avatar(value: string | null) {
     this.data.avatar = value;
   }
 
-  get displayName(): string | undefined {
+  get displayName(): string {
     return this.data.displayName;
   }
   set displayName(value: string) {
@@ -31,7 +43,7 @@ export class UserInstance implements User {
   }
 
   get email(): string {
-    return this.data.email;
+    return this.data.email ?? '';
   }
 
   get memberSince(): Date {

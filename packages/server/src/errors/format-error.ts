@@ -1,5 +1,5 @@
 import { ApolloServerErrorCode } from '@apollo/server/errors';
-import { InternalErrorCodes } from '@gaia-project/api';
+import { ErrorCode } from '@gaia-project/api';
 import { GraphQLFormattedError } from 'graphql';
 
 import { BadRequestError } from './bad-request-error';
@@ -25,7 +25,7 @@ export function formatError(
     return {
       message: error.message,
       extensions: {
-        code: InternalErrorCodes.ConflictError,
+        code: ErrorCode.Conflict,
         conflictingFields: error.conflictingFields,
       },
     };
@@ -35,7 +35,7 @@ export function formatError(
     return {
       message: error.message,
       extensions: {
-        code: InternalErrorCodes.ForbiddenError,
+        code: ErrorCode.Forbidden,
       },
     };
   }
@@ -44,7 +44,7 @@ export function formatError(
     return {
       message: error.message,
       extensions: {
-        code: InternalErrorCodes.UnauthorizedError,
+        code: ErrorCode.Unauthorized,
       },
     };
   }
@@ -53,7 +53,7 @@ export function formatError(
     return {
       message: error.message,
       extensions: {
-        code: InternalErrorCodes.ValidationError,
+        code: ErrorCode.Validation,
         issues: error.issues,
       },
     };

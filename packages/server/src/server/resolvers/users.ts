@@ -26,11 +26,11 @@ export async function getCurrentUser(ctx: Request): Promise<CurrentUserDto> {
 export async function updateUserEmail(
   ctx: Request,
   newEmail: string,
-): Promise<UserDto> {
+): Promise<boolean> {
   const user = requireAuth(ctx);
   assertValid(newEmail, EmailSchema);
   await user.changeEmail(newEmail);
-  return user.toJSON();
+  return true;
 }
 
 export async function updateUserProfile(

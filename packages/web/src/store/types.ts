@@ -1,3 +1,5 @@
+import { Timeout } from '@/utils';
+
 export enum Action {
   ToastSuccess = 'toastSuccess',
   ToastError = 'toastError',
@@ -20,5 +22,5 @@ export type Toast = {
   id: string;
   message: string;
   type: ToastType;
-  timer: NodeJS.Timeout;
+  timer: Timeout;
 };

@@ -1,29 +1,57 @@
-import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
-import { PlayerDTO } from '@gaia-project/api';
+import { Maybe } from '@/utils';
+import {
+  ApolloClient as ApolloClientInternal,
+  NormalizedCacheObject,
+} from '@apollo/client/core';
+import { OperationVariables, TypedDocumentNode } from '@apollo/client/core';
+import { FactionType } from '@gaia-project/engine';
+
+export interface GqlClient {
+  query<TResult, TVars extends OperationVariables = object>(
+    query: TypedDocumentNode<TResult, TVars>,
+    variables?: TVars,
+  ): Promise<TResult>;
+
+  mutate<TResult = void, TVars extends OperationVariables = object>(
+    query: TypedDocumentNode<TResult, TVars>,
+    variables?: TVars,
+  ): Promise<TResult>;
+}
 
 export interface User {
   readonly id: string;
   readonly email: string;
   readonly memberSince: Date;
-  avatar?: string;
-  displayName?: string;
+  avatar: string | null;
+  displayName: string;
   changeEmail(newEmail: string): Promise<void>;
   save(): Promise<void>;
 }
 
 export interface UserManager {
-  getCurrentUser(): Promise<User | undefined>;
+  getCurrentUser(): Promise<User | null>;
+}
+
+export interface LobbyPlayer {
+  readonly id: string;
+  readonly avatar: Maybe<string>;
+  readonly displayName: string;
+  readonly memberSince: Date;
+  faction: Maybe<FactionType>;
+
+  save(): Promise<void>;
+  disconnect(): Promise<void>;
 }
 
 export interface Lobby {
   readonly id: string;
   readonly ownerId: string;
-  readonly players: Readonly<PlayerDTO[]>;
+  readonly players: Readonly<LobbyPlayer[]>;
 }
 
 export interface LobbyManager {
   createLobby(): Promise<Lobby>;
-  getLobby(lobbyId: string): Promise<Lobby>;
+  getLobby(lobbyId: string): Promise<Lobby | null>;
 }
 
 export interface ApiClient {
@@ -31,4 +59,4 @@ export interface ApiClient {
   readonly lobbies: LobbyManager;
 }
 
-export type GqlClient = ApolloClient<NormalizedCacheObject>;
+export type ApolloClient = ApolloClientInternal<NormalizedCacheObject>;

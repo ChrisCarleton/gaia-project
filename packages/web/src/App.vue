@@ -1,9 +1,9 @@
 <template>
   <PageLoading v-if="isLoading"></PageLoading>
-  <v-else>
+  <div v-else>
     <NavBar></NavBar>
     <RouterView></RouterView>
-  </v-else>
+  </div>
   <ToastGroup></ToastGroup>
 </template>
 
@@ -12,22 +12,22 @@ import NavBar from '@/components/NavBar.vue';
 import PageLoading from '@/components/PageLoading.vue';
 import ToastGroup from '@/components/ToastGroup.vue';
 import { ApiClientKey } from '@/injection-keys';
-import { inject } from '@/utils';
+import { inject, useErrorHandling } from '@/utils';
 import { nextTick, onMounted, ref } from 'vue';
 
 import { Mutation, useStore } from './store';
 
 const store = useStore();
+const handleError = useErrorHandling();
 const client = inject(ApiClientKey);
 const isLoading = ref(true);
 
 onMounted(async () => {
   try {
     const user = await client.users.getCurrentUser();
-    store.commit(Mutation.SignInUser, user);
+    if (user) store.commit(Mutation.SignInUser, user);
   } catch (error) {
-    console.error(error);
-    // TODO: Need a server error page.
+    handleError(error);
   } finally {
     nextTick(() => {
       isLoading.value = false;

@@ -1,0 +1,22 @@
+mutation CreateLobby {
+  lobbiesCreateLobby {
+    id
+    createdOn
+    owner {
+      avatar
+      displayName
+      email
+      id
+      memberSince
+    }
+    players {
+      user {
+        id
+        avatar
+        displayName
+        memberSince
+      }
+      faction
+    }
+  }
+}
