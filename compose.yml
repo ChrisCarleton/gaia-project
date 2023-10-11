@@ -1,22 +1,38 @@
-version: 'version'
+version: '3.1'
 services:
-  mongo:
-    image: mongodb
+  redis:
+    image: 'redis'
     networks:
       - backend
 
+  mongo:
+    image: mongo:7.0.2
+    networks:
+      - backend
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
   server:
-    build: Dockerfile.server
+    build:
+      context: .
+      dockerfile: Dockerfile.server
     ports:
       - '3020:3020'
     depends_on:
       - mongo
+      - redis
     networks:
       - frontend
       - backend
 
   web:
-    build: Dockerfile.web
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    environment:
+      - 'GP_WEB_SERVER_PORT=3021'
+      - 'GP_SERVER_BASE_URL=http://server:3020/'
     ports:
       - '3021:3021'
     depends_on:
@@ -26,6 +42,6 @@ services:
 
 networks:
   frontend:
-    name: gaia-frontend
+    name: frontend
   backend:
-    name: gaia-frontend
+    name: backend

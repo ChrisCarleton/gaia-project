@@ -1,38 +1,27 @@
-FROM node:18-bullseye AS base
+FROM node:18-bullseye AS API
 
 WORKDIR /app
 
 COPY package.json yarn.lock lerna.json nx.json ./
-
-COPY packages/server/package.json packages/server/tsconfig.json ./packages/server/
-COPY packages/server/src/ ./packages/server/src/
-
-COPY packages/api/package.json packages/api/tsconfig.json ./packages/api/
+COPY packages/api/package.json packages/api/tsconfig.json packages/api/codegen.ts packages/api/schema.graphql packages/api/codegen-gql-plugin.js ./packages/api/
 COPY packages/api/src/ ./packages/api/src/
-
 COPY packages/engine/package.json packages/engine/tsconfig.json ./packages/engine/
 COPY packages/engine/src/ ./packages/engine/src/
 
-RUN yarn && yarn build --scope @gaia-project/server
+RUN yarn
 
-FROM node:18-alpine AS deps
+FROM node:18-alpine AS SERVER
 
 WORKDIR /app
-
-COPY --from=base /app/package.json /app/yarn.lock /app/lerna.json /app/nx.json ./
-COPY --from=base /app/packages/server/package.json ./packages/server/
-COPY --from=base /app/packages/server/dist/ ./packages/server/dist/
-COPY --from=base /app/packages/engine/package.json ./packages/engine/
-COPY --from=base /app/packages/engine/dist/ ./packages/engine/dist/
-COPY --from=base /app/packages/api/package.json ./packages/api/
-COPY --from=base /app/packages/api/dist/ ./packages/api/dist/
-
+COPY --from=API /app ./
+COPY packages/server/package.json packages/server/tsconfig.json ./packages/server/
+COPY packages/server/src/ ./packages/server/src/
 RUN yarn install --production
 
 FROM node:18-alpine
 
-COPY --from=deps /app /app
+COPY --from=SERVER /app /app
 WORKDIR /app/packages/server
 
-ENTRYPOINT [ "node", "dist/index.js" ]
+ENTRYPOINT [ "node", "--nolazy", "-r", "ts-node/register/transpile-only", "src/index.ts"]
 EXPOSE 3020
