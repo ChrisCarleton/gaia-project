@@ -5,6 +5,9 @@ const { defineConfig } = require('@vue/cli-service');
 
 const ServerUrl = process.env.GP_SERVER_BASE_URL || 'http://localhost:3020/';
 
+const ParsedDevServerPort = parseInt(process.env.GP_WEB_SERVER_PORT);
+const DevServerPort = isNaN(ParsedDevServerPort) ? 3021 : ParsedDevServerPort;
+
 module.exports = defineConfig({
   transpileDependencies: true,
   configureWebpack: {
@@ -15,6 +18,7 @@ module.exports = defineConfig({
     },
   },
   devServer: {
+    port: DevServerPort,
     proxy: {
       '^/api': {
         target: ServerUrl,

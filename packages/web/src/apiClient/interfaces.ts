@@ -47,6 +47,9 @@ export interface Lobby {
   readonly id: string;
   readonly ownerId: string;
   readonly players: Readonly<LobbyPlayer[]>;
+
+  join(): Promise<LobbyPlayer>;
+  leave(): Promise<void>;
 }
 
 export interface LobbyManager {
