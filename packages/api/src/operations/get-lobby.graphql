@@ -1,0 +1,15 @@
+query GetLobby($lobbyId: ID!) {
+  lobbiesGetLobby(id: $lobbyId) {
+    id
+    createdOn
+    owner {
+      ...PrivateUser
+    }
+    players {
+      user {
+        ...PrivateUser
+      }
+      faction
+    }
+  }
+}

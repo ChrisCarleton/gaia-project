@@ -1,0 +1,12 @@
+fragment PrivateUser on UserDTO {
+  id
+  avatar
+  displayName
+  memberSince
+}
+
+fragment FullUser on UserDTO {
+  ...PrivateUser
+  authToken
+  email
+}

@@ -1,4 +1,3 @@
-import { CurrentUserDTO } from '@gaia-project/api';
 import { Express, NextFunction, Request, Response } from 'express';
 import passport from 'passport';
 
@@ -8,21 +7,6 @@ import { issueAuthCookie } from '../auth';
 
 const GoogleAuthRoute = '/api/auth/google';
 const GoogleAuthCallbackRoute = `${GoogleAuthRoute}/callback`;
-
-export function getCurrentUser(req: Request, res: Response) {
-  const json: CurrentUserDTO = req.user
-    ? {
-        anonymous: false,
-        ...req.user.toJSON(),
-      }
-    : { anonymous: true };
-
-  if (req.log.debug()) {
-    req.log.debug('Returning current user info', json);
-  }
-
-  res.json(json);
-}
 
 export function logout(_req: Request, res: Response) {
   res.clearCookie(config.cookieName);
@@ -60,7 +44,6 @@ export function configureAuthRoutes(app: Express) {
     },
   );
 
-  app.get('/api/auth/me', getCurrentUser);
   app.get('/api/auth/logout', logout, (req, res) => {
     if (req.log.debug()) {
       req.log.debug('User successfully logged out');

@@ -9,6 +9,7 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "@apollo/client": "^3.8.4",
     "@gaia-project/api": "1.0.0",
     "@gaia-project/engine": "1.0.0",
     "@vuelidate/core": "^2.0.3",
@@ -16,8 +17,11 @@
     "core-js": "^3.8.3",
     "dayjs": "^1.11.10",
     "dotenv": "^16.3.1",
+    "events": "^3.3.0",
+    "graphql": "^16.8.1",
+    "graphql-tag": "^2.12.6",
+    "graphql-ws": "^5.14.1",
     "qrcode.vue": "^3.4.1",
-    "superagent": "^8.1.2",
     "three": "^0.156.0",
     "uuid": "^9.0.1",
     "vue": "^3.2.13",
@@ -26,8 +30,8 @@
     "zod": "^3.22.2"
   },
   "devDependencies": {
+    "@types/events": "^3.0.1",
     "@types/jest": "^27.0.1",
-    "@types/superagent": "^4.1.18",
     "@types/three": "^0.155.1",
     "@types/uuid": "^9.0.4",
     "@vue/cli-plugin-babel": "~5.0.0",

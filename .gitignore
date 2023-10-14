@@ -131,3 +131,6 @@ dist
 
 # MacOS Finder files
 .DS_Store
+
+# Generated GrqphQL files
+/packages/api/src/generated/

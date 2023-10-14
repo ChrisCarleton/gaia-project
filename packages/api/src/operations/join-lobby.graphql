@@ -1,0 +1,10 @@
+subscription JoinLobby($lobbyId: ID!) {
+  lobbiesJoin(lobbyId: $lobbyId) {
+    players {
+      user {
+        ...PrivateUser
+      }
+      faction
+    }
+  }
+}

@@ -1,31 +1,56 @@
-version: 'version'
+version: '3.7'
 services:
-  mongo:
-    image: mongodb
+  redis:
+    image: 'redis'
     networks:
       - backend
 
+  mongo:
+    image: mongo:7.0.2
+    ports:
+      - '3022:27017'
+    networks:
+      - backend
+    volumes:
+      - ~/mongo/gaia-project:/data/db
+
   server:
-    build: Dockerfile.server
+    build:
+      context: .
+      dockerfile: Dockerfile.server
     ports:
       - '3020:3020'
     depends_on:
-      - mongo
+      mongo:
+        condition: service_started
+      redis:
+        condition: service_started
     networks:
       - frontend
       - backend
+    env_file:
+      - 'packages/server/.env'
+    environment:
+      - GP_MONGO_URI=mongodb://mongo:27017/gaia-project-local
 
   web:
-    build: Dockerfile.web
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    environment:
+      - 'GP_WEB_SERVER_PORT=3021'
+      - 'GP_SERVER_BASE_URL=http://server:3020/'
     ports:
       - '3021:3021'
     depends_on:
       - server
     networks:
       - frontend
+    env_file:
+      - 'packages/web/.env'
 
 networks:
   frontend:
-    name: gaia-frontend
+    name: frontend
   backend:
-    name: gaia-frontend
+    name: backend

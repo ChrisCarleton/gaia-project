@@ -3,14 +3,12 @@
     <div class="column is-8-tablet">
       <p class="title">Players</p>
 
-      <span>{{ JSON.stringify(lobby, null, 2) }}</span>
-
       <div v-for="player in lobby.players" :key="player.id" class="card block">
         <div class="card-content">
           <div class="media">
             <div class="media-left">
               <figure class="image is-64x64">
-                <img class="is-rounded" :src="player.avatar" />
+                <img class="is-rounded" :src="player.avatar ?? undefined" />
               </figure>
             </div>
 
@@ -36,7 +34,7 @@
         </div>
       </div>
 
-      <div class="field is-grouped is-grouped-centered">
+      <div v-if="isLobbyOwner" class="field is-grouped is-grouped-centered">
         <div class="control">
           <button class="button is-large is-primary">Start Game</button>
         </div>
@@ -92,6 +90,7 @@
 
 <script lang="ts" setup>
 import { Lobby } from '@/apiClient';
+import { useStore } from '@/store';
 import dayjs from 'dayjs';
 import QRCode from 'qrcode.vue';
 import { computed, ref } from 'vue';
@@ -100,10 +99,15 @@ interface LobbyHubProps {
   lobby: Lobby;
 }
 
-defineProps<LobbyHubProps>();
+const store = useStore();
+
+const props = defineProps<LobbyHubProps>();
 
 const lobbyUrl = computed(() => window.location.toString());
 const showCopiedMessage = ref(false);
+const isLobbyOwner = computed(
+  () => store.state.currentUser?.id === props.lobby.ownerId,
+);
 
 function onCopyLobbyUrl() {
   navigator.clipboard.writeText(lobbyUrl.value);

@@ -1,39 +1,41 @@
-import { ProfileUpdate, UserDTO, UserDTOSchema } from '@gaia-project/api';
-import { SuperAgentStatic } from 'superagent';
+import { Maybe } from '@/utils';
+import { Operations, ProfileUpdateDto, UserDto } from '@gaia-project/api';
 
-import { User } from './interfaces';
+import { GqlClient, User } from './interfaces';
 
 export class UserInstance implements User {
   constructor(
-    private readonly agent: SuperAgentStatic,
-    private data: UserDTO,
+    private readonly client: GqlClient,
+    private data: UserDto,
   ) {}
 
-  async changeEmail(newEmail: string): Promise<void> {}
+  async changeEmail(newEmail: string): Promise<void> {
+    await this.client.mutate(Operations.UpdateEmailDocument, {
+      userId: this.id,
+      newEmail: newEmail,
+    });
+  }
 
   async save(): Promise<void> {
-    const update: ProfileUpdate = {
+    const update: ProfileUpdateDto = {
       avatar: this.avatar,
       displayName: this.displayName,
     };
 
-    const { body } = await this.agent
-      .put(`/api/profile/${this.id}`)
-      .send(update);
-    this.data = UserDTOSchema.parse(body);
+    await this.client.mutate(Operations.UpdateProfileDocument, { update });
   }
 
-  get avatar(): string | undefined {
-    return this.data.avatar;
+  get avatar(): string | null {
+    return this.data.avatar ?? null;
   }
-  set avatar(value: string | undefined) {
+  set avatar(value: string | null) {
     this.data.avatar = value;
   }
 
-  get displayName(): string | undefined {
+  get displayName(): string {
     return this.data.displayName;
   }
-  set displayName(value: string | undefined) {
+  set displayName(value: string) {
     this.data.displayName = value;
   }
 
@@ -42,10 +44,14 @@ export class UserInstance implements User {
   }
 
   get email(): string {
-    return this.data.email;
+    return this.data.email ?? '';
   }
 
   get memberSince(): Date {
     return this.data.memberSince;
+  }
+
+  get authToken(): Maybe<string> {
+    return this.data.authToken;
   }
 }

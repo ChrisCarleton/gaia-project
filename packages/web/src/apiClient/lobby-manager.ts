@@ -1,21 +1,26 @@
-import { LobbyDTOSchema } from '@gaia-project/api';
-import { SuperAgentStatic } from 'superagent';
+import { Operations } from '@gaia-project/api';
 
-import { Lobby, LobbyManager } from './interfaces';
+import { GqlClient, Lobby, LobbyManager } from './interfaces';
 import { LobbyInstance } from './lobby';
 
 export class LobbyManagerInstance implements LobbyManager {
-  constructor(private readonly agent: SuperAgentStatic) {}
+  constructor(private readonly client: GqlClient) {}
 
   async createLobby(): Promise<Lobby> {
-    const { body } = await this.agent.post('/api/lobby');
-    const dto = LobbyDTOSchema.parse(body);
-    return new LobbyInstance(this.agent, dto);
+    const { lobbiesCreateLobby: data } = await this.client.mutate(
+      Operations.CreateLobbyDocument,
+    );
+    return new LobbyInstance(this.client, data);
   }
 
-  async getLobby(lobbyId: string): Promise<Lobby> {
-    const { body } = await this.agent.get(`/api/lobby/${lobbyId}`);
-    const dto = LobbyDTOSchema.parse(body);
-    return new LobbyInstance(this.agent, dto);
+  async getLobby(lobbyId: string): Promise<Lobby | null> {
+    const { lobbiesGetLobby: data } = await this.client.query(
+      Operations.GetLobbyDocument,
+      {
+        lobbyId,
+      },
+    );
+
+    return data ? new LobbyInstance(this.client, data) : null;
   }
 }
