@@ -1,6 +1,12 @@
-import { LobbyDto, MutationResolvers, QueryResolvers } from '@gaia-project/api';
+import {
+  LobbyDto,
+  MutationResolvers,
+  QueryResolvers,
+  SubscriptionResolvers,
+} from '@gaia-project/api';
 import { Request } from 'express';
 
+import { PubSubEngine } from '../pubsub';
 import { requireAuth } from './utils';
 
 export async function createLobby(ctx: Request): Promise<LobbyDto> {
@@ -15,7 +21,7 @@ export async function getLobby(
 ): Promise<LobbyDto | null> {
   requireAuth(ctx);
   const lobby = await ctx.lobbies.getLobby(lobbyId);
-  return lobby?.toJSON() ?? null;
+  return lobby ? lobby.toJSON() : null;
 }
 
 export const LobbyQueries: QueryResolvers = {
@@ -24,4 +30,17 @@ export const LobbyQueries: QueryResolvers = {
 
 export const LobbyMutations: MutationResolvers = {
   lobbiesCreateLobby: (_parent, _args, ctx) => createLobby(ctx),
-};
+} as const;
+
+export function getLobbySubscriptions(
+  pubSubEngine: PubSubEngine,
+): SubscriptionResolvers {
+  return {
+    lobbiesJoin: {
+      subscribe: () => pubSubEngine.asyncIterator<LobbyDto>(),
+      resolve: async (): Promise<LobbyDto> => {
+        throw new Error('Blah');
+      },
+    },
+  };
+}

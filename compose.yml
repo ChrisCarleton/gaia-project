@@ -1,4 +1,4 @@
-version: '3.1'
+version: '3.7'
 services:
   redis:
     image: 'redis'
@@ -7,11 +7,12 @@ services:
 
   mongo:
     image: mongo:7.0.2
+    ports:
+      - '3022:27017'
     networks:
       - backend
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - ~/mongo/gaia-project:/data/db
 
   server:
     build:
@@ -20,11 +21,17 @@ services:
     ports:
       - '3020:3020'
     depends_on:
-      - mongo
-      - redis
+      mongo:
+        condition: service_started
+      redis:
+        condition: service_started
     networks:
       - frontend
       - backend
+    env_file:
+      - 'packages/server/.env'
+    environment:
+      - GP_MONGO_URI=mongodb://mongo:27017/gaia-project-local
 
   web:
     build:
@@ -39,6 +46,8 @@ services:
       - server
     networks:
       - frontend
+    env_file:
+      - 'packages/web/.env'
 
 networks:
   frontend:

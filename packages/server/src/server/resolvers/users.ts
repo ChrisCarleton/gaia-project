@@ -10,13 +10,18 @@ import { Request } from 'express';
 
 import { EmailSchema } from '../../constants';
 import { assertValid } from '../../utils';
+import { signJwtToken } from '../auth';
 import { requireAuth } from './utils';
 
 export async function getCurrentUser(ctx: Request): Promise<CurrentUserDto> {
   if (ctx.user) {
+    const authToken = await signJwtToken(ctx.user);
     return {
       anonymous: false,
-      user: ctx.user.toJSON(),
+      user: {
+        ...ctx.user.toJSON(),
+        authToken,
+      },
     };
   }
 

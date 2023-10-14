@@ -4,6 +4,7 @@
   "main": "src/index.ts",
   "author": "Chris Carleton",
   "license": "MIT",
+  "private": true,
   "scripts": {
     "clean": "rm -rf src/generated/",
     "build": "yarn codegen && tsc",

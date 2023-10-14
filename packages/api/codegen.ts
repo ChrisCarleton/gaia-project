@@ -26,7 +26,7 @@ const config: CodegenConfig = {
       plugins: ['typescript', 'typescript-resolvers'],
       config: {
         enumValues: {
-          FactionType: '@gaia-project/engine/src/factions#FactionType',
+          FactionType: '@gaia-project/engine#FactionType',
         },
       },
     },
@@ -34,8 +34,9 @@ const config: CodegenConfig = {
       plugins: ['typescript', 'typescript-operations', 'typed-document-node'],
       config: {
         enumValues: {
-          FactionType: '@gaia-project/engine/src/factions#FactionType',
+          FactionType: '@gaia-project/engine#FactionType',
         },
+        flattenGeneratedTypes: true,
       },
     },
     [generatedJson]: {

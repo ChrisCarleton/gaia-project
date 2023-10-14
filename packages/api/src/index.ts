@@ -5,5 +5,6 @@ export * from './date-scalar';
 export * from './generated/resolvers';
 export * from './generated/type-defs';
 export * from './validation';
+export * from './subscriptions';
 
 export { Operations };

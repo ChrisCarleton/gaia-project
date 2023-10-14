@@ -1,9 +1,5 @@
 mutation UpdateProfile($update: ProfileUpdateDTO!) {
   usersUpdateProfile(update: $update) {
-    id
-    avatar
-    displayName
-    email
-    memberSince
+    ...FullUser
   }
 }

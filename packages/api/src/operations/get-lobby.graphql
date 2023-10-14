@@ -3,17 +3,11 @@ query GetLobby($lobbyId: ID!) {
     id
     createdOn
     owner {
-      id
-      avatar
-      displayName
-      memberSince
+      ...PrivateUser
     }
     players {
       user {
-        id
-        avatar
-        displayName
-        memberSince
+        ...PrivateUser
       }
       faction
     }

@@ -3,18 +3,11 @@ mutation CreateLobby {
     id
     createdOn
     owner {
-      avatar
-      displayName
-      email
-      id
-      memberSince
+      ...PrivateUser
     }
     players {
       user {
-        id
-        avatar
-        displayName
-        memberSince
+        ...PrivateUser
       }
       faction
     }

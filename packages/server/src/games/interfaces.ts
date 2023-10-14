@@ -11,6 +11,7 @@ export interface LobbyPlayer {
   toJSON(): LobbyPlayerDto;
 }
 
+export type LobbyData = Omit<LobbyDto, 'joinToken'>;
 export interface Lobby {
   readonly id: string;
   readonly createdOn: Date;
@@ -24,7 +25,7 @@ export interface Lobby {
   delete(): Promise<boolean>;
   save(): Promise<void>;
 
-  toJSON(): LobbyDto;
+  toJSON(): LobbyData;
 }
 
 export interface LobbyManager {

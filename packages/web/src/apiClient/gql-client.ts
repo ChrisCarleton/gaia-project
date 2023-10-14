@@ -1,7 +1,12 @@
 import { OperationVariables, TypedDocumentNode } from '@apollo/client/core';
 import { ApolloError, GraphQLErrors } from '@apollo/client/errors';
 
-import { ApolloClient, GqlClient } from './interfaces';
+import {
+  ApolloClient,
+  GqlClient,
+  GqlConnection,
+  SubscriptionOptions,
+} from './interfaces';
 
 export class CompoundGraphQLError extends Error {
   constructor(
@@ -44,10 +49,43 @@ export class ApolloGqlClient implements GqlClient {
         throw errors[0];
       }
 
-      throw new CompoundGraphQLError('', errors);
+      throw new CompoundGraphQLError(
+        'Multiple errors occurred while attempting mutation.',
+        errors,
+      );
+    }
+
+    if (!data) {
+      throw new Error('Wat!?');
     }
 
     return data!;
+  }
+
+  async subscribe<TData, TVars extends OperationVariables>(
+    options: SubscriptionOptions<TData, TVars>,
+  ): Promise<GqlConnection> {
+    const subscription = this.client
+      .subscribe<TData, TVars>({
+        query: options.subscription,
+        variables: options.variables,
+      })
+      .subscribe(
+        (result) => {
+          if (result.errors) options.onError(result.errors);
+          if (result.data) options.onData(result.data);
+        },
+        (error) => {
+          options.onError(error);
+        },
+        options.onClosed,
+      );
+
+    return {
+      disconnect() {
+        subscription.unsubscribe();
+      },
+    };
   }
 
   private handleError(error: ApolloError): never {

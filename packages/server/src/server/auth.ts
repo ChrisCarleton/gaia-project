@@ -19,13 +19,13 @@ const Issuer = 'gp-server';
 
 type DeserializeUserCallback = (err: Error | null, user?: User) => void;
 
-export function signJwtToken(user: User): Promise<string> {
+export function signJwtToken(user: User | string): Promise<string> {
   const payload: JwtPayload = {
     aud: Audience,
     exp: config.sessionTTLInSeconds * 1000 + Date.now(),
     iat: Date.now(),
     iss: Issuer,
-    sub: user.id,
+    sub: typeof user === 'string' ? user : user.id,
   };
 
   return new Promise<string>((resolve, reject) => {
@@ -144,10 +144,7 @@ export function extractJwtTokenFromRequest(req: Request): string | null {
   return null;
 }
 
-export async function verifyJwtToken(req: Request): Promise<User | undefined> {
-  const token = extractJwtTokenFromRequest(req);
-  if (!token) return;
-
+export async function verifyJwt(token: string): Promise<string | null> {
   const userId = await new Promise<string | null>((resolve, reject) => {
     jwt.verify(token, config.sessionSecret, {}, (error, payload) => {
       if (error) {
@@ -164,8 +161,18 @@ export async function verifyJwtToken(req: Request): Promise<User | undefined> {
     });
   });
 
-  if (!userId) return undefined;
+  if (!userId) return null;
 
+  return userId;
+}
+
+export async function verifyJwtFromRequest(
+  req: Request,
+): Promise<User | undefined> {
+  const token = extractJwtTokenFromRequest(req);
+  if (!token) return;
+  const userId = await verifyJwt(token);
+  if (!userId) return;
   return req.users.getUser(userId);
 }
 
@@ -190,7 +197,7 @@ export function configureAuth(app: Express) {
   // Verify JWT token and load user account
   app.use(async (req, _res, next): Promise<void> => {
     try {
-      req.user = await verifyJwtToken(req);
+      req.user = await verifyJwtFromRequest(req);
     } catch (error) {
       req.log.error(error);
     }

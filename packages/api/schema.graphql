@@ -24,6 +24,9 @@ type UserDTO {
   "The user's globally-unique ID."
   id: ID!
 
+  "A JWT that the user can use to make secure API calls and connect to lobbies."
+  authToken: String
+
   "A URL to the user's avatar."
   avatar: String
 
@@ -44,6 +47,9 @@ type CurrentUserDTO {
 
   "If the user is logged in, this will represent the current user."
   user: UserDTO
+
+  "If the user is logged in, this will be the JWT the user can be used to call APIs."
+  authToken: String
 }
 
 "Represents a player in a game lobby."
@@ -95,4 +101,8 @@ type Mutation {
 
   "Updates a user's profile info."
   usersUpdateProfile(update: ProfileUpdateDTO!): UserDTO!
+}
+
+type Subscription {
+  lobbiesJoin(lobbyId: ID!): LobbyDTO!
 }

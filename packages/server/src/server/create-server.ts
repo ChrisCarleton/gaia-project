@@ -15,8 +15,9 @@ import { configureRouter } from './routes';
 export async function createServer(
   createDependencies: () => Promise<ServerDependencies>,
 ): Promise<Express> {
-  const { createHttpServer, lobbyManager, logger, userManager } =
-    await createDependencies();
+  const dependencies = await createDependencies();
+  const { createHttpServer, lobbyManager, logger, userManager } = dependencies;
+
   const app = express();
   const httpServer = createHttpServer(app);
 
@@ -66,7 +67,7 @@ export async function createServer(
   });
 
   logger.debug('[APP] Starting GraphQL server...');
-  const graphqlServer = await createGraphqlServer(httpServer);
+  const graphqlServer = await createGraphqlServer(httpServer, dependencies);
   await graphqlServer.start();
   app.use(
     '/api/graphql',

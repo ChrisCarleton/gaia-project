@@ -1,3 +1,4 @@
+import { Maybe } from '@/utils';
 import { Operations, ProfileUpdateDto, UserDto } from '@gaia-project/api';
 
 import { GqlClient, User } from './interfaces';
@@ -48,5 +49,9 @@ export class UserInstance implements User {
 
   get memberSince(): Date {
     return this.data.memberSince;
+  }
+
+  get authToken(): Maybe<string> {
+    return this.data.authToken;
   }
 }

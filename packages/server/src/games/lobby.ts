@@ -6,7 +6,7 @@ import { Collection, MongoClient } from 'mongodb';
 import { CollectionNames, GameDocument, UserDocument } from '../data';
 import { BadRequestError } from '../errors';
 import { User, UserInstance } from '../users';
-import { Lobby, LobbyPlayer } from './interfaces';
+import { Lobby, LobbyData, LobbyPlayer } from './interfaces';
 
 type LobbyPlayerData = {
   id: string;
@@ -153,7 +153,7 @@ export class LobbyInstance implements Lobby {
 
   async save(): Promise<void> {}
 
-  toJSON(): LobbyDto {
+  toJSON(): LobbyData {
     return {
       id: this.id,
       createdOn: this.createdOn,
