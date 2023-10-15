@@ -17,6 +17,7 @@ import {
 } from 'three';
 
 import { createMapHex, createPlanet } from './map';
+import { createMousePointer } from './mouse-cursor';
 import { Sprite } from './sprite';
 
 export type RenderCallback = (
@@ -113,13 +114,13 @@ export class SceneRenderer {
   private readonly scene: Scene;
   private readonly camera: Camera;
   private readonly environmentLights: Light[];
-  private stopRendering = false;
+  private readonly mouseCursor: Sprite;
 
   sprites: Sprite[] = [];
 
   constructor(
     private readonly renderer: WebGLRenderer,
-    viewSize: { width: number; height: number },
+    private readonly viewSize: { width: number; height: number },
   ) {
     this.scene = new Scene();
     this.camera = new PerspectiveCamera(
@@ -130,11 +131,16 @@ export class SceneRenderer {
     );
     this.camera.position.set(28, -28, 90);
     this.camera.lookAt(28, 0, 0);
+    this.mouseCursor = createMousePointer();
+    this.sprites.push(this.mouseCursor);
 
     const directionalLight = new DirectionalLight(0xeeeeee, 0.9);
     directionalLight.lookAt(0, 0, 0);
     directionalLight.position.set(0, 12, 50);
     this.environmentLights = [new AmbientLight(0x999999), directionalLight];
+
+    const canvas = renderer.domElement;
+    canvas.addEventListener('mousemove', this.onMouseMove.bind(this));
   }
 
   beginRendering() {
@@ -148,7 +154,9 @@ export class SceneRenderer {
       const [q, r] = mapHex.location;
       const hex = createMapHex(5);
 
-      const v = new Vector3(q, r, -q - r).applyMatrix4(TranslationMatrix);
+      const v = new Vector3(q, r, -q - r)
+        .applyMatrix4(TranslationMatrix)
+        .setZ(0);
       hex.position.set(v.x, v.y, v.z);
       this.scene.add(hex);
 
@@ -159,11 +167,26 @@ export class SceneRenderer {
       }
     });
 
+    this.scene.add(this.mouseCursor.mesh);
+
     this.environmentLights.forEach((light) => {
       this.scene.add(light);
     });
     this.scene.add(this.camera);
     this.animate();
+  }
+
+  private onMouseMove(e: MouseEvent) {
+    const x = (e.clientX / this.viewSize.width) * 2 - 1;
+    const y = -(e.clientY / this.viewSize.height) * 2 + 1;
+
+    const vector = new Vector3(x, y, 0);
+    vector.unproject(this.camera);
+
+    const dir = vector.sub(this.camera.position).normalize();
+    const distance = -this.camera.position.z / dir.z - 12;
+    const pos = this.camera.position.clone().add(dir.multiplyScalar(distance));
+    this.mouseCursor.mesh.position.copy(pos);
   }
 
   private animate() {

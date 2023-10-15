@@ -19,6 +19,11 @@ const routes: RouteRecordRaw[] = [
     component: import(/* webpackChunkName: "lobby" */ '@/views/LobbyView.vue'),
   },
   {
+    path: '/game',
+    name: 'game',
+    component: import(/* webpackChunkName: "game" */ '@/views/GameView.vue'),
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'notFound',
     component: import(
