@@ -1,23 +1,23 @@
-import { PlanetType } from '@gaia-project/engine';
+import { Map } from '@gaia-project/engine';
 import { BasicMapModel } from '@gaia-project/engine/src/core/maps';
 import {
   AmbientLight,
   Camera,
   DirectionalLight,
   Light,
-  Material,
+  LineSegments,
   Matrix4,
-  MeshPhongMaterial,
-  MeshPhysicalMaterial,
   PerspectiveCamera,
+  Raycaster,
   Scene,
   TextureLoader,
+  Vector2,
   Vector3,
   WebGLRenderer,
 } from 'three';
 
-import { createMapHex, createPlanet } from './map';
-import { createMousePointer } from './mouse-cursor';
+import { createHighlightHex, createMapHex, createPlanet } from './map';
+// import { createMousePointer } from './mouse-cursor';
 import { Sprite } from './sprite';
 
 export type RenderCallback = (
@@ -25,63 +25,7 @@ export type RenderCallback = (
   addSprite: (sprite: Sprite) => void,
 ) => void;
 
-const textureLoader = new TextureLoader();
-
-const PlanetMaterials: Record<PlanetType, Material> = {
-  [PlanetType.Desert]: new MeshPhysicalMaterial({
-    color: 0xe4ed66,
-    reflectivity: 0.9,
-    emissive: 0.2,
-  }),
-  [PlanetType.Gaia]: new MeshPhysicalMaterial({
-    color: 0x57e031,
-    reflectivity: 0.9,
-    emissive: 0.8,
-  }),
-  [PlanetType.Ice]: new MeshPhysicalMaterial({
-    color: 0xffffff,
-    reflectivity: 0.9,
-    emissive: 0.8,
-  }),
-  [PlanetType.Oxide]: new MeshPhysicalMaterial({
-    color: 0xde0030,
-    reflectivity: 0.9,
-    emissive: 0.2,
-  }),
-  [PlanetType.Swamp]: new MeshPhysicalMaterial({
-    color: 0x6c6e44,
-    reflectivity: 0.9,
-    emissive: 0.2,
-  }),
-  [PlanetType.Terra]: new MeshPhongMaterial({
-    map: textureLoader.load('/earth2.jpg'),
-    reflectivity: 0.8,
-    emissive: 0.8,
-  }),
-  // [PlanetType.Terra]: new MeshPhysicalMaterial({
-  //   color: 0x1c54ed,
-  //   reflectivity: 0.9,
-  //   emissive: 0.5,
-  // }),
-  [PlanetType.Titanium]: new MeshPhysicalMaterial({
-    color: 0x4a4949,
-    reflectivity: 0.9,
-    emissive: 0.7,
-  }),
-  [PlanetType.Transdim]: new MeshPhongMaterial({
-    transparent: true,
-    opacity: 0.5,
-    color: 0x8414f5,
-    reflectivity: 0.9,
-    emissive: 1,
-  }),
-  [PlanetType.Volcanic]: new MeshPhysicalMaterial({
-    color: 0xff6912,
-    reflectivity: 0.9,
-    emissive: 1,
-  }),
-};
-
+const HexRadius = 5;
 const StarryBackground = new TextureLoader().load('/stars.jpg');
 const HorizontalOffset = (3 / 2) * 2.5;
 const VerticalOffset = Math.sqrt(3) * 2.5;
@@ -114,7 +58,9 @@ export class SceneRenderer {
   private readonly scene: Scene;
   private readonly camera: Camera;
   private readonly environmentLights: Light[];
-  private readonly mouseCursor: Sprite;
+  private readonly map: Map;
+  private readonly mapHexes: Record<string, LineSegments>;
+  private readonly hexHighlight: Sprite;
 
   sprites: Sprite[] = [];
 
@@ -131,28 +77,30 @@ export class SceneRenderer {
     );
     this.camera.position.set(28, -28, 90);
     this.camera.lookAt(28, 0, 0);
-    this.mouseCursor = createMousePointer();
-    this.sprites.push(this.mouseCursor);
 
     const directionalLight = new DirectionalLight(0xeeeeee, 0.9);
     directionalLight.lookAt(0, 0, 0);
     directionalLight.position.set(0, 12, 50);
     this.environmentLights = [new AmbientLight(0x999999), directionalLight];
 
+    this.map = new BasicMapModel().createMap(3);
+    this.mapHexes = {};
+    this.hexHighlight = createHighlightHex(HexRadius);
+
     const canvas = renderer.domElement;
+    // canvas.style.cursor = 'none';
     canvas.addEventListener('mousemove', this.onMouseMove.bind(this));
+    canvas.addEventListener('wheel', this.onMouseWheel.bind(this));
   }
 
   beginRendering() {
-    const mapModel = new BasicMapModel();
-    const map = mapModel.createMap(3);
-
     this.scene.background = StarryBackground;
     this.scene.backgroundIntensity = 0.05;
 
-    map.hexes().forEach((mapHex) => {
+    this.map.hexes().forEach((mapHex) => {
       const [q, r] = mapHex.location;
-      const hex = createMapHex(5);
+      const hex = createMapHex(HexRadius);
+      this.mapHexes[hex.id] = hex;
 
       const v = new Vector3(q, r, -q - r)
         .applyMatrix4(TranslationMatrix)
@@ -161,13 +109,14 @@ export class SceneRenderer {
       this.scene.add(hex);
 
       if (mapHex.planet) {
-        const planet = createPlanet(3.5, PlanetMaterials[mapHex.planet], v);
+        const planet = createPlanet(3.5, mapHex.planet, v);
         this.sprites.push(planet);
         this.scene.add(planet.mesh);
       }
     });
 
-    this.scene.add(this.mouseCursor.mesh);
+    this.scene.add(this.hexHighlight.mesh);
+    this.sprites.push(this.hexHighlight);
 
     this.environmentLights.forEach((light) => {
       this.scene.add(light);
@@ -177,16 +126,43 @@ export class SceneRenderer {
   }
 
   private onMouseMove(e: MouseEvent) {
-    const x = (e.clientX / this.viewSize.width) * 2 - 1;
-    const y = -(e.clientY / this.viewSize.height) * 2 + 1;
+    const x = (e.offsetX / this.viewSize.width) * 2 - 1;
+    const y = -(e.offsetY / this.viewSize.height) * 2 + 1;
 
-    const vector = new Vector3(x, y, 0);
-    vector.unproject(this.camera);
+    // const vector = new Vector3(x, y, -15);
+    // vector.unproject(this.camera);
 
-    const dir = vector.sub(this.camera.position).normalize();
-    const distance = -this.camera.position.z / dir.z - 12;
-    const pos = this.camera.position.clone().add(dir.multiplyScalar(distance));
-    this.mouseCursor.mesh.position.copy(pos);
+    // const dir = vector.sub(this.camera.position).normalize();
+    // const distance = -this.camera.position.z / dir.z - 12;
+    // const pos = this.camera.position.clone().add(dir.multiplyScalar(distance));
+    // this.mouseCursor.mesh.position.copy(pos);
+
+    // Can we highlight a hex??
+    const mousePosition = new Vector2(x, y);
+
+    const raycaster = new Raycaster();
+    raycaster.setFromCamera(mousePosition, this.camera);
+    const intersections = raycaster.intersectObjects(this.scene.children);
+    for (const intersection of intersections) {
+      const hex = this.mapHexes[intersection.object.id];
+      if (hex) {
+        this.setHighlightedHex(hex);
+        break;
+      }
+    }
+  }
+
+  private onMouseWheel(e: WheelEvent) {
+    const zoomFactor = e.deltaY * 1;
+    // TODO: Move the camera closer/farther away by the Zoom factor.
+  }
+
+  private setHighlightedHex(hex: LineSegments) {
+    this.hexHighlight.mesh.position.set(
+      hex.position.x,
+      hex.position.y,
+      hex.position.z,
+    );
   }
 
   private animate() {
