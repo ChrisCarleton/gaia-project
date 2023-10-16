@@ -3,37 +3,42 @@ import {
   BufferGeometry,
   LineBasicMaterial,
   LineSegments,
+  Mesh,
+  MeshPhongMaterial,
 } from 'three';
 
+import { Sprite } from '../sprite';
+
 const RootThree = Math.sqrt(3);
+const HighlightFlashFrequency = 1000; // Two seconds.
 
-// function createHex(radius: number, color: number): Mesh {
-//   const geometry = new BufferGeometry();
-//   const vertices = new Float32Array([
-//     -radius, 0, 1, // Left
-//     0.5 * radius, -RootThree * radius / 2, 1, // Bottom Right
-//     0.5 * radius, RootThree * radius / 2, 1, // Top Right
+class HightlightHexSprite implements Sprite {
+  private lastTick: number;
+  private dimming: boolean;
+  private readonly material: MeshPhongMaterial;
 
-//     -radius, 0, 1, // Left
-//     -0.5 * radius, -RootThree * radius / 2, 1, // Bottom Left
-//     0.5 * radius, -RootThree * radius / 2, 1, // Bottom Right
+  constructor(readonly mesh: Mesh) {
+    this.lastTick = Date.now();
+    this.dimming = false;
+    this.material = mesh.material as MeshPhongMaterial;
+  }
 
-//     0.5 * radius, -RootThree * radius / 2, 1, // Bottom Right
-//     radius, 0, 1, // Right
-//     0.5 * radius, RootThree * radius / 2, 1, // Top Right
+  animate(): void {
+    const now = Date.now();
+    const delta = ((now - this.lastTick) / HighlightFlashFrequency) * 0.5;
+    if (this.dimming) {
+      this.material.opacity -= delta;
+      if (this.material.opacity <= 0.3) this.dimming = false;
+    } else {
+      this.material.opacity += delta;
+      if (this.material.opacity >= 0.8) this.dimming = true;
+    }
 
-//     -radius, 0, 1, // Left
-//     0.5 * radius, RootThree * radius / 2, 1, // Top Right
-//     -0.5 * radius, RootThree * radius / 2, 1, // Top left
-//   ]);
-//   geometry.setAttribute('position', new BufferAttribute(vertices, 3));
-//   geometry.computeVertexNormals();
-//   const material = new MeshStandardMaterial({ color, opacity: 0.40 });
-//   return new Mesh(geometry, material);
-// }
+    this.lastTick = now;
+  }
+}
 
-export function createMapHex(radius: number): LineSegments {
-  const geometry = new BufferGeometry();
+function getHexGeometry(radius: number): BufferGeometry {
   const vertices = new Float32Array([
     -0.5 * radius,
     (RootThree * radius) / 2,
@@ -76,46 +81,86 @@ export function createMapHex(radius: number): LineSegments {
     -0.5 * radius,
     (RootThree * radius) / 2,
     1,
-
-    // -0.5 * radius, RootThree * radius / 2, 1,
-    // -0.5 * radius, RootThree * radius / 2, -3,
-
-    // -radius, 0, 1,
-    // -radius, 0, -3,
-
-    // -0.5 * radius, -RootThree * radius / 2, 1,
-    // -0.5 * radius, -RootThree * radius / 2, -3,
-
-    // 0.5 * radius, -RootThree * radius / 2, 1,
-    // 0.5 * radius, -RootThree * radius / 2, -3,
-
-    // radius, 0, 1,
-    // radius, 0, -3,
-
-    // 0.5 * radius, RootThree * radius / 2, 1,
-    // 0.5 * radius, RootThree * radius / 2, -3,
-
-    // -0.5 * radius, RootThree * radius / 2, -3, // Top left
-    // -radius, 0, -3,
-
-    // -radius, 0, -3, // Left
-    // -0.5 * radius, -RootThree * radius / 2, -3,
-
-    // -0.5 * radius, -RootThree * radius / 2, -3, // Bottom Left
-    // 0.5 * radius, -RootThree * radius / 2, -3,
-
-    // 0.5 * radius, -RootThree * radius / 2, -3, // Bottom Right
-    // radius, 0, -3,
-
-    // radius, 0, -3, // Right
-    // 0.5 * radius, RootThree * radius / 2, -3,
-
-    // 0.5 * radius, RootThree * radius / 2, -3, // Top Right
-    // -0.5 * radius, RootThree * radius / 2, -3,
   ]);
+
+  const geometry = new BufferGeometry();
   geometry.setAttribute('position', new BufferAttribute(vertices, 3));
+  return geometry;
+}
+
+function getHighlightGeometry(radius: number): BufferGeometry {
+  const vertices = new Float32Array([
+    -0.5 * radius,
+    (RootThree * radius) / 2,
+    1, // Top left
+
+    -radius,
+    0,
+    1, // Left
+
+    -0.5 * radius,
+    (-RootThree * radius) / 2,
+    1, // Bottom Left
+
+    -0.5 * radius,
+    (-RootThree * radius) / 2,
+    1, // Bottom Left
+
+    0.5 * radius,
+    (-RootThree * radius) / 2,
+    1, // Bottom Right
+
+    -0.5 * radius,
+    (RootThree * radius) / 2,
+    1, // Top left
+
+    -0.5 * radius,
+    (RootThree * radius) / 2,
+    1, // Top left
+
+    0.5 * radius,
+    (-RootThree * radius) / 2,
+    1, // Bottom Right
+
+    0.5 * radius,
+    (RootThree * radius) / 2,
+    1, // Top Right
+
+    0.5 * radius,
+    (RootThree * radius) / 2,
+    1, // Top Right
+
+    0.5 * radius,
+    (-RootThree * radius) / 2,
+    1, // Bottom Right
+
+    radius,
+    0,
+    1, // Right
+  ]);
+
+  const geometry = new BufferGeometry();
+  geometry.setAttribute('position', new BufferAttribute(vertices, 3));
+  geometry.computeVertexNormals();
+  return geometry;
+}
+
+export function createMapHex(radius: number): LineSegments {
+  const geometry = getHexGeometry(radius);
   return new LineSegments(
     geometry,
     new LineBasicMaterial({ color: 0x555555, opacity: 0.9 }),
   );
+}
+
+export function createHighlightHex(radius: number): Sprite {
+  const geometry = getHighlightGeometry(radius);
+  const material = new MeshPhongMaterial({
+    transparent: true,
+    opacity: 0.3,
+    color: 0xffffff,
+    reflectivity: 0.6,
+    emissive: 0.6,
+  });
+  return new HightlightHexSprite(new Mesh(geometry, material));
 }

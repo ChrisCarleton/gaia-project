@@ -11,8 +11,10 @@ export class GameMap implements Map {
   }
 
   at(pt: AxialCoordinates): MapHex | undefined {
-    throw new Error('Method not implemented.');
+    const [q, r] = pt;
+    return this.grid[`${q},${r}`];
   }
+
   distance(from: AxialCoordinates, to: AxialCoordinates): number {
     throw new Error('Method not implemented.');
   }

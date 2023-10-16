@@ -1,22 +1,24 @@
-import { PlanetType } from '@gaia-project/engine';
+import { Map } from '@gaia-project/engine';
 import { BasicMapModel } from '@gaia-project/engine/src/core/maps';
 import {
   AmbientLight,
   Camera,
   DirectionalLight,
   Light,
-  Material,
+  LineSegments,
   Matrix4,
-  MeshPhongMaterial,
-  MeshPhysicalMaterial,
   PerspectiveCamera,
+  Quaternion,
+  Raycaster,
   Scene,
   TextureLoader,
+  Vector2,
   Vector3,
   WebGLRenderer,
 } from 'three';
 
-import { createMapHex, createPlanet } from './map';
+import { createHighlightHex, createMapHex, createPlanet } from './map';
+// import { createMousePointer } from './mouse-cursor';
 import { Sprite } from './sprite';
 
 export type RenderCallback = (
@@ -24,63 +26,15 @@ export type RenderCallback = (
   addSprite: (sprite: Sprite) => void,
 ) => void;
 
-const textureLoader = new TextureLoader();
-
-const PlanetMaterials: Record<PlanetType, Material> = {
-  [PlanetType.Desert]: new MeshPhysicalMaterial({
-    color: 0xe4ed66,
-    reflectivity: 0.9,
-    emissive: 0.2,
-  }),
-  [PlanetType.Gaia]: new MeshPhysicalMaterial({
-    color: 0x57e031,
-    reflectivity: 0.9,
-    emissive: 0.8,
-  }),
-  [PlanetType.Ice]: new MeshPhysicalMaterial({
-    color: 0xffffff,
-    reflectivity: 0.9,
-    emissive: 0.8,
-  }),
-  [PlanetType.Oxide]: new MeshPhysicalMaterial({
-    color: 0xde0030,
-    reflectivity: 0.9,
-    emissive: 0.2,
-  }),
-  [PlanetType.Swamp]: new MeshPhysicalMaterial({
-    color: 0x6c6e44,
-    reflectivity: 0.9,
-    emissive: 0.2,
-  }),
-  [PlanetType.Terra]: new MeshPhongMaterial({
-    map: textureLoader.load('/earth2.jpg'),
-    reflectivity: 0.8,
-    emissive: 0.8,
-  }),
-  // [PlanetType.Terra]: new MeshPhysicalMaterial({
-  //   color: 0x1c54ed,
-  //   reflectivity: 0.9,
-  //   emissive: 0.5,
-  // }),
-  [PlanetType.Titanium]: new MeshPhysicalMaterial({
-    color: 0x4a4949,
-    reflectivity: 0.9,
-    emissive: 0.7,
-  }),
-  [PlanetType.Transdim]: new MeshPhongMaterial({
-    transparent: true,
-    opacity: 0.5,
-    color: 0x8414f5,
-    reflectivity: 0.9,
-    emissive: 1,
-  }),
-  [PlanetType.Volcanic]: new MeshPhysicalMaterial({
-    color: 0xff6912,
-    reflectivity: 0.9,
-    emissive: 1,
-  }),
+// TODO: Calculate this based on Map Hexes.
+const CameraBounds = {
+  top: 40,
+  left: -30,
+  bottom: -80,
+  right: 100,
 };
 
+const HexRadius = 5;
 const StarryBackground = new TextureLoader().load('/stars.jpg');
 const HorizontalOffset = (3 / 2) * 2.5;
 const VerticalOffset = Math.sqrt(3) * 2.5;
@@ -113,57 +67,162 @@ export class SceneRenderer {
   private readonly scene: Scene;
   private readonly camera: Camera;
   private readonly environmentLights: Light[];
-  private stopRendering = false;
+  private readonly map: Map;
+  private readonly mapHexes: Record<string, LineSegments>;
+  private readonly hexHighlight: Sprite;
+  private readonly cameraLookAt: Vector3;
 
   sprites: Sprite[] = [];
 
   constructor(
     private readonly renderer: WebGLRenderer,
-    viewSize: { width: number; height: number },
+    private readonly viewSize: { width: number; height: number },
   ) {
     this.scene = new Scene();
+    this.cameraLookAt = new Vector3(28, 0, 0);
     this.camera = new PerspectiveCamera(
       75,
       viewSize.width / viewSize.height,
       0.1,
       1000,
     );
-    this.camera.position.set(28, -28, 90);
-    this.camera.lookAt(28, 0, 0);
+    this.camera.position.set(28, -45, 90);
+    this.camera.lookAt(this.cameraLookAt);
 
     const directionalLight = new DirectionalLight(0xeeeeee, 0.9);
     directionalLight.lookAt(0, 0, 0);
     directionalLight.position.set(0, 12, 50);
     this.environmentLights = [new AmbientLight(0x999999), directionalLight];
+
+    this.map = new BasicMapModel().createMap(3);
+    this.mapHexes = {};
+    this.hexHighlight = createHighlightHex(HexRadius);
+
+    const canvas = renderer.domElement;
+    // canvas.style.cursor = 'none';
+    canvas.addEventListener('mousemove', this.onMouseMove.bind(this));
+    canvas.addEventListener('wheel', this.onMouseWheel.bind(this));
   }
 
   beginRendering() {
-    const mapModel = new BasicMapModel();
-    const map = mapModel.createMap(3);
-
     this.scene.background = StarryBackground;
     this.scene.backgroundIntensity = 0.05;
 
-    map.hexes().forEach((mapHex) => {
+    this.map.hexes().forEach((mapHex) => {
       const [q, r] = mapHex.location;
-      const hex = createMapHex(5);
+      const hex = createMapHex(HexRadius);
+      this.mapHexes[hex.id] = hex;
 
-      const v = new Vector3(q, r, -q - r).applyMatrix4(TranslationMatrix);
+      const v = new Vector3(q, r, -q - r)
+        .applyMatrix4(TranslationMatrix)
+        .setZ(0);
       hex.position.set(v.x, v.y, v.z);
       this.scene.add(hex);
 
       if (mapHex.planet) {
-        const planet = createPlanet(3.5, PlanetMaterials[mapHex.planet], v);
+        const planet = createPlanet(3.5, mapHex.planet, v);
         this.sprites.push(planet);
         this.scene.add(planet.mesh);
       }
     });
+
+    this.scene.add(this.hexHighlight.mesh);
+    this.sprites.push(this.hexHighlight);
 
     this.environmentLights.forEach((light) => {
       this.scene.add(light);
     });
     this.scene.add(this.camera);
     this.animate();
+  }
+
+  private onMouseMove(e: MouseEvent) {
+    const mousePosition = new Vector2(
+      (e.offsetX / this.viewSize.width) * 2 - 1,
+      -(e.offsetY / this.viewSize.height) * 2 + 1,
+    );
+
+    if (e.buttons === 1) {
+      // User is holding down the left mouse button. Move the camera!
+      const scalingFactor = -0.25;
+      const movement = new Vector3(e.movementX, -e.movementY, 0);
+      const newCameraPosition = this.camera.position
+        .clone()
+        .addScaledVector(movement, scalingFactor);
+
+      if (newCameraPosition.x < CameraBounds.left) {
+        newCameraPosition.setX(CameraBounds.left);
+      }
+
+      if (newCameraPosition.x > CameraBounds.right) {
+        newCameraPosition.setX(CameraBounds.right);
+      }
+
+      if (newCameraPosition.y > CameraBounds.top) {
+        newCameraPosition.setY(CameraBounds.top);
+      }
+
+      if (newCameraPosition.y < CameraBounds.bottom) {
+        newCameraPosition.setY(CameraBounds.bottom);
+      }
+
+      this.camera.position.set(
+        newCameraPosition.x,
+        newCameraPosition.y,
+        newCameraPosition.z,
+      );
+    }
+
+    const raycaster = new Raycaster();
+    raycaster.setFromCamera(mousePosition, this.camera);
+    const intersections = raycaster.intersectObjects(this.scene.children);
+    for (const intersection of intersections) {
+      const hex = this.mapHexes[intersection.object.id];
+      if (hex) {
+        this.setHighlightedHex(hex);
+        break;
+      }
+    }
+  }
+
+  private onMouseWheel(e: WheelEvent) {
+    if (e.deltaY) {
+      // Vertical scroll controls zoom.
+      const zoomFactor = e.deltaY * 0.25;
+      const cameraNormal = this.camera.getWorldDirection(new Vector3());
+
+      const newCameraPosition = this.camera.position
+        .clone()
+        .addScaledVector(cameraNormal, zoomFactor);
+
+      if (newCameraPosition.z >= 30 && newCameraPosition.z <= 160) {
+        this.camera.position.set(
+          newCameraPosition.x,
+          newCameraPosition.y,
+          newCameraPosition.z,
+        );
+      }
+    }
+
+    // TODO: Figure this out later.
+    // if (e.deltaX) {
+    //   // Horizontal scroll controls rotation about the Y-axis.
+    //   const rotateFactor = e.deltaX * 0.01;
+    //   const quat = new Quaternion();
+    //   quat.setFromAxisAngle(new Vector3(0, 1, 0), rotateFactor);
+    //   this.camera.position.applyQuaternion(quat);
+    // }
+
+    // Stop the page from scrolling up/down in the browser.
+    e.preventDefault();
+  }
+
+  private setHighlightedHex(hex: LineSegments) {
+    this.hexHighlight.mesh.position.set(
+      hex.position.x,
+      hex.position.y,
+      hex.position.z,
+    );
   }
 
   private animate() {
