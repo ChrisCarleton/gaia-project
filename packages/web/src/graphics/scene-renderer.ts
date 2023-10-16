@@ -61,6 +61,7 @@ export class SceneRenderer {
   private readonly map: Map;
   private readonly mapHexes: Record<string, LineSegments>;
   private readonly hexHighlight: Sprite;
+  private readonly cameraLookAt: Vector3;
 
   sprites: Sprite[] = [];
 
@@ -69,6 +70,7 @@ export class SceneRenderer {
     private readonly viewSize: { width: number; height: number },
   ) {
     this.scene = new Scene();
+    this.cameraLookAt = new Vector3(28, 0, 0);
     this.camera = new PerspectiveCamera(
       75,
       viewSize.width / viewSize.height,
@@ -76,7 +78,7 @@ export class SceneRenderer {
       1000,
     );
     this.camera.position.set(28, -28, 90);
-    this.camera.lookAt(28, 0, 0);
+    this.camera.lookAt(this.cameraLookAt);
 
     const directionalLight = new DirectionalLight(0xeeeeee, 0.9);
     directionalLight.lookAt(0, 0, 0);
@@ -153,8 +155,24 @@ export class SceneRenderer {
   }
 
   private onMouseWheel(e: WheelEvent) {
-    const zoomFactor = e.deltaY * 1;
-    // TODO: Move the camera closer/farther away by the Zoom factor.
+    // if (e.deltaY) {
+    const zoomFactor = e.deltaY * 0.25;
+    const cameraNormal = this.camera.getWorldDirection(new Vector3());
+
+    const newCameraPosition = this.camera.position
+      .clone()
+      .addScaledVector(cameraNormal, zoomFactor);
+
+    if (newCameraPosition.z >= 30 && newCameraPosition.z <= 160) {
+      this.camera.position.set(
+        newCameraPosition.x,
+        newCameraPosition.y,
+        newCameraPosition.z,
+      );
+    }
+
+    // Stop the page from scrolling up/down in the browser.
+    e.preventDefault();
   }
 
   private setHighlightedHex(hex: LineSegments) {
