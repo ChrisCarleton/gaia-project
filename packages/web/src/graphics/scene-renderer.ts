@@ -25,6 +25,14 @@ export type RenderCallback = (
   addSprite: (sprite: Sprite) => void,
 ) => void;
 
+// TODO: Calculate this based on Map Hexes.
+const CameraBounds = {
+  top: 40,
+  left: -30,
+  bottom: -80,
+  right: 100,
+};
+
 const HexRadius = 5;
 const StarryBackground = new TextureLoader().load('/stars.jpg');
 const HorizontalOffset = (3 / 2) * 2.5;
@@ -128,19 +136,41 @@ export class SceneRenderer {
   }
 
   private onMouseMove(e: MouseEvent) {
-    const x = (e.offsetX / this.viewSize.width) * 2 - 1;
-    const y = -(e.offsetY / this.viewSize.height) * 2 + 1;
+    const mousePosition = new Vector2(
+      (e.offsetX / this.viewSize.width) * 2 - 1,
+      -(e.offsetY / this.viewSize.height) * 2 + 1,
+    );
 
-    // const vector = new Vector3(x, y, -15);
-    // vector.unproject(this.camera);
+    if (e.buttons === 1) {
+      // User is holding down the left mouse button. Move the camera!
+      const scalingFactor = -0.25;
+      const movement = new Vector3(e.movementX, -e.movementY, 0);
+      const newCameraPosition = this.camera.position
+        .clone()
+        .addScaledVector(movement, scalingFactor);
 
-    // const dir = vector.sub(this.camera.position).normalize();
-    // const distance = -this.camera.position.z / dir.z - 12;
-    // const pos = this.camera.position.clone().add(dir.multiplyScalar(distance));
-    // this.mouseCursor.mesh.position.copy(pos);
+      if (newCameraPosition.x < CameraBounds.left) {
+        newCameraPosition.setX(CameraBounds.left);
+      }
 
-    // Can we highlight a hex??
-    const mousePosition = new Vector2(x, y);
+      if (newCameraPosition.x > CameraBounds.right) {
+        newCameraPosition.setX(CameraBounds.right);
+      }
+
+      if (newCameraPosition.y > CameraBounds.top) {
+        newCameraPosition.setY(CameraBounds.top);
+      }
+
+      if (newCameraPosition.y < CameraBounds.bottom) {
+        newCameraPosition.setY(CameraBounds.bottom);
+      }
+
+      this.camera.position.set(
+        newCameraPosition.x,
+        newCameraPosition.y,
+        newCameraPosition.z,
+      );
+    }
 
     const raycaster = new Raycaster();
     raycaster.setFromCamera(mousePosition, this.camera);
