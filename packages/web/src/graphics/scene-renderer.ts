@@ -8,6 +8,7 @@ import {
   LineSegments,
   Matrix4,
   PerspectiveCamera,
+  Quaternion,
   Raycaster,
   Scene,
   TextureLoader,
@@ -85,7 +86,7 @@ export class SceneRenderer {
       0.1,
       1000,
     );
-    this.camera.position.set(28, -28, 90);
+    this.camera.position.set(28, -45, 90);
     this.camera.lookAt(this.cameraLookAt);
 
     const directionalLight = new DirectionalLight(0xeeeeee, 0.9);
@@ -185,21 +186,32 @@ export class SceneRenderer {
   }
 
   private onMouseWheel(e: WheelEvent) {
-    // if (e.deltaY) {
-    const zoomFactor = e.deltaY * 0.25;
-    const cameraNormal = this.camera.getWorldDirection(new Vector3());
+    if (e.deltaY) {
+      // Vertical scroll controls zoom.
+      const zoomFactor = e.deltaY * 0.25;
+      const cameraNormal = this.camera.getWorldDirection(new Vector3());
 
-    const newCameraPosition = this.camera.position
-      .clone()
-      .addScaledVector(cameraNormal, zoomFactor);
+      const newCameraPosition = this.camera.position
+        .clone()
+        .addScaledVector(cameraNormal, zoomFactor);
 
-    if (newCameraPosition.z >= 30 && newCameraPosition.z <= 160) {
-      this.camera.position.set(
-        newCameraPosition.x,
-        newCameraPosition.y,
-        newCameraPosition.z,
-      );
+      if (newCameraPosition.z >= 30 && newCameraPosition.z <= 160) {
+        this.camera.position.set(
+          newCameraPosition.x,
+          newCameraPosition.y,
+          newCameraPosition.z,
+        );
+      }
     }
+
+    // TODO: Figure this out later.
+    // if (e.deltaX) {
+    //   // Horizontal scroll controls rotation about the Y-axis.
+    //   const rotateFactor = e.deltaX * 0.01;
+    //   const quat = new Quaternion();
+    //   quat.setFromAxisAngle(new Vector3(0, 1, 0), rotateFactor);
+    //   this.camera.position.applyQuaternion(quat);
+    // }
 
     // Stop the page from scrolling up/down in the browser.
     e.preventDefault();
