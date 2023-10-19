@@ -1,5 +1,6 @@
 import {
   GameAction,
+  GameState,
   Income,
   MapHex,
   Player,
@@ -21,7 +22,7 @@ export type EventArgsBase = {
 
 export type AwaitingPlayerInputEventArgs = EventArgsBase & {
   type: EventType.AwaitingPlayerInput;
-  allowedActions: GameAction[];
+  gameState: GameState;
 };
 
 export type MineBuiltEventArgs = EventArgsBase & {

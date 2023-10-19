@@ -187,21 +187,28 @@ export interface GameContext {
   readonly currentRound: number;
   readonly rounds: Readonly<Round[]>;
   readonly roundBoosters: Readonly<RoundBooster[]>;
-  map: Map;
+  readonly map: Map;
   readonly players: Readonly<Player[]>;
-  researchBoard: ResearchBoard;
+  readonly researchBoard: ResearchBoard;
+
+  toJSON(): Record<string, unknown>;
 }
 
 export enum GameState {
   BuildFirstMines = 'pickFirstMines',
+  IncomePhase = 'incomePhase',
 }
 
 export enum GameAction {
   BuildMine = 'buildMine',
 }
 
+export type ChangeStateFunction = (nextState: State) => void;
 export interface State {
   readonly currentState: GameState;
+
+  // Initialize and transition into the new state.
+  init(): void;
 
   // Player actions
   buildMine(location: MapHex): void;
@@ -215,7 +222,6 @@ export interface State {
   pass(): void;
 
   // Maintenance
-  doIncome(): void;
   completeGaiaProjects(): void;
   doRoundCleanup(): void;
   doEndGameScoring(): void;

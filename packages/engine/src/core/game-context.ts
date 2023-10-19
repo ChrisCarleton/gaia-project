@@ -57,4 +57,9 @@ export class GameContextInstance implements GameContext {
   get researchBoard(): Readonly<ResearchBoard> {
     return this._researchBoard;
   }
+
+  toJSON(): Record<string, unknown> {
+    // TODO: Serialize!
+    return {};
+  }
 }
