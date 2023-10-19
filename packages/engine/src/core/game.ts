@@ -4,7 +4,6 @@ import {
   EventHandler,
   EventType,
   GPError,
-  Game,
   GameContext,
   GameState,
   MapHex,
@@ -17,7 +16,7 @@ import {
 import { BuildFirstMinesState } from '../states/build-first-mines-state';
 import { GameContextInstance } from './game-context';
 
-export class GameInstance implements Game {
+export class Game implements State {
   readonly _context: GameContext;
   private readonly events: Observer;
 

@@ -1,4 +1,3 @@
-import { EventHandler, EventType } from './events';
 import { FactionType } from './factions';
 
 // Map
@@ -219,11 +218,4 @@ export interface State {
   completeGaiaProjects(): void;
   doRoundCleanup(): void;
   doEndGameScoring(): void;
-}
-
-export interface Game extends State {
-  readonly context: Readonly<GameContext>;
-
-  abortGame(): void;
-  subscribeToEvent(event: EventType, handler: EventHandler): void;
 }

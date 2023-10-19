@@ -1,14 +1,12 @@
-import { Map } from '@gaia-project/engine';
-import { BasicMapModel } from '@gaia-project/engine/src/core/maps';
+import { Game, MapHex } from '@gaia-project/engine';
+import { EventEmitter } from 'events';
 import {
   AmbientLight,
   Camera,
   DirectionalLight,
   Light,
   LineSegments,
-  Matrix4,
   PerspectiveCamera,
-  Quaternion,
   Raycaster,
   Scene,
   TextureLoader,
@@ -17,14 +15,13 @@ import {
   WebGLRenderer,
 } from 'three';
 
-import { createHighlightHex, createMapHex, createPlanet } from './map';
-// import { createMousePointer } from './mouse-cursor';
+import {
+  MapTileTranslationMatrix,
+  createHighlightHex,
+  createMapHex,
+  createPlanet,
+} from './map';
 import { Sprite } from './sprite';
-
-export type RenderCallback = (
-  scene: Scene,
-  addSprite: (sprite: Sprite) => void,
-) => void;
 
 // TODO: Calculate this based on Map Hexes.
 const CameraBounds = {
@@ -36,48 +33,30 @@ const CameraBounds = {
 
 const HexRadius = 5;
 const StarryBackground = new TextureLoader().load('/stars.jpg');
-const HorizontalOffset = (3 / 2) * 2.5;
-const VerticalOffset = Math.sqrt(3) * 2.5;
-const UnitVectors = {
-  Q: [HorizontalOffset, 0, 0],
-  R: [-HorizontalOffset, -VerticalOffset, 0],
-  S: [-HorizontalOffset, VerticalOffset, 0],
-} as const;
-
-const TranslationMatrix = new Matrix4(
-  UnitVectors.Q[0],
-  UnitVectors.R[0],
-  UnitVectors.S[0],
-  0,
-  UnitVectors.Q[1],
-  UnitVectors.R[1],
-  UnitVectors.S[1],
-  0,
-  0,
-  0,
-  1,
-  0,
-  0,
-  0,
-  0,
-  1,
-);
+type MapHexInfo = {
+  mesh: LineSegments;
+  hex: MapHex;
+};
 
 export class SceneRenderer {
   private readonly scene: Scene;
   private readonly camera: Camera;
   private readonly environmentLights: Light[];
-  private readonly map: Map;
-  private readonly mapHexes: Record<string, LineSegments>;
+  private readonly mapHexes: Record<string, MapHexInfo>;
   private readonly hexHighlight: Sprite;
   private readonly cameraLookAt: Vector3;
+  private readonly sprites: Sprite[] = [];
+  private readonly events: EventEmitter;
 
-  sprites: Sprite[] = [];
+  private currentMapHex: MapHexInfo | undefined;
 
   constructor(
     private readonly renderer: WebGLRenderer,
     private readonly viewSize: { width: number; height: number },
+    private readonly game: Game,
   ) {
+    this.events = new EventEmitter();
+    renderer.setSize(viewSize.width, viewSize.height);
     this.scene = new Scene();
     this.cameraLookAt = new Vector3(28, 0, 0);
     this.camera = new PerspectiveCamera(
@@ -88,44 +67,27 @@ export class SceneRenderer {
     );
     this.camera.position.set(28, -45, 90);
     this.camera.lookAt(this.cameraLookAt);
+    this.mapHexes = {};
 
     const directionalLight = new DirectionalLight(0xeeeeee, 0.9);
     directionalLight.lookAt(0, 0, 0);
     directionalLight.position.set(0, 12, 50);
     this.environmentLights = [new AmbientLight(0x999999), directionalLight];
 
-    this.map = new BasicMapModel().createMap(3);
-    this.mapHexes = {};
     this.hexHighlight = createHighlightHex(HexRadius);
 
     const canvas = renderer.domElement;
     // canvas.style.cursor = 'none';
     canvas.addEventListener('mousemove', this.onMouseMove.bind(this));
     canvas.addEventListener('wheel', this.onMouseWheel.bind(this));
+    canvas.addEventListener('click', this.onMouseClick.bind(this));
   }
 
   beginRendering() {
     this.scene.background = StarryBackground;
     this.scene.backgroundIntensity = 0.05;
 
-    this.map.hexes().forEach((mapHex) => {
-      const [q, r] = mapHex.location;
-      const hex = createMapHex(HexRadius);
-      this.mapHexes[hex.id] = hex;
-
-      const v = new Vector3(q, r, -q - r)
-        .applyMatrix4(TranslationMatrix)
-        .setZ(0);
-      hex.position.set(v.x, v.y, v.z);
-      this.scene.add(hex);
-
-      if (mapHex.planet) {
-        const planet = createPlanet(3.5, mapHex.planet, v);
-        this.sprites.push(planet);
-        this.scene.add(planet.mesh);
-      }
-    });
-
+    this.initMap();
     this.scene.add(this.hexHighlight.mesh);
     this.sprites.push(this.hexHighlight);
 
@@ -134,6 +96,33 @@ export class SceneRenderer {
     });
     this.scene.add(this.camera);
     this.animate();
+  }
+
+  on(e: 'hexhighlight' | 'hexclick', handler: (hex: MapHex) => void) {
+    this.events.addListener(e, handler);
+  }
+
+  private initMap() {
+    this.game.context.map.hexes().forEach((mapHex) => {
+      const [q, r] = mapHex.location;
+      const hexMesh = createMapHex(HexRadius);
+      this.mapHexes[hexMesh.id] = {
+        hex: mapHex,
+        mesh: hexMesh,
+      };
+
+      const v = new Vector3(q, r, -q - r)
+        .applyMatrix4(MapTileTranslationMatrix)
+        .setZ(0);
+      hexMesh.position.set(v.x, v.y, v.z);
+      this.scene.add(hexMesh);
+
+      if (mapHex.planet) {
+        const planet = createPlanet(3.5, mapHex.planet, v);
+        this.sprites.push(planet);
+        this.scene.add(planet.mesh);
+      }
+    });
   }
 
   private onMouseMove(e: MouseEvent) {
@@ -204,7 +193,13 @@ export class SceneRenderer {
       }
     }
 
-    // TODO: Figure this out later.
+    /*
+    TODO: Figure this out later.... how do I rotate the camera around the Y-axis at thelook-at point?
+      1. Find the look at point... Project camera onto Z plane? Just track it in memory?
+      2. Calculate camera rotation around that point.
+      3. Maintain camera orentiation so that it stays looking at the same point.
+    */
+
     // if (e.deltaX) {
     //   // Horizontal scroll controls rotation about the Y-axis.
     //   const rotateFactor = e.deltaX * 0.01;
@@ -217,12 +212,32 @@ export class SceneRenderer {
     e.preventDefault();
   }
 
-  private setHighlightedHex(hex: LineSegments) {
-    this.hexHighlight.mesh.position.set(
-      hex.position.x,
-      hex.position.y,
-      hex.position.z,
+  private onMouseClick(e: MouseEvent) {
+    // TODO: Refactor... there is a lot of code duplicated from mouse move.
+    const mousePosition = new Vector2(
+      (e.offsetX / this.viewSize.width) * 2 - 1,
+      -(e.offsetY / this.viewSize.height) * 2 + 1,
     );
+
+    const raycaster = new Raycaster();
+    raycaster.setFromCamera(mousePosition, this.camera);
+    const intersections = raycaster.intersectObjects(this.scene.children);
+    for (const intersection of intersections) {
+      const hex = this.mapHexes[intersection.object.id];
+      if (hex) {
+        this.events.emit('hexclick', hex.hex);
+        break;
+      }
+    }
+  }
+
+  private setHighlightedHex(hex: MapHexInfo) {
+    if (this.currentMapHex?.mesh.id !== hex.mesh.id) {
+      const { x, y, z } = hex.mesh.position;
+      this.hexHighlight.mesh.position.set(x, y, z);
+      this.currentMapHex = hex;
+      this.events.emit('hexhighlight', hex.hex);
+    }
   }
 
   private animate() {

@@ -3,6 +3,7 @@ import {
   BufferGeometry,
   LineBasicMaterial,
   LineSegments,
+  Matrix4,
   Mesh,
   MeshPhongMaterial,
 } from 'three';
@@ -164,3 +165,30 @@ export function createHighlightHex(radius: number): Sprite {
   });
   return new HightlightHexSprite(new Mesh(geometry, material));
 }
+
+const HorizontalOffset = (3 / 2) * 2.5;
+const VerticalOffset = Math.sqrt(3) * 2.5;
+const UnitVectors = {
+  Q: [HorizontalOffset, 0, 0],
+  R: [-HorizontalOffset, -VerticalOffset, 0],
+  S: [-HorizontalOffset, VerticalOffset, 0],
+} as const;
+
+export const MapTileTranslationMatrix = new Matrix4(
+  UnitVectors.Q[0],
+  UnitVectors.R[0],
+  UnitVectors.S[0],
+  0,
+  UnitVectors.Q[1],
+  UnitVectors.R[1],
+  UnitVectors.S[1],
+  0,
+  0,
+  0,
+  1,
+  0,
+  0,
+  0,
+  0,
+  1,
+);
