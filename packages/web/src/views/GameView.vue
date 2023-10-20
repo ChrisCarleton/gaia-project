@@ -10,16 +10,28 @@
       </div>
     </div>
     <div class="tile is-ancestor">
-      <div class="tile is-parent is-vertical is-2">
+      <div
+        v-if="viewState === PlayerViewState.Players"
+        class="tile is-parent is-vertical is-2"
+      >
         <PlayerInfoTile
           v-for="player in game.context.players"
           :key="player.name"
           :player="player"
           :is-active="player.id === gameState.currentPlayer?.id"
           :allowed-actions="gameState.allowedActions"
+          @buildmine="viewState = PlayerViewState.BuildFirstMine"
         />
         <MapInfoTile :highlighted-tile="currentHex" />
       </div>
+
+      <div
+        v-else-if="viewState === PlayerViewState.BuildFirstMine"
+        class="tile is-parent is-2"
+      >
+        <BuildFirstMineTile @cancel="viewState = PlayerViewState.Players" />
+      </div>
+
       <div class="tile is-parent is-10">
         <RenderWindow
           class="tile is-child box"
@@ -33,6 +45,7 @@
 </template>
 
 <script lang="ts" setup>
+import BuildFirstMineTile from '@/components/game/BuildFirstMineTile.vue';
 import GameStatusTile from '@/components/game/GameStatusTile.vue';
 import MapInfoTile from '@/components/game/MapInfoTile.vue';
 import PlayerInfoTile from '@/components/game/PlayerInfoTile.vue';
@@ -48,6 +61,11 @@ import {
 } from '@gaia-project/engine';
 import { reactive, ref } from 'vue';
 
+enum PlayerViewState {
+  Players,
+  BuildFirstMine,
+}
+
 interface GameState {
   allowedActions: Set<GameAction>;
   currentPlayer?: Player;
@@ -58,6 +76,7 @@ const gameState = reactive<GameState>({
   allowedActions: new Set<GameAction>([]),
   round: 0,
 });
+const viewState = ref<PlayerViewState>(PlayerViewState.Players);
 
 const currentHex = ref<MapHex | undefined>();
 const events = new Observer();

@@ -30,8 +30,22 @@ function onHexClick(mapHex: MapHex) {
 }
 
 onMounted(() => {
-  const boundingRect = containerDiv.value?.getBoundingClientRect();
-  const width = boundingRect?.width ?? 1920;
+  let width = 1920;
+  if (containerDiv.value) {
+    const boundingRect = containerDiv.value.getBoundingClientRect();
+    const padding =
+      parseInt(
+        window
+          .getComputedStyle(containerDiv.value, null)
+          .getPropertyValue('padding-left'),
+      ) +
+      parseInt(
+        window
+          .getComputedStyle(containerDiv.value, null)
+          .getPropertyValue('padding-right'),
+      );
+    width = boundingRect.width - padding;
+  }
   const height = width * (9 / 16); // Go for a consistent 16:9 aspect ratio.
 
   const renderer = new SceneRenderer(

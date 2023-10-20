@@ -83,6 +83,7 @@
         v-if="allowedActions.has(GameAction.BuildMine)"
         href="#"
         class="card-footer-item"
+        @click="$emit('buildmine')"
       >
         Build Mine
       </a>
@@ -103,6 +104,9 @@ interface PlayerInfoTileProps {
 }
 
 const props = defineProps<PlayerInfoTileProps>();
+defineEmits<{
+  (e: 'buildmine'): void;
+}>();
 
 const factionName = computed(
   () => FactionTypeNames[props.player.faction.factionType],

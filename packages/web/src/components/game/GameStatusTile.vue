@@ -1,7 +1,7 @@
 <template>
   <div class="level tile is-child box">
     <div class="level-left">
-      <div class="level-item">
+      <div v-if="round" class="level-item">
         <div>
           <p class="heading">Round #</p>
           <p class="title">{{ round }}</p>
