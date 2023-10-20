@@ -1,4 +1,5 @@
 import {
+  GameAction,
   GameContext,
   Map,
   Player,
@@ -12,6 +13,9 @@ export class GameContextInstance implements GameContext {
   private _players: Player[];
   private _rounds: Round[];
   private _researchBoard: ResearchBoard;
+
+  private _currentPlayer: Player | undefined;
+  private _allowedActions: GameAction[] = [];
 
   constructor(
     readonly map: Map,
@@ -56,5 +60,18 @@ export class GameContextInstance implements GameContext {
 
   get researchBoard(): Readonly<ResearchBoard> {
     return this._researchBoard;
+  }
+
+  get currentPlayer(): Player | undefined {
+    return this._currentPlayer;
+  }
+
+  get allowedActions(): Readonly<GameAction[]> {
+    return this._allowedActions;
+  }
+
+  updateAwaitedAction(player: Player, allowedActions: GameAction[]) {
+    this._currentPlayer = player;
+    this._allowedActions = allowedActions;
   }
 }

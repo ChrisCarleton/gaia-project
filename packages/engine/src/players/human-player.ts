@@ -5,8 +5,8 @@ import { PlayerBase } from './player-base';
 export class HumanPlayer extends PlayerBase {
   private _name: string;
 
-  constructor(name: string, faction: Faction, events: Observer) {
-    super(faction, events);
+  constructor(id: string, name: string, faction: Faction, events: Observer) {
+    super(id, faction, events);
     this._name = name;
   }
 

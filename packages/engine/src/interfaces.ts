@@ -22,6 +22,7 @@ export interface MapHex {
   player?: Player;
   structure?: StructureType;
   isSatellite: boolean;
+  lantidCohabitation: boolean;
 }
 
 export interface Map {
@@ -150,7 +151,8 @@ export type ScoringTrackPositions = {
 };
 
 export interface Player {
-  faction: Faction;
+  readonly id: string;
+  readonly faction: Faction;
   name: string;
   powerCycle: Readonly<PowerCycle>;
   resources: Readonly<Resources>;
@@ -189,6 +191,9 @@ export interface GameContext {
   map: Map;
   readonly players: Readonly<Player[]>;
   researchBoard: ResearchBoard;
+
+  readonly currentPlayer: Player | undefined;
+  readonly allowedActions: Readonly<GameAction[]>;
 }
 
 export enum GameState {

@@ -2,12 +2,18 @@
   <!-- <PageTitle title="Game Test" /> -->
   <section class="section">
     <div class="tile is-ancestor">
+      <div class="tile is-parent is-12">
+        <GameStatusTile :context="game.context" />
+      </div>
+    </div>
+    <div class="tile is-ancestor">
       <div class="tile is-parent is-vertical is-2">
         <MapInfoTile :highlighted-tile="currentHex" />
         <PlayerInfoTile
           v-for="player in game.context.players"
           :key="player.name"
           :player="player"
+          :context="game.context"
         />
       </div>
       <div class="tile is-parent is-10">
@@ -23,6 +29,7 @@
 </template>
 
 <script lang="ts" setup>
+import GameStatusTile from '@/components/game/GameStatusTile.vue';
 import MapInfoTile from '@/components/game/MapInfoTile.vue';
 import PlayerInfoTile from '@/components/game/PlayerInfoTile.vue';
 import RenderWindow from '@/components/game/RenderWindow.vue';
@@ -43,9 +50,9 @@ const events = new Observer();
 const factionFactory = new FactionFactory();
 const playerFactory = new PlayerFactory(events, factionFactory);
 const players = [
-  playerFactory.createPlayer(FactionType.Terrans, 'Julian'),
-  playerFactory.createPlayer(FactionType.Ambas, 'Bubbles'),
-  playerFactory.createPlayer(FactionType.BalTaks, 'Ricky'),
+  playerFactory.createPlayer('0', FactionType.Terrans, 'Julian'),
+  playerFactory.createPlayer('1', FactionType.Ambas, 'Bubbles'),
+  playerFactory.createPlayer('2', FactionType.BalTaks, 'Ricky'),
 ];
 
 const mapModel = new BasicMapModel();
@@ -57,6 +64,5 @@ function onHexHighlight(mapHex: MapHex) {
 
 async function onHexClick(mapHex: MapHex): Promise<void> {
   // TODO: Handle this event.
-  const [q, r] = mapHex.location;
 }
 </script>

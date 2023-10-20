@@ -1,4 +1,4 @@
-import { FactionType } from '..';
+import { EventArgs, FactionType } from '..';
 import {
   ErrorCode,
   EventHandler,
@@ -17,12 +17,12 @@ import { BuildFirstMinesState } from '../states/build-first-mines-state';
 import { GameContextInstance } from './game-context';
 
 export class Game implements State {
-  readonly _context: GameContext;
+  readonly _context: GameContextInstance;
   private readonly events: Observer;
 
   private _currentState: State;
 
-  constructor(players: Player[], mapModel: MapModel, events?: Observer) {
+  constructor(players: Player[], mapModel: MapModel, events: Observer) {
     // Validate player entries to make sure there are between 2-4 players
     // and that there are no conflicts in their choices of faction or homeworld.
     if (players.length < 2) {
@@ -61,12 +61,17 @@ export class Game implements State {
       factions.add(player.faction.factionType);
     }
 
+    events.subscribe(
+      EventType.AwaitingPlayerInput,
+      this.onAwaitingPlayerInput.bind(this),
+    );
+
     // Shuffle the players into a random turn order for the first round.
     const shuffledPlayers = players.sort(() => Math.random() - 0.5);
 
     // Generate a map using the provided map model.
     const map = mapModel.createMap(shuffledPlayers.length);
-    this.events = events ?? new Observer();
+    this.events = events;
 
     // Initialize the game context.
     this._context = new GameContextInstance(map, shuffledPlayers);
@@ -150,5 +155,14 @@ export class Game implements State {
 
   private changeState(newState: State) {
     this._currentState = newState;
+  }
+
+  private onAwaitingPlayerInput(eventArgs: EventArgs) {
+    if (eventArgs.type === EventType.AwaitingPlayerInput) {
+      this._context.updateAwaitedAction(
+        eventArgs.player,
+        eventArgs.allowedActions,
+      );
+    }
   }
 }

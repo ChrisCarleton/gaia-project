@@ -9,19 +9,19 @@ export class PlayerFactory {
     private readonly factionFactory: FactionFactory,
   ) {}
 
-  createPlayer(faction: FactionType, name: string): Player {
+  createPlayer(id: string, faction: FactionType, name: string): Player {
     const factionEntity = this.factionFactory.createFaction(
       faction,
       this.events,
     );
-    return new HumanPlayer(name, factionEntity, this.events);
+    return new HumanPlayer(id, name, factionEntity, this.events);
   }
 
-  createAIOpponent(faction: FactionType): Player {
+  createAIOpponent(id: string, faction: FactionType): Player {
     const factionEntity = this.factionFactory.createFaction(
       faction,
       this.events,
     );
-    return new AIPlayer(factionEntity, this.events);
+    return new AIPlayer(id, factionEntity, this.events);
   }
 }

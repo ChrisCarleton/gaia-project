@@ -28,6 +28,7 @@ export abstract class PlayerBase implements Player {
   protected scoringTrackPositionB: number;
 
   constructor(
+    readonly id: string,
     readonly faction: Faction,
     protected readonly events: Observer,
   ) {
