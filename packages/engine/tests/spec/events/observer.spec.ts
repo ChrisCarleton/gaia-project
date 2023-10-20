@@ -1,4 +1,4 @@
-import { Mock } from 'moq.ts';
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 
 import { MapHex, Player } from '../../../src';
 import {
@@ -8,7 +8,7 @@ import {
 } from '../../../src/events';
 
 describe('Observer class', () => {
-  const player = new Mock<Player>().object();
+  const player: DeepMockProxy<Player> = mockDeep<Player>();
   const e: IncomeGainedEventArgs = {
     type: EventType.IncomeGained,
     player,
@@ -89,7 +89,7 @@ describe('Observer class', () => {
     observer.publish(e);
     observer.publish({
       type: EventType.MineBuilt,
-      location: new Mock<MapHex>().object(),
+      location: mockDeep<MapHex>(),
       player,
     });
 

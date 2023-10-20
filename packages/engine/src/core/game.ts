@@ -13,7 +13,11 @@ import {
   Player,
   State,
 } from '..';
-import { BuildFirstMinesState } from '../states/build-first-mines-state';
+import {
+  BuildFirstMinesPass,
+  BuildFirstMinesState,
+} from '../states/build-first-mines-state';
+import { nextTick } from '../utils';
 import { GameContextInstance } from './game-context';
 
 export class Game implements State {
@@ -78,11 +82,15 @@ export class Game implements State {
 
     // Set the initial state so that the players can place their first mines.
     this._currentState = new BuildFirstMinesState(
-      this.context.players[0],
       this._context,
       this.events,
       this.changeState,
+      {
+        turnIndex: 0,
+        pass: BuildFirstMinesPass.First,
+      },
     );
+    nextTick(this._currentState.init);
   }
 
   get currentState(): GameState {
@@ -99,6 +107,10 @@ export class Game implements State {
 
   subscribeToEvent(event: EventType, handler: EventHandler): void {
     this.events.subscribe(event, handler);
+  }
+
+  init(): void {
+    /* TODO: Anything here? Constructor handles most things */
   }
 
   buildMine(location: MapHex): void {
@@ -137,10 +149,6 @@ export class Game implements State {
     this._currentState.pass();
   }
 
-  doIncome(): void {
-    this._currentState.doIncome();
-  }
-
   completeGaiaProjects(): void {
     this._currentState.completeGaiaProjects();
   }
@@ -155,6 +163,14 @@ export class Game implements State {
 
   private changeState(newState: State) {
     this._currentState = newState;
+    nextTick(newState.init);
+  }
+
+  static fromContext(): Game {
+    // TODO: Deserialize a serialized game context.
+    // return new GameContextInstance()
+
+    throw new Error('Not implemented.');
   }
 
   private onAwaitingPlayerInput(eventArgs: EventArgs) {

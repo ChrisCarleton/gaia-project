@@ -74,4 +74,9 @@ export class GameContextInstance implements GameContext {
     this._currentPlayer = player;
     this._allowedActions = allowedActions;
   }
+
+  toJSON(): Record<string, unknown> {
+    // TODO: Serialize!
+    return {};
+  }
 }
