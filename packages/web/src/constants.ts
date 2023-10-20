@@ -18,13 +18,13 @@ export const FactionTypeNames: Record<FactionType, string> = {
 } as const;
 
 export const PlanetTypeNames: Record<PlanetType, string> = {
-  [PlanetType.Desert]: 'Desert World',
-  [PlanetType.Gaia]: 'Gaia Planet',
-  [PlanetType.Ice]: 'Ice World',
-  [PlanetType.Oxide]: 'Oxide World',
-  [PlanetType.Swamp]: 'Swamp World',
-  [PlanetType.Terra]: 'Earth-like World',
-  [PlanetType.Titanium]: 'Titanium World',
-  [PlanetType.Transdim]: 'Transdim Planet',
-  [PlanetType.Volcanic]: 'Volcanic World',
+  [PlanetType.Desert]: 'Desert',
+  [PlanetType.Gaia]: 'Gaia',
+  [PlanetType.Ice]: 'Ice',
+  [PlanetType.Oxide]: 'Oxide',
+  [PlanetType.Swamp]: 'Swamp',
+  [PlanetType.Terra]: 'Earth-like',
+  [PlanetType.Titanium]: 'Titanium',
+  [PlanetType.Transdim]: 'Transdim',
+  [PlanetType.Volcanic]: 'Volcanic',
 } as const;

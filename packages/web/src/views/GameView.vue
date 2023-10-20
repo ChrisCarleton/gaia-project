@@ -3,18 +3,22 @@
   <section class="section">
     <div class="tile is-ancestor">
       <div class="tile is-parent is-12">
-        <GameStatusTile :context="game.context" />
+        <GameStatusTile
+          :current-player="gameState.currentPlayer"
+          :round="gameState.round"
+        />
       </div>
     </div>
     <div class="tile is-ancestor">
       <div class="tile is-parent is-vertical is-2">
-        <MapInfoTile :highlighted-tile="currentHex" />
         <PlayerInfoTile
           v-for="player in game.context.players"
           :key="player.name"
           :player="player"
-          :context="game.context"
+          :is-active="player.id === gameState.currentPlayer?.id"
+          :allowed-actions="gameState.allowedActions"
         />
+        <MapInfoTile :highlighted-tile="currentHex" />
       </div>
       <div class="tile is-parent is-10">
         <RenderWindow
@@ -33,7 +37,7 @@ import GameStatusTile from '@/components/game/GameStatusTile.vue';
 import MapInfoTile from '@/components/game/MapInfoTile.vue';
 import PlayerInfoTile from '@/components/game/PlayerInfoTile.vue';
 import RenderWindow from '@/components/game/RenderWindow.vue';
-import { Observer } from '@gaia-project/engine';
+import { EventType, GameAction, Observer, Player } from '@gaia-project/engine';
 import {
   BasicMapModel,
   FactionFactory,
@@ -42,10 +46,28 @@ import {
   MapHex,
   PlayerFactory,
 } from '@gaia-project/engine';
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
+
+interface GameState {
+  allowedActions: Set<GameAction>;
+  currentPlayer?: Player;
+  round: number;
+}
+
+const gameState = reactive<GameState>({
+  allowedActions: new Set<GameAction>([]),
+  round: 0,
+});
 
 const currentHex = ref<MapHex | undefined>();
 const events = new Observer();
+
+events.subscribe(EventType.AwaitingPlayerInput, (e) => {
+  if (e.type === EventType.AwaitingPlayerInput) {
+    gameState.currentPlayer = e.player;
+    gameState.allowedActions = new Set<GameAction>(e.allowedActions);
+  }
+});
 
 const factionFactory = new FactionFactory();
 const playerFactory = new PlayerFactory(events, factionFactory);
@@ -55,8 +77,8 @@ const players = [
   playerFactory.createPlayer('2', FactionType.BalTaks, 'Ricky'),
 ];
 
-const mapModel = new BasicMapModel();
-const game = new Game(players, mapModel, events);
+const map = new BasicMapModel().createMap(players.length);
+const game = Game.beginNewGame(players, map, events);
 
 function onHexHighlight(mapHex: MapHex) {
   currentHex.value = mapHex;

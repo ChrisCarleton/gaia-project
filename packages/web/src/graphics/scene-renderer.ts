@@ -16,6 +16,8 @@ import {
 } from 'three';
 
 import {
+  HexHighlightMaterial,
+  HexHighlightStatus,
   MapTileTranslationMatrix,
   createHighlightHex,
   createMapHex,
@@ -96,6 +98,10 @@ export class SceneRenderer {
     });
     this.scene.add(this.camera);
     this.animate();
+  }
+
+  setHighlightStatus(status: HexHighlightStatus) {
+    this.hexHighlight.mesh.material = HexHighlightMaterial[status];
   }
 
   on(e: 'hexhighlight' | 'hexclick', handler: (hex: MapHex) => void) {

@@ -75,7 +75,7 @@ export class BuildFirstMinesState extends StateBase {
     }
 
     // Place mine event.
-    this.events.publish({
+    super.events.publish({
       type: EventType.MineBuilt,
       player,
       location,

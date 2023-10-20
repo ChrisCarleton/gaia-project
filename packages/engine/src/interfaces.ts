@@ -190,14 +190,15 @@ export interface GameContext {
   readonly roundBoosters: Readonly<RoundBooster[]>;
   readonly map: Map;
   readonly players: Readonly<Player[]>;
-  readonly currentPlayer: Player | undefined;
-  readonly allowedActions: Readonly<GameAction[]>;
   readonly researchBoard: ResearchBoard;
+  currentPlayer: Player | undefined;
+  allowedActions: Readonly<GameAction[]>;
 
   toJSON(): Record<string, unknown>;
 }
 
 export enum GameState {
+  GameNotStarted = 'gameNotStarted',
   BuildFirstMines = 'pickFirstMines',
   IncomePhase = 'incomePhase',
 }
