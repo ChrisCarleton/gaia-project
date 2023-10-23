@@ -22,7 +22,7 @@
     "graphql-tag": "^2.12.6",
     "graphql-ws": "^5.14.1",
     "qrcode.vue": "^3.4.1",
-    "three": "^0.156.0",
+    "three": "^0.157.0",
     "uuid": "^9.0.1",
     "vue": "^3.2.13",
     "vue-router": "4",

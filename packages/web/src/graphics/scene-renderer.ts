@@ -1,11 +1,10 @@
-import { Game, MapHex } from '@gaia-project/engine';
+import { Game, MapHex, Player, StructureType } from '@gaia-project/engine';
 import { EventEmitter } from 'events';
 import {
   AmbientLight,
   Camera,
   DirectionalLight,
   Light,
-  LineSegments,
   PerspectiveCamera,
   Raycaster,
   Scene,
@@ -18,12 +17,13 @@ import {
 import {
   HexHighlightMaterial,
   HexHighlightStatus,
-  MapTileTranslationMatrix,
   createHighlightHex,
   createMapHex,
   createPlanet,
 } from './map';
+import { mapCoordsToWorldCoords } from './map/utils';
 import { Sprite } from './sprite';
+import { createMine } from './structures';
 
 // TODO: Calculate this based on Map Hexes.
 const CameraBounds = {
@@ -35,22 +35,25 @@ const CameraBounds = {
 
 const HexRadius = 5;
 const StarryBackground = new TextureLoader().load('/stars.jpg');
-type MapHexInfo = {
-  mesh: LineSegments;
-  hex: MapHex;
-};
 
 export class SceneRenderer {
   private readonly scene: Scene;
   private readonly camera: Camera;
   private readonly environmentLights: Light[];
-  private readonly mapHexes: Record<string, MapHexInfo>;
+  private readonly objLocations: Record<string, MapHex>;
   private readonly hexHighlight: Sprite;
   private readonly cameraLookAt: Vector3;
   private readonly sprites: Sprite[] = [];
   private readonly events: EventEmitter;
 
-  private currentMapHex: MapHexInfo | undefined;
+  private currentMapHex: MapHex | undefined;
+
+  private structures: Record<
+    string,
+    {
+      sprite: Sprite;
+    }
+  >;
 
   constructor(
     private readonly renderer: WebGLRenderer,
@@ -69,7 +72,8 @@ export class SceneRenderer {
     );
     this.camera.position.set(28, -45, 90);
     this.camera.lookAt(this.cameraLookAt);
-    this.mapHexes = {};
+    this.objLocations = {};
+    this.structures = {};
 
     const directionalLight = new DirectionalLight(0xeeeeee, 0.9);
     directionalLight.lookAt(0, 0, 0);
@@ -85,7 +89,7 @@ export class SceneRenderer {
     canvas.addEventListener('click', this.onMouseClick.bind(this));
   }
 
-  beginRendering() {
+  async beginRendering(): Promise<void> {
     this.scene.background = StarryBackground;
     this.scene.backgroundIntensity = 0.05;
 
@@ -104,6 +108,22 @@ export class SceneRenderer {
     this.hexHighlight.mesh.material = HexHighlightMaterial[status];
   }
 
+  async addStructure(
+    mapHex: MapHex,
+    player: Player,
+    structureType: StructureType,
+  ) {
+    const [q, r] = mapHex.location;
+    const mine = await createMine(player.faction.homeWorld);
+    const position = mapCoordsToWorldCoords(mapHex.location).setZ(4.5);
+    mine.mesh.position.set(position.x, position.y, position.z);
+
+    this.structures[`${q},${r}`] = { sprite: mine };
+    this.scene.add(mine.mesh);
+  }
+
+  removeStructure(mapHex: MapHex) {}
+
   on(e: 'hexhighlight' | 'hexclick', handler: (hex: MapHex) => void) {
     this.events.addListener(e, handler);
   }
@@ -112,20 +132,16 @@ export class SceneRenderer {
     this.game.context.map.hexes().forEach((mapHex) => {
       const [q, r] = mapHex.location;
       const hexMesh = createMapHex(HexRadius);
-      this.mapHexes[hexMesh.id] = {
-        hex: mapHex,
-        mesh: hexMesh,
-      };
+      this.objLocations[hexMesh.id] = mapHex;
+      const v = mapCoordsToWorldCoords(mapHex.location);
 
-      const v = new Vector3(q, r, -q - r)
-        .applyMatrix4(MapTileTranslationMatrix)
-        .setZ(0);
       hexMesh.position.set(v.x, v.y, v.z);
       this.scene.add(hexMesh);
 
       if (mapHex.planet) {
         const planet = createPlanet(3.5, mapHex.planet, v);
         this.sprites.push(planet);
+        this.objLocations[planet.mesh.id] = mapHex;
         this.scene.add(planet.mesh);
       }
     });
@@ -172,7 +188,7 @@ export class SceneRenderer {
     raycaster.setFromCamera(mousePosition, this.camera);
     const intersections = raycaster.intersectObjects(this.scene.children);
     for (const intersection of intersections) {
-      const hex = this.mapHexes[intersection.object.id];
+      const hex = this.objLocations[intersection.object.id];
       if (hex) {
         this.setHighlightedHex(hex);
         break;
@@ -229,21 +245,19 @@ export class SceneRenderer {
     raycaster.setFromCamera(mousePosition, this.camera);
     const intersections = raycaster.intersectObjects(this.scene.children);
     for (const intersection of intersections) {
-      const hex = this.mapHexes[intersection.object.id];
+      const hex = this.objLocations[intersection.object.id];
       if (hex) {
-        this.events.emit('hexclick', hex.hex);
+        this.events.emit('hexclick', hex);
         break;
       }
     }
   }
 
-  private setHighlightedHex(hex: MapHexInfo) {
-    if (this.currentMapHex?.mesh.id !== hex.mesh.id) {
-      const { x, y, z } = hex.mesh.position;
-      this.hexHighlight.mesh.position.set(x, y, z);
-      this.currentMapHex = hex;
-      this.events.emit('hexhighlight', hex.hex);
-    }
+  private setHighlightedHex(hex: MapHex) {
+    const { x, y, z } = mapCoordsToWorldCoords(hex.location);
+    this.hexHighlight.mesh.position.set(x, y, z);
+    this.currentMapHex = hex;
+    this.events.emit('hexhighlight', hex);
   }
 
   private animate() {

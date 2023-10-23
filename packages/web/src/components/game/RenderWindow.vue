@@ -4,9 +4,11 @@
 
 <script lang="ts" setup>
 import { SceneRenderer } from '@/graphics';
-import { Game, MapHex } from '@gaia-project/engine';
+import { HexHighlightStatus } from '@/graphics/map';
+import { Game, MapHex, Player, StructureType } from '@gaia-project/engine';
 import { WebGLRenderer } from 'three';
 import { onMounted, ref } from 'vue';
+import { map } from 'zod';
 
 interface RenderWindowProps {
   game: Game;
@@ -20,6 +22,7 @@ const emit = defineEmits<{
 
 const webGL = new WebGLRenderer();
 const containerDiv = ref<HTMLDivElement | null>();
+const renderer = ref<SceneRenderer | undefined>();
 
 function onHexHighlight(mapHex: MapHex) {
   emit('hexhighlight', mapHex);
@@ -48,7 +51,7 @@ onMounted(() => {
   }
   const height = width * (9 / 16); // Go for a consistent 16:9 aspect ratio.
 
-  const renderer = new SceneRenderer(
+  const sceneRenderer = new SceneRenderer(
     webGL,
     {
       width,
@@ -56,10 +59,34 @@ onMounted(() => {
     },
     props.game,
   );
-  renderer.on('hexhighlight', onHexHighlight);
-  renderer.on('hexclick', onHexClick);
+  sceneRenderer.on('hexhighlight', onHexHighlight);
+  sceneRenderer.on('hexclick', onHexClick);
 
   document.getElementById('render')?.appendChild(webGL.domElement);
-  renderer.beginRendering();
+  sceneRenderer.beginRendering();
+
+  renderer.value = sceneRenderer;
+});
+
+function setHighlightStatus(status: HexHighlightStatus) {
+  renderer.value?.setHighlightStatus(status);
+}
+
+function addStructure(
+  mapHex: MapHex,
+  player: Player,
+  structureType: StructureType,
+) {
+  renderer.value?.addStructure(mapHex, player, structureType);
+}
+
+function removeStructure(mapHex: MapHex) {
+  renderer.value?.removeStructure(mapHex);
+}
+
+defineExpose({
+  addStructure,
+  removeStructure,
+  setHighlightStatus,
 });
 </script>

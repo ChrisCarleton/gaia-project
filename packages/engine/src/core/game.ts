@@ -131,7 +131,7 @@ export class Game implements State {
 
   private changeState(newState: State) {
     this._currentState = newState;
-    nextTick(newState.init);
+    nextTick(() => newState.init());
   }
 
   toJSON(): SerializedGameContext {

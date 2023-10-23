@@ -22,20 +22,25 @@
           :allowed-actions="gameState.allowedActions"
           @buildmine="viewState = PlayerViewState.BuildFirstMine"
         />
-        <MapInfoTile :highlighted-tile="currentHex" />
+        <!-- <MapInfoTile :highlighted-tile="currentHex" /> -->
       </div>
 
       <div
         v-else-if="viewState === PlayerViewState.BuildFirstMine"
         class="tile is-parent is-2"
       >
-        <BuildFirstMineTile @cancel="viewState = PlayerViewState.Players" />
+        <BuildFirstMineTile
+          :player="gameState.currentPlayer!"
+          @cancel="viewState = PlayerViewState.Players"
+        />
       </div>
 
       <div class="tile is-parent is-10">
         <RenderWindow
+          ref="renderWindow"
           class="tile is-child box"
           :game="game"
+          :highlight-status="highlightStatus"
           @hexhighlight="onHexHighlight"
           @hexclick="onHexClick"
         />
@@ -47,10 +52,22 @@
 <script lang="ts" setup>
 import BuildFirstMineTile from '@/components/game/BuildFirstMineTile.vue';
 import GameStatusTile from '@/components/game/GameStatusTile.vue';
-import MapInfoTile from '@/components/game/MapInfoTile.vue';
 import PlayerInfoTile from '@/components/game/PlayerInfoTile.vue';
 import RenderWindow from '@/components/game/RenderWindow.vue';
-import { EventType, GameAction, Observer, Player } from '@gaia-project/engine';
+import { HexHighlightStatus } from '@/graphics/map';
+import { Action, useStore } from '@/store';
+import {
+  ClickStrategies,
+  HighlightStrategies,
+  PlayerViewState,
+} from '@/strategies';
+import {
+  EventType,
+  GameAction,
+  Observer,
+  Player,
+  StructureType,
+} from '@gaia-project/engine';
 import {
   BasicMapModel,
   FactionFactory,
@@ -61,22 +78,21 @@ import {
 } from '@gaia-project/engine';
 import { reactive, ref } from 'vue';
 
-enum PlayerViewState {
-  Players,
-  BuildFirstMine,
-}
-
 interface GameState {
   allowedActions: Set<GameAction>;
   currentPlayer?: Player;
   round: number;
 }
 
+const store = useStore();
+
 const gameState = reactive<GameState>({
   allowedActions: new Set<GameAction>([]),
   round: 0,
 });
 const viewState = ref<PlayerViewState>(PlayerViewState.Players);
+const highlightStatus = ref<HexHighlightStatus>(HexHighlightStatus.Neutral);
+const renderWindow = ref<InstanceType<typeof RenderWindow> | null>();
 
 const currentHex = ref<MapHex | undefined>();
 const events = new Observer();
@@ -85,6 +101,13 @@ events.subscribe(EventType.AwaitingPlayerInput, (e) => {
   if (e.type === EventType.AwaitingPlayerInput) {
     gameState.currentPlayer = e.player;
     gameState.allowedActions = new Set<GameAction>(e.allowedActions);
+    viewState.value = PlayerViewState.Players;
+  }
+});
+
+events.subscribe(EventType.MineBuilt, (e) => {
+  if (e.type === EventType.MineBuilt) {
+    renderWindow.value?.addStructure(e.location, e.player, StructureType.Mine);
   }
 });
 
@@ -101,9 +124,23 @@ const game = Game.beginNewGame(players, map, events);
 
 function onHexHighlight(mapHex: MapHex) {
   currentHex.value = mapHex;
+  const status = HighlightStrategies[viewState.value].determineHighlight(
+    gameState.currentPlayer ?? game.context.players[0],
+    mapHex,
+  );
+  renderWindow.value?.setHighlightStatus(status);
 }
 
 async function onHexClick(mapHex: MapHex): Promise<void> {
-  // TODO: Handle this event.
+  currentHex.value = mapHex;
+  try {
+    await ClickStrategies[viewState.value].handleClick(
+      game,
+      gameState.currentPlayer ?? game.context.players[0],
+      mapHex,
+    );
+  } catch (error) {
+    await store.dispatch(Action.ToastError, (error as Error).message);
+  }
 }
 </script>

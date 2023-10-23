@@ -16,11 +16,31 @@
       </p>
 
       <p class="content">These mines can be placed at no cost.</p>
+
+      <div class="block level">
+        <div class="level-item">
+          <div>
+            <p class="heading">Homeworld</p>
+            <p class="is-family-code">
+              {{ PlanetTypeNames[player.faction.homeWorld] }}
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { PlanetTypeNames } from '@/constants';
+import { Player } from '@gaia-project/engine';
+
+interface BuildFirstMineTileProps {
+  player: Player;
+}
+
+defineProps<BuildFirstMineTileProps>();
+
 defineEmits<{
   (e: 'cancel'): void;
 }>();
