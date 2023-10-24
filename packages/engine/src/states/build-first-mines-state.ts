@@ -9,8 +9,7 @@ import {
   GameState,
   MapHex,
 } from '../interfaces';
-import { GameCompletedState } from './game-completed-state';
-import { IncomePhaseState } from './income-phase-state';
+import { ChooseFirstRoundBoostersState } from './choose-first-round-boosters-state';
 import { StateBase } from './state-base';
 
 export enum BuildFirstMinesPass {
@@ -95,8 +94,12 @@ export class BuildFirstMinesState extends StateBase {
         );
         if (this.options.turnIndex === -1) {
           this.changeState(
-            new GameCompletedState(this.context, this.events, this.changeState),
-            // new IncomePhaseState(this.context, this.events, this.changeState),
+            new ChooseFirstRoundBoostersState(
+              this.context,
+              this.events,
+              this.changeState,
+              this.context.players[this.context.players.length - 1],
+            ),
           );
           return;
         } else {
@@ -107,8 +110,12 @@ export class BuildFirstMinesState extends StateBase {
       }
     } else {
       this.changeState(
-        new GameCompletedState(this.context, this.events, this.changeState),
-        // new IncomePhaseState(this.context, this.events, this.changeState),
+        new ChooseFirstRoundBoostersState(
+          this.context,
+          this.events,
+          this.changeState,
+          this.context.players[this.context.players.length - 1],
+        ),
       );
       return;
     }

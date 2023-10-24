@@ -44,7 +44,7 @@ export class GameNotStartedState implements State {
     throw NotStartedError;
   }
 
-  pass(): void {
+  chooseRoundBoosterAndPass(): void {
     throw NotStartedError;
   }
 

@@ -18,6 +18,7 @@ export class GameContextInstance implements GameContext {
   private _players: Player[];
   private _rounds: Round[];
   private _researchBoard: ResearchBoard;
+  private _roundBoosters: RoundBooster[];
 
   private _currentPlayer: Player | undefined;
   private _allowedActions: Readonly<GameAction[]> = [];
@@ -45,6 +46,7 @@ export class GameContextInstance implements GameContext {
         terraforming: { ...researchTrack },
       },
     };
+    this._roundBoosters = [];
   }
 
   get players(): Player[] {
@@ -55,8 +57,11 @@ export class GameContextInstance implements GameContext {
     return this._currentRound;
   }
 
-  get roundBoosters(): Readonly<RoundBooster[]> {
-    return [];
+  get roundBoosters(): RoundBooster[] {
+    return this._roundBoosters;
+  }
+  set roundBoosters(val: RoundBooster[]) {
+    this._roundBoosters = val;
   }
 
   get rounds(): Readonly<Round[]> {

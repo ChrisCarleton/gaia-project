@@ -103,6 +103,13 @@ export type FactionIncome = {
 };
 
 export enum FreeAction {
+  // Take a "build a mine" or "start gaia project" action with normal range extended by 3.
+  BuildMineOrStartGaiaWithRangeBoost = 'buildMineOrGaiaWithRangeBoost',
+
+  // Take a "build a mine action" with one free Terraforming step.
+  BuildMineWithTerraforming = 'buildMineWithTerraforming',
+
+  // Earn a free QIC.
   GenerateQIC = 'generateQIC',
 }
 
@@ -174,7 +181,40 @@ export interface ResearchBoard {
   };
 }
 
-export interface RoundBooster {}
+export enum RoundBoosterBonusType {
+  Action = 'action',
+  BonusOnPass = 'passBonus',
+  Income = 'income',
+}
+export enum RoundBoosterPassBonusDiscriminator {
+  Mines = 'mines',
+  ResearchLabs = 'researchLabs',
+  TradingStations = 'tradingStations',
+  PlanetaryInstitutesAndAcadamies = 'acadamiesAndPI',
+  GaiaPlanets = 'gaiaPlanets',
+}
+type RoundBoosterActionBonus = {
+  type: RoundBoosterBonusType.Action;
+  action: FreeAction;
+};
+type RoundBoosterIncomeBonus = {
+  type: RoundBoosterBonusType.Income;
+  income: Income;
+};
+type RoundBoosterPassBonus = {
+  type: RoundBoosterBonusType.BonusOnPass;
+  discriminator: RoundBoosterPassBonusDiscriminator;
+  vp: number;
+};
+export type RoundBoosterBonus =
+  | RoundBoosterActionBonus
+  | RoundBoosterIncomeBonus
+  | RoundBoosterPassBonus;
+export interface RoundBooster {
+  id: number;
+  a: RoundBoosterBonus;
+  b: RoundBoosterBonus;
+}
 
 export interface RoundScoringTile {}
 
@@ -187,17 +227,18 @@ export interface Round {
 export interface GameContext {
   readonly currentRound: number;
   readonly rounds: Readonly<Round[]>;
-  readonly roundBoosters: Readonly<RoundBooster[]>;
   readonly map: Map;
   readonly players: Readonly<Player[]>;
   readonly researchBoard: ResearchBoard;
   currentPlayer: Player | undefined;
   allowedActions: Readonly<GameAction[]>;
+  roundBoosters: RoundBooster[];
 
   toJSON(): Record<string, unknown>;
 }
 
 export enum GameState {
+  ChooseFirstRoundBoosters = 'chooseFirstRoundBoosters',
   GameEnded = 'gameEnded',
   GameNotStarted = 'gameNotStarted',
   BuildFirstMines = 'pickFirstMines',
@@ -206,6 +247,7 @@ export enum GameState {
 
 export enum GameAction {
   BuildMine = 'buildMine',
+  Pass = 'pass',
 }
 
 export type ChangeStateFunction = (nextState: State) => void;
@@ -224,10 +266,5 @@ export interface State {
   powerOrQicAction(): void;
   specialAction(): void;
   freeAction(): void;
-  pass(): void;
-
-  // Maintenance
-  completeGaiaProjects(): void;
-  doRoundCleanup(): void;
-  doEndGameScoring(): void;
+  chooseRoundBoosterAndPass(roundBooster: RoundBooster): void;
 }

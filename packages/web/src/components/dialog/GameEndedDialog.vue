@@ -2,7 +2,7 @@
   <div v-if="visible" class="modal is-active">
     <div class="modal-background"></div>
     <div class="modal-card">
-      <header class="modal-card-head is-success">
+      <header class="modal-card-head">
         <p class="modal-card-title">Game over, man! Game over!!</p>
       </header>
       <section class="modal-card-body is-size-4">

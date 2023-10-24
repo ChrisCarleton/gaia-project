@@ -4,6 +4,10 @@
     :player-rankings="gameState.playerRankings"
     :visible="gameState.gameOver"
   />
+  <RoundBoostersDialog
+    :boosters="roundBoosters"
+    @confirm="onSelectRoundBooster"
+  />
   <section class="section">
     <div class="tile is-ancestor">
       <div class="tile is-parent">
@@ -14,6 +18,7 @@
           :is-active="player.id === gameState.currentPlayer?.id"
           :allowed-actions="gameState.allowedActions"
           @buildmine="viewState = PlayerViewState.BuildFirstMine"
+          @pass="onPass"
         />
       </div>
     </div>
@@ -57,6 +62,7 @@
 
 <script lang="ts" setup>
 import GameEndedDialog from '@/components/dialog/GameEndedDialog.vue';
+import RoundBoostersDialog from '@/components/dialog/RoundBoostersDialog.vue';
 import BuildFirstMineTile from '@/components/game/BuildFirstMineTile.vue';
 import GameStatusTile from '@/components/game/GameStatusTile.vue';
 import PlayerInfoTile from '@/components/game/PlayerInfoTile.vue';
@@ -73,6 +79,8 @@ import {
   GameAction,
   Observer,
   Player,
+  Round,
+  RoundBooster,
   StructureType,
 } from '@gaia-project/engine';
 import {
@@ -83,7 +91,7 @@ import {
   MapHex,
   PlayerFactory,
 } from '@gaia-project/engine';
-import { reactive, ref } from 'vue';
+import { computed, reactive, ref } from 'vue';
 
 interface GameState {
   allowedActions: Set<GameAction>;
@@ -103,6 +111,7 @@ const gameState = reactive<GameState>({
 const viewState = ref<PlayerViewState>(PlayerViewState.Players);
 const highlightStatus = ref<HexHighlightStatus>(HexHighlightStatus.Neutral);
 const renderWindow = ref<InstanceType<typeof RenderWindow> | null>();
+const roundBoosters = computed(() => game.context.roundBoosters);
 
 const currentHex = ref<MapHex | undefined>();
 const events = new Observer();
@@ -160,5 +169,13 @@ async function onHexClick(mapHex: MapHex): Promise<void> {
   } catch (error) {
     await store.dispatch(Action.ToastError, (error as Error).message);
   }
+}
+
+function onPass() {
+  // TODO: Show round booster dialog.
+}
+
+function onSelectRoundBooster(roundBooster: RoundBooster) {
+  console.log(roundBooster);
 }
 </script>

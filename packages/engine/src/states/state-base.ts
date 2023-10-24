@@ -5,6 +5,7 @@ import {
   GameContext,
   GameState,
   MapHex,
+  RoundBooster,
   State,
 } from '../interfaces';
 
@@ -23,7 +24,7 @@ export abstract class StateBase implements State {
   abstract readonly currentState: GameState;
   abstract init(): void;
 
-  buildMine(_location: MapHex): void {
+  buildMine(location: MapHex): void {
     throw ActionNotSupportedError;
   }
 
@@ -55,19 +56,7 @@ export abstract class StateBase implements State {
     throw ActionNotSupportedError;
   }
 
-  pass(): void {
-    throw ActionNotSupportedError;
-  }
-
-  completeGaiaProjects(): void {
-    throw ActionNotSupportedError;
-  }
-
-  doRoundCleanup(): void {
-    throw ActionNotSupportedError;
-  }
-
-  doEndGameScoring(): void {
+  chooseRoundBoosterAndPass(roundBooster: RoundBooster): void {
     throw ActionNotSupportedError;
   }
 }

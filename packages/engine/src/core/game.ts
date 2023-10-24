@@ -1,4 +1,4 @@
-import { EventArgs, FactionType, Map } from '..';
+import { EventArgs, FactionType, Map, RoundBooster } from '..';
 import {
   ErrorCode,
   EventHandler,
@@ -23,6 +23,7 @@ import {
   GameContextSchema,
   SerializedGameContext,
 } from './game-context';
+import { RoundBoosters } from './round-boosters';
 
 export class Game implements State {
   private readonly _events: Observer;
@@ -59,6 +60,12 @@ export class Game implements State {
 
     // Initialize the game context.
     this._context = new GameContextInstance(map, players);
+
+    // Select a random subset of round boosters.
+    // We need a number of boosters equal to the number of players + 3.
+    this._context.roundBoosters = [...RoundBoosters]
+      .sort(() => Math.random() - 0.5)
+      .slice(0, players.length + 3);
 
     // Set the initial state so that the players can place their first mines.
     this._currentState = new BuildFirstMinesState(
@@ -113,20 +120,8 @@ export class Game implements State {
     this._currentState.freeAction();
   }
 
-  pass(): void {
-    this._currentState.pass();
-  }
-
-  completeGaiaProjects(): void {
-    this._currentState.completeGaiaProjects();
-  }
-
-  doRoundCleanup(): void {
-    this._currentState.doRoundCleanup();
-  }
-
-  doEndGameScoring(): void {
-    this._currentState.doEndGameScoring();
+  chooseRoundBoosterAndPass(roundBooster: RoundBooster): void {
+    this._currentState.chooseRoundBoosterAndPass(roundBooster);
   }
 
   private changeState(newState: State) {

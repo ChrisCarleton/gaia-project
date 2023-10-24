@@ -94,13 +94,21 @@
         >
           Build Mine
         </a>
+
+        <a
+          v-if="allowedActions.has(GameAction.Pass)"
+          href="#"
+          class="card-footer-item"
+          @click="$emit('pass')"
+        >
+          Pass
+        </a>
       </footer>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import ToolTip from '@/components/ToolTip.vue';
 import { FactionTypeNames, PlanetTypeNames } from '@/constants';
 import { GameAction, Player } from '@gaia-project/engine';
 import { computed } from 'vue';
@@ -114,6 +122,7 @@ interface PlayerInfoTileProps {
 const props = defineProps<PlayerInfoTileProps>();
 defineEmits<{
   (e: 'buildmine'): void;
+  (e: 'pass'): void;
 }>();
 
 const factionName = computed(
