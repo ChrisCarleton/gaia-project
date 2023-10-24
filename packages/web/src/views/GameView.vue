@@ -1,5 +1,9 @@
 <template>
   <!-- <PageTitle title="Game Test" /> -->
+  <GameEndedDialog
+    :player-rankings="gameState.playerRankings"
+    :visible="gameState.gameOver"
+  />
   <section class="section">
     <div class="tile is-ancestor">
       <div class="tile is-parent is-12">
@@ -50,6 +54,7 @@
 </template>
 
 <script lang="ts" setup>
+import GameEndedDialog from '@/components/dialog/GameEndedDialog.vue';
 import BuildFirstMineTile from '@/components/game/BuildFirstMineTile.vue';
 import GameStatusTile from '@/components/game/GameStatusTile.vue';
 import PlayerInfoTile from '@/components/game/PlayerInfoTile.vue';
@@ -81,6 +86,8 @@ import { reactive, ref } from 'vue';
 interface GameState {
   allowedActions: Set<GameAction>;
   currentPlayer?: Player;
+  gameOver: boolean;
+  playerRankings?: Readonly<Player[]>;
   round: number;
 }
 
@@ -88,6 +95,7 @@ const store = useStore();
 
 const gameState = reactive<GameState>({
   allowedActions: new Set<GameAction>([]),
+  gameOver: false,
   round: 0,
 });
 const viewState = ref<PlayerViewState>(PlayerViewState.Players);
@@ -108,6 +116,14 @@ events.subscribe(EventType.AwaitingPlayerInput, (e) => {
 events.subscribe(EventType.MineBuilt, (e) => {
   if (e.type === EventType.MineBuilt) {
     renderWindow.value?.addStructure(e.location, e.player, StructureType.Mine);
+  }
+});
+
+events.subscribe(EventType.GameEnded, (e) => {
+  if (e.type === EventType.GameEnded) {
+    gameState.playerRankings = e.playerRanking;
+    gameState.gameOver = true;
+    viewState.value = PlayerViewState.Players;
   }
 });
 

@@ -9,6 +9,7 @@ import {
   GameState,
   MapHex,
 } from '../interfaces';
+import { GameCompletedState } from './game-completed-state';
 import { IncomePhaseState } from './income-phase-state';
 import { StateBase } from './state-base';
 
@@ -94,7 +95,8 @@ export class BuildFirstMinesState extends StateBase {
         );
         if (this.options.turnIndex === -1) {
           this.changeState(
-            new IncomePhaseState(this.context, this.events, this.changeState),
+            new GameCompletedState(this.context, this.events, this.changeState),
+            // new IncomePhaseState(this.context, this.events, this.changeState),
           );
           return;
         } else {
@@ -105,7 +107,8 @@ export class BuildFirstMinesState extends StateBase {
       }
     } else {
       this.changeState(
-        new IncomePhaseState(this.context, this.events, this.changeState),
+        new GameCompletedState(this.context, this.events, this.changeState),
+        // new IncomePhaseState(this.context, this.events, this.changeState),
       );
       return;
     }

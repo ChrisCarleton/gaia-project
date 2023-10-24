@@ -183,7 +183,7 @@ export class Game implements State {
    */
   private onAwaitingPlayerInput(eventArgs: EventArgs) {
     if (this._context && eventArgs.type === EventType.AwaitingPlayerInput) {
-      this._context.currentPlayer = eventArgs.player;
+      if (eventArgs.player) this._context.currentPlayer = eventArgs.player;
       this._context.allowedActions = eventArgs.allowedActions;
     }
   }

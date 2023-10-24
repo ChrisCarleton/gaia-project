@@ -130,7 +130,6 @@ export class SceneRenderer {
 
   private initMap() {
     this.game.context.map.hexes().forEach((mapHex) => {
-      const [q, r] = mapHex.location;
       const hexMesh = createMapHex(HexRadius);
       this.objLocations[hexMesh.id] = mapHex;
       const v = mapCoordsToWorldCoords(mapHex.location);

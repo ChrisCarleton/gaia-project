@@ -198,6 +198,7 @@ export interface GameContext {
 }
 
 export enum GameState {
+  GameEnded = 'gameEnded',
   GameNotStarted = 'gameNotStarted',
   BuildFirstMines = 'pickFirstMines',
   IncomePhase = 'incomePhase',
