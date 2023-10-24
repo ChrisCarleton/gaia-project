@@ -1,5 +1,6 @@
 import { PlanetType } from '@gaia-project/engine';
 import {
+  Clock,
   Material,
   Mesh,
   MeshPhongMaterial,
@@ -14,16 +15,21 @@ import { Sprite } from '..';
 const textureLoader = new TextureLoader();
 
 class PlanetSprite implements Sprite {
-  constructor(readonly mesh: Mesh) {}
+  private readonly clock: Clock;
+
+  constructor(readonly mesh: Mesh) {
+    this.clock = new Clock(true);
+  }
 
   animate(): void {
-    this.mesh.rotateY(0.005);
+    this.mesh.rotateY(0.25 * this.clock.getDelta());
+    this.mesh.rotateX(0.01 * this.clock.getDelta());
   }
 }
 
 const PlanetMaterials: Record<PlanetType, Material> = {
-  [PlanetType.Desert]: new MeshPhysicalMaterial({
-    color: 0xe4ed66,
+  [PlanetType.Desert]: new MeshPhongMaterial({
+    map: textureLoader.load('/desert.png'),
     reflectivity: 0.9,
     emissive: 0.2,
   }),
@@ -32,30 +38,28 @@ const PlanetMaterials: Record<PlanetType, Material> = {
     reflectivity: 0.9,
     emissive: 0.8,
   }),
-  [PlanetType.Ice]: new MeshPhysicalMaterial({
-    color: 0xffffff,
-    reflectivity: 0.9,
-    emissive: 0.8,
+  [PlanetType.Ice]: new MeshPhongMaterial({
+    map: textureLoader.load('/ice.png'),
+    reflectivity: 100.9,
   }),
-  [PlanetType.Oxide]: new MeshPhysicalMaterial({
-    color: 0xde0030,
-    reflectivity: 0.9,
-    emissive: 0.2,
+  [PlanetType.Oxide]: new MeshPhongMaterial({
+    map: textureLoader.load('/oxide.png'),
+    reflectivity: 0.01,
+    // emissive: 0x880000,
+    // emissiveIntensity: 0.02,
   }),
-  [PlanetType.Swamp]: new MeshPhysicalMaterial({
-    color: 0x6c6e44,
-    reflectivity: 0.9,
-    emissive: 0.2,
+  [PlanetType.Swamp]: new MeshPhongMaterial({
+    map: textureLoader.load('/swamp.png'),
+    reflectivity: 0.2,
   }),
   [PlanetType.Terra]: new MeshPhongMaterial({
     map: textureLoader.load('/earth2.jpg'),
     reflectivity: 0.8,
     emissive: 0.8,
   }),
-  [PlanetType.Titanium]: new MeshPhysicalMaterial({
-    color: 0x4a4949,
-    reflectivity: 0.9,
-    emissive: 0.7,
+  [PlanetType.Titanium]: new MeshPhongMaterial({
+    map: textureLoader.load('/titanium.png'),
+    reflectivity: 1000.0,
   }),
   [PlanetType.Transdim]: new MeshPhongMaterial({
     transparent: true,
@@ -64,10 +68,11 @@ const PlanetMaterials: Record<PlanetType, Material> = {
     reflectivity: 0.9,
     emissive: 1,
   }),
-  [PlanetType.Volcanic]: new MeshPhysicalMaterial({
-    color: 0xff6912,
+  [PlanetType.Volcanic]: new MeshPhongMaterial({
+    map: textureLoader.load('/volcanic.png'),
     reflectivity: 0.9,
-    emissive: 1,
+    emissiveIntensity: 0.4,
+    emissive: 0xff4400,
   }),
 };
 

@@ -7,6 +7,7 @@ export enum ErrorCode {
   // State related errors
   ActionNotSupportedNow,
   GameAlreadyBegun,
+  GameNotStarted,
 
   // Invalid action errors
   InvalidMinePlacement,

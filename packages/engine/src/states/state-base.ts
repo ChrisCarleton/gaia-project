@@ -1,6 +1,12 @@
 import { ErrorCode, GPError } from '../errors';
 import { Observer } from '../events';
-import { GameContext, GameState, MapHex, State } from '../interfaces';
+import {
+  ChangeStateFunction,
+  GameContext,
+  GameState,
+  MapHex,
+  State,
+} from '../interfaces';
 
 const ActionNotSupportedError = new GPError(
   ErrorCode.ActionNotSupportedNow,
@@ -11,10 +17,11 @@ export abstract class StateBase implements State {
   constructor(
     protected readonly context: GameContext,
     protected readonly events: Observer,
-    protected readonly changeState: (nextState: State) => void,
+    protected readonly changeState: ChangeStateFunction,
   ) {}
 
   abstract readonly currentState: GameState;
+  abstract init(): void;
 
   buildMine(_location: MapHex): void {
     throw ActionNotSupportedError;
@@ -49,10 +56,6 @@ export abstract class StateBase implements State {
   }
 
   pass(): void {
-    throw ActionNotSupportedError;
-  }
-
-  doIncome(): void {
     throw ActionNotSupportedError;
   }
 

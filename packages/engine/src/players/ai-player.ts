@@ -4,8 +4,8 @@ import { PlayerBase } from './player-base';
 export class AIPlayer extends PlayerBase {
   private _name = 'beep-boop';
 
-  constructor(faction: Faction, events: Observer) {
-    super(faction, events);
+  constructor(id: string, faction: Faction, events: Observer) {
+    super(id, faction, events);
   }
 
   get name(): string {

@@ -1,5 +1,6 @@
 import { Faction, Observer } from '..';
 import { Ambas } from './ambas';
+import { BalTAks } from './bal-t-aks';
 import { FactionType } from './faction-type';
 import { Terrans } from './terrans';
 
@@ -9,6 +10,7 @@ export class FactionFactory {
     Record<FactionType, (events: Observer) => Faction>
   > = {
     [FactionType.Ambas]: (e) => new Ambas(e),
+    [FactionType.BalTaks]: (e) => new BalTAks(e),
     [FactionType.Terrans]: (e) => new Terrans(e),
   };
 

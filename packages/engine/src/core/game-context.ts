@@ -1,4 +1,7 @@
+import { z } from 'zod';
+
 import {
+  GameAction,
   GameContext,
   Map,
   Player,
@@ -7,11 +10,17 @@ import {
   RoundBooster,
 } from '../interfaces';
 
+export const GameContextSchema = z.object({});
+export type SerializedGameContext = z.infer<typeof GameContextSchema>;
+
 export class GameContextInstance implements GameContext {
   private _currentRound: number;
   private _players: Player[];
   private _rounds: Round[];
   private _researchBoard: ResearchBoard;
+
+  private _currentPlayer: Player | undefined;
+  private _allowedActions: Readonly<GameAction[]> = [];
 
   constructor(
     readonly map: Map,
@@ -56,5 +65,24 @@ export class GameContextInstance implements GameContext {
 
   get researchBoard(): Readonly<ResearchBoard> {
     return this._researchBoard;
+  }
+
+  get currentPlayer(): Player | undefined {
+    return this._currentPlayer;
+  }
+  set currentPlayer(val: Player | undefined) {
+    this._currentPlayer = val;
+  }
+
+  get allowedActions(): Readonly<GameAction[]> {
+    return this._allowedActions;
+  }
+  set allowedActions(val: Readonly<GameAction[]>) {
+    this._allowedActions = val;
+  }
+
+  toJSON(): Record<string, unknown> {
+    // TODO: Serialize!
+    return {};
   }
 }

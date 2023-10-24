@@ -1,7 +1,7 @@
 <template>
   <PageLoading v-if="isLoading"></PageLoading>
   <div v-else>
-    <NavBar></NavBar>
+    <NavBar />
     <RouterView></RouterView>
   </div>
   <ToastGroup></ToastGroup>

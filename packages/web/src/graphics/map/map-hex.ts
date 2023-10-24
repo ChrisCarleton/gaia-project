@@ -3,6 +3,7 @@ import {
   BufferGeometry,
   LineBasicMaterial,
   LineSegments,
+  Matrix4,
   Mesh,
   MeshPhongMaterial,
 } from 'three';
@@ -145,6 +146,36 @@ function getHighlightGeometry(radius: number): BufferGeometry {
   return geometry;
 }
 
+export enum HexHighlightStatus {
+  Neutral,
+  Good,
+  Bad,
+}
+
+export const HexHighlightMaterial = {
+  [HexHighlightStatus.Neutral]: new MeshPhongMaterial({
+    transparent: true,
+    opacity: 0.3,
+    color: 0xffffff,
+    reflectivity: 0.6,
+    emissive: 0.6,
+  }),
+  [HexHighlightStatus.Good]: new MeshPhongMaterial({
+    transparent: true,
+    opacity: 0.3,
+    color: 0x00ff00,
+    reflectivity: 0.6,
+    emissive: 0.6,
+  }),
+  [HexHighlightStatus.Bad]: new MeshPhongMaterial({
+    transparent: true,
+    opacity: 0.3,
+    color: 0xff0000,
+    reflectivity: 0.6,
+    emissive: 0.6,
+  }),
+} as const;
+
 export function createMapHex(radius: number): LineSegments {
   const geometry = getHexGeometry(radius);
   return new LineSegments(
@@ -155,12 +186,6 @@ export function createMapHex(radius: number): LineSegments {
 
 export function createHighlightHex(radius: number): Sprite {
   const geometry = getHighlightGeometry(radius);
-  const material = new MeshPhongMaterial({
-    transparent: true,
-    opacity: 0.3,
-    color: 0xffffff,
-    reflectivity: 0.6,
-    emissive: 0.6,
-  });
+  const material = HexHighlightMaterial[HexHighlightStatus.Neutral];
   return new HightlightHexSprite(new Mesh(geometry, material));
 }

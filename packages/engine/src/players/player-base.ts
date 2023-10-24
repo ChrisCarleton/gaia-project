@@ -28,6 +28,7 @@ export abstract class PlayerBase implements Player {
   protected scoringTrackPositionB: number;
 
   constructor(
+    readonly id: string,
     readonly faction: Faction,
     protected readonly events: Observer,
   ) {
@@ -67,6 +68,7 @@ export abstract class PlayerBase implements Player {
 
     events.subscribe(EventType.IncomeGained, this.onIncomeReceived);
     events.subscribe(EventType.ResourcesSpent, this.onResourcesSpent);
+    events.subscribe(EventType.VPAwarded, this.onVPAwarded.bind(this));
   }
 
   abstract name: string;
@@ -103,7 +105,7 @@ export abstract class PlayerBase implements Player {
   }
 
   private onIncomeReceived(e: EventArgs): void {
-    if (e.player === this && e.type === EventType.IncomeGained) {
+    if (e.type === EventType.IncomeGained && e.player.id === this.id) {
       this._resources.credits += e.income.credits ?? 0;
       this._resources.knowledge += e.income.knowledge ?? 0;
       this._resources.ore += e.income.ore ?? 0;
@@ -134,11 +136,17 @@ export abstract class PlayerBase implements Player {
   }
 
   private onResourcesSpent(e: EventArgs): void {
-    if (e.player === this && e.type === EventType.ResourcesSpent) {
+    if (e.type === EventType.ResourcesSpent && e.player.id === this.id) {
       this._resources.credits -= e.resources.credits ?? 0;
       this._resources.knowledge -= e.resources.knowledge ?? 0;
       this._resources.ore -= e.resources.ore ?? 0;
       this._resources.qic -= e.resources.qic ?? 0;
+    }
+  }
+
+  private onVPAwarded(e: EventArgs): void {
+    if (e.type === EventType.VPAwarded && e.player.id === this.id) {
+      this._vp += e.vp;
     }
   }
 }
