@@ -6,18 +6,7 @@
   />
   <section class="section">
     <div class="tile is-ancestor">
-      <div class="tile is-parent is-12">
-        <GameStatusTile
-          :current-player="gameState.currentPlayer"
-          :round="gameState.round"
-        />
-      </div>
-    </div>
-    <div class="tile is-ancestor">
-      <div
-        v-if="viewState === PlayerViewState.Players"
-        class="tile is-parent is-vertical is-2"
-      >
+      <div class="tile is-parent">
         <PlayerInfoTile
           v-for="player in game.context.players"
           :key="player.name"
@@ -26,6 +15,19 @@
           :allowed-actions="gameState.allowedActions"
           @buildmine="viewState = PlayerViewState.BuildFirstMine"
         />
+      </div>
+    </div>
+    <div class="tile is-ancestor">
+      <div
+        v-if="viewState === PlayerViewState.Players"
+        class="tile is-parent is-vertical is-2"
+      >
+        <div class="tile is-parent is-12">
+          <GameStatusTile
+            :current-player="gameState.currentPlayer"
+            :round="gameState.round"
+          />
+        </div>
         <!-- <MapInfoTile :highlighted-tile="currentHex" /> -->
       </div>
 
@@ -39,7 +41,7 @@
         />
       </div>
 
-      <div class="tile is-parent is-10">
+      <div class="tile is-parent is-8">
         <RenderWindow
           ref="renderWindow"
           class="tile is-child box"

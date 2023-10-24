@@ -1,17 +1,16 @@
 <template>
-  <div class="tile is-child card is-success">
-    <!-- Header -->
-    <div class="card-header">
-      <p class="card-header-title is-centered">{{ player.name }}</p>
-    </div>
-
-    <!-- Content Body -->
-    <div class="card-content content">
-      <div v-if="isActive" class="block content has-text-centered">
-        <span class="tag is-success">Active Player</span>
+  <div class="tile is-parent is-3">
+    <div class="tile is-child card">
+      <!-- Header -->
+      <div class="card-header">
+        <p class="card-header-title">{{ player.name }}</p>
+        <div v-if="isActive" class="card-header-icon">
+          <span class="tag is-success">Active Player</span>
+        </div>
       </div>
 
-      <div class="block">
+      <!-- Content Body -->
+      <div class="card-content content">
         <div class="level">
           <div class="level-left">
             <div class="level-item">
@@ -33,9 +32,7 @@
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="block">
         <span class="heading">Resources</span>
         <div class="level">
           <div class="level-item icon-text">
@@ -75,32 +72,30 @@
               <span class="is-family-code">{{ player.resources.qic }}</span>
             </abbr>
           </div>
-        </div>
 
-        <div class="level">
           <div class="level-item icon-text">
             <abbr title="Victory Points">
               <span class="icon">
                 <i class="fas fa-star"></i>
-                <span class="is-family-code">{{ player.vp }}</span>
               </span>
+              <span class="is-family-code">{{ player.vp }}</span>
             </abbr>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Footer -->
-    <footer v-if="isActive" class="card-footer">
-      <a
-        v-if="allowedActions.has(GameAction.BuildMine)"
-        href="#"
-        class="card-footer-item"
-        @click="$emit('buildmine')"
-      >
-        Build Mine
-      </a>
-    </footer>
+      <!-- Footer -->
+      <footer v-if="isActive" class="card-footer">
+        <a
+          v-if="allowedActions.has(GameAction.BuildMine)"
+          href="#"
+          class="card-footer-item"
+          @click="$emit('buildmine')"
+        >
+          Build Mine
+        </a>
+      </footer>
+    </div>
   </div>
 </template>
 
