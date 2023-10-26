@@ -6,6 +6,7 @@
   />
   <RoundBoostersDialog
     :boosters="roundBoosters"
+    :visible="gameState.selectingRoundBooster"
     @confirm="onSelectRoundBooster"
   />
   <section class="section">
@@ -16,21 +17,20 @@
           :key="player.name"
           :player="player"
           :is-active="player.id === gameState.currentPlayer?.id"
-          :allowed-actions="gameState.allowedActions"
-          @buildmine="viewState = PlayerViewState.BuildFirstMine"
-          @pass="onPass"
         />
       </div>
     </div>
     <div class="tile is-ancestor">
       <div
         v-if="viewState === PlayerViewState.Players"
-        class="tile is-parent is-vertical is-2"
+        class="tile is-parent is-vertical is-4"
       >
-        <div class="tile is-parent is-12">
-          <GameStatusTile
+        <div class="tile is-parent">
+          <ActionMenuTile
             :current-player="gameState.currentPlayer"
-            :round="gameState.round"
+            :allowed-actions="gameState.allowedActions"
+            @buildmine="viewState = PlayerViewState.BuildFirstMine"
+            @pass="onPass"
           />
         </div>
         <!-- <MapInfoTile :highlighted-tile="currentHex" /> -->
@@ -38,7 +38,7 @@
 
       <div
         v-else-if="viewState === PlayerViewState.BuildFirstMine"
-        class="tile is-parent is-2"
+        class="tile is-parent is-4"
       >
         <BuildFirstMineTile
           :player="gameState.currentPlayer!"
@@ -63,8 +63,8 @@
 <script lang="ts" setup>
 import GameEndedDialog from '@/components/dialog/GameEndedDialog.vue';
 import RoundBoostersDialog from '@/components/dialog/RoundBoostersDialog.vue';
+import ActionMenuTile from '@/components/game/ActionMenuTile.vue';
 import BuildFirstMineTile from '@/components/game/BuildFirstMineTile.vue';
-import GameStatusTile from '@/components/game/GameStatusTile.vue';
 import PlayerInfoTile from '@/components/game/PlayerInfoTile.vue';
 import RenderWindow from '@/components/game/RenderWindow.vue';
 import { HexHighlightStatus } from '@/graphics/map';
@@ -77,9 +77,8 @@ import {
 import {
   EventType,
   GameAction,
-  Observer,
+  LocalObserver,
   Player,
-  Round,
   RoundBooster,
   StructureType,
 } from '@gaia-project/engine';
@@ -99,6 +98,7 @@ interface GameState {
   gameOver: boolean;
   playerRankings?: Readonly<Player[]>;
   round: number;
+  selectingRoundBooster: boolean;
 }
 
 const store = useStore();
@@ -107,6 +107,7 @@ const gameState = reactive<GameState>({
   allowedActions: new Set<GameAction>([]),
   gameOver: false,
   round: 0,
+  selectingRoundBooster: false,
 });
 const viewState = ref<PlayerViewState>(PlayerViewState.Players);
 const highlightStatus = ref<HexHighlightStatus>(HexHighlightStatus.Neutral);
@@ -114,7 +115,7 @@ const renderWindow = ref<InstanceType<typeof RenderWindow> | null>();
 const roundBoosters = computed(() => game.context.roundBoosters);
 
 const currentHex = ref<MapHex | undefined>();
-const events = new Observer();
+const events = new LocalObserver();
 
 events.subscribe(EventType.AwaitingPlayerInput, (e) => {
   if (e.type === EventType.AwaitingPlayerInput) {
@@ -172,7 +173,7 @@ async function onHexClick(mapHex: MapHex): Promise<void> {
 }
 
 function onPass() {
-  // TODO: Show round booster dialog.
+  gameState.selectingRoundBooster = true;
 }
 
 function onSelectRoundBooster(roundBooster: RoundBooster) {

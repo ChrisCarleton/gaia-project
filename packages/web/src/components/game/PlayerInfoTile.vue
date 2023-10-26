@@ -85,7 +85,7 @@
       </div>
 
       <!-- Footer -->
-      <footer v-if="isActive" class="card-footer">
+      <!-- <footer v-if="isActive" class="card-footer">
         <a
           v-if="allowedActions.has(GameAction.BuildMine)"
           href="#"
@@ -103,20 +103,19 @@
         >
           Pass
         </a>
-      </footer>
+      </footer> -->
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { FactionTypeNames, PlanetTypeNames } from '@/constants';
-import { GameAction, Player } from '@gaia-project/engine';
+import { Player } from '@gaia-project/engine';
 import { computed } from 'vue';
 
 interface PlayerInfoTileProps {
   player: Player;
   isActive: boolean;
-  allowedActions: Set<GameAction>;
 }
 
 const props = defineProps<PlayerInfoTileProps>();

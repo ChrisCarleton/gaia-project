@@ -1,5 +1,5 @@
 <template>
-  <div class="modal is-active">
+  <div v-if="visible" class="modal is-active">
     <div class="modal-background"></div>
     <div class="modal-card">
       <header class="modal-card-head">
@@ -68,10 +68,12 @@ import { ref } from 'vue';
 interface RoundBoostersDialogProps {
   boosters: RoundBooster[];
   showCancel?: boolean;
+  visible: boolean;
 }
 
 const props = withDefaults(defineProps<RoundBoostersDialogProps>(), {
   showCancel: true,
+  visible: false,
 });
 
 const selectedBoosterId = ref<number | undefined>();
@@ -129,7 +131,7 @@ function getBonusDescription(bonus: RoundBoosterBonus): string {
       } you have on the map.`;
 
     case RoundBoosterBonusType.Income:
-      return `As income, ${getIncomeString(bonus.income)} for this round.`;
+      return `As income, ${getIncomeString(bonus.income)} this round.`;
 
     default:
       return '';

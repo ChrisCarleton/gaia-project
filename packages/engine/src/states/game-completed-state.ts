@@ -5,7 +5,6 @@ import {
   GameState,
   Observer,
 } from '..';
-import { nextTick } from '../utils';
 import { StateBase } from './state-base';
 
 export class GameCompletedState extends StateBase {
@@ -22,36 +21,32 @@ export class GameCompletedState extends StateBase {
   }
 
   init(): void {
-    nextTick(() => {
-      // It's game over, man! Game over!!!
+    // It's game over, man! Game over!!!
 
-      // TODO: 1. Award VP for final scoring tiles.
-      // TODO: 2. Award VP for research progress.
+    // TODO: 1. Award VP for final scoring tiles.
+    // TODO: 2. Award VP for research progress.
 
-      // 3. Award VP for remaining resources.
-      for (const player of this.context.players) {
-        const { credits, knowledge, ore } = player.resources;
-        const resourceBonus =
-          Math.floor(credits / 3) +
-          Math.floor(knowledge / 3) +
-          Math.floor(ore / 3);
-        this.events.publish({
-          type: EventType.VPAwarded,
-          player,
-          vp: resourceBonus,
-          message: 'Remaining resources',
-        });
-      }
-
-      // 4. Sort players in descending order by VP. Boom! The winner is the first player in the array.
-      const playerRanking = [...this.context.players].sort(
-        (a, b) => b.vp - a.vp,
-      );
-
+    // 3. Award VP for remaining resources.
+    for (const player of this.context.players) {
+      const { credits, knowledge, ore } = player.resources;
+      const resourceBonus =
+        Math.floor(credits / 3) +
+        Math.floor(knowledge / 3) +
+        Math.floor(ore / 3);
       this.events.publish({
-        type: EventType.GameEnded,
-        playerRanking,
+        type: EventType.VPAwarded,
+        player,
+        vp: resourceBonus,
+        message: 'Remaining resources',
       });
+    }
+
+    // 4. Sort players in descending order by VP. Boom! The winner is the first player in the array.
+    const playerRanking = [...this.context.players].sort((a, b) => b.vp - a.vp);
+
+    this.events.publish({
+      type: EventType.GameEnded,
+      playerRanking,
     });
   }
 }

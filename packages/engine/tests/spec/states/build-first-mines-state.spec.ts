@@ -3,6 +3,7 @@ import {
   EventType,
   GameContext,
   GameState,
+  LocalObserver,
   Observer,
   Player,
   State,
@@ -17,7 +18,7 @@ import {
 } from '../../../src/states/build-first-mines-state';
 import { createTestContext, createTestPlayer } from '../../util';
 
-function createTestPlayers(events: Observer = new Observer()): Player[] {
+function createTestPlayers(events: Observer = new LocalObserver()): Player[] {
   const players: Player[] = [
     createTestPlayer({
       name: 'Paul',
@@ -55,7 +56,7 @@ function createTestState({
 }: CreateTestStateOptions): State {
   return new BuildFirstMinesState(
     context,
-    events ?? new Observer(),
+    events ?? new LocalObserver(),
     changeState ?? (() => {}),
     options ?? {
       pass: BuildFirstMinesPass.First,
@@ -66,7 +67,7 @@ function createTestState({
 
 describe('Build first mines state', () => {
   it('will signal to current player that they need to place a mine on initialization', () => {
-    const events = new Observer();
+    const events = new LocalObserver();
     const players = createTestPlayers(events);
     const context = createTestContext({ players });
     const state = createTestState({

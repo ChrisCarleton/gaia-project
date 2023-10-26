@@ -17,7 +17,6 @@ import {
   BuildFirstMinesState,
 } from '../states/build-first-mines-state';
 import { GameNotStartedState } from '../states/game-not-started-state';
-import { nextTick } from '../utils';
 import {
   GameContextInstance,
   GameContextSchema,
@@ -77,7 +76,7 @@ export class Game implements State {
         pass: BuildFirstMinesPass.First,
       },
     );
-    nextTick(() => this._currentState.init());
+    setTimeout(() => this._currentState.init(), 0);
   }
 
   subscribeToEvent(event: EventType, handler: EventHandler): void {
@@ -126,7 +125,7 @@ export class Game implements State {
 
   private changeState(newState: State) {
     this._currentState = newState;
-    nextTick(() => newState.init());
+    setTimeout(() => newState.init(), 0);
   }
 
   toJSON(): SerializedGameContext {

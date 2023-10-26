@@ -2,14 +2,15 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 
 import { MapHex, Player } from '../../../src';
 import {
+  EventArgs,
   EventType,
-  IncomeGainedEventArgs,
+  LocalObserver,
   Observer,
 } from '../../../src/events';
 
 describe('Observer class', () => {
   const player: DeepMockProxy<Player> = mockDeep<Player>();
-  const e: IncomeGainedEventArgs = {
+  const e: EventArgs = {
     type: EventType.IncomeGained,
     player,
     income: {
@@ -19,7 +20,7 @@ describe('Observer class', () => {
   let observer: Observer;
 
   beforeEach(() => {
-    observer = new Observer();
+    observer = new LocalObserver();
   });
 
   it('will respond to publish requests even if no listeners are subscribed', () => {

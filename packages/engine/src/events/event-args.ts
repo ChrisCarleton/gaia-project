@@ -5,6 +5,7 @@ import {
   MapHex,
   Player,
   Resources,
+  RoundBooster,
   StructureType,
 } from '../interfaces';
 
@@ -14,29 +15,30 @@ export enum EventType {
   MineBuilt = 'mineBuilt',
   IncomeGained = 'incomeGained',
   ResourcesSpent = 'resourcesSpent',
+  RoundBoosterSelected = 'roundBooster',
   StructureBuilt = 'structureBuilt',
   VPAwarded = 'vpAwarded',
 }
 
-export type AwaitingPlayerInputEventArgs = {
+type AwaitingPlayerInputEventArgs = {
   type: EventType.AwaitingPlayerInput;
   player: Player;
   gameState: GameState;
   allowedActions: GameAction[];
 };
 
-export type GameEndedEventArgs = {
+type GameEndedEventArgs = {
   type: EventType.GameEnded;
   playerRanking: Readonly<Player[]>;
 };
 
-export type MineBuiltEventArgs = {
+type MineBuiltEventArgs = {
   type: EventType.MineBuilt;
   player: Player;
   location: MapHex;
 };
 
-export type StructureBuiltEventArgs = {
+type StructureBuiltEventArgs = {
   type: EventType.StructureBuilt;
   player: Player;
   location: MapHex;
@@ -44,19 +46,25 @@ export type StructureBuiltEventArgs = {
   previousStructure?: StructureType;
 };
 
-export type IncomeGainedEventArgs = {
+type IncomeGainedEventArgs = {
   type: EventType.IncomeGained;
   player: Player;
   income: Income;
 };
 
-export type ResourcesSpentEventArgs = {
+type ResourcesSpentEventArgs = {
   type: EventType.ResourcesSpent;
   player: Player;
   resources: Partial<Resources>;
 };
 
-export type VPAwardedEventArgs = {
+type RoundBoosterSelectedEventArgs = {
+  type: EventType.RoundBoosterSelected;
+  player: Player;
+  roundBooster: RoundBooster;
+};
+
+type VPAwardedEventArgs = {
   type: EventType.VPAwarded;
   player: Player;
   vp: number;
@@ -69,5 +77,6 @@ export type EventArgs =
   | IncomeGainedEventArgs
   | MineBuiltEventArgs
   | ResourcesSpentEventArgs
+  | RoundBoosterSelectedEventArgs
   | StructureBuiltEventArgs
   | VPAwardedEventArgs;

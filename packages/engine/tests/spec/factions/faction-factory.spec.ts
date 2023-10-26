@@ -1,11 +1,16 @@
-import { FactionFactory, FactionType, Observer } from '../../../src';
+import {
+  FactionFactory,
+  FactionType,
+  LocalObserver,
+  Observer,
+} from '../../../src';
 import { Terrans } from '../../../src/factions/terrans';
 
 describe('Faction factory', () => {
   let events: Observer;
 
   beforeEach(() => {
-    events = new Observer();
+    events = new LocalObserver();
   });
 
   it('Will create a new faction based on the type parameter', () => {

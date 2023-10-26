@@ -8,7 +8,6 @@ import {
   Player,
   RoundBooster,
 } from '..';
-import { nextTick } from '../utils';
 import { StateBase } from './state-base';
 
 export class ChooseFirstRoundBoostersState extends StateBase {
@@ -27,13 +26,11 @@ export class ChooseFirstRoundBoostersState extends StateBase {
 
   init(): void {
     /* TODO: Request players to choose their round booster. */
-    nextTick(() => {
-      this.events.publish({
-        type: EventType.AwaitingPlayerInput,
-        gameState: GameState.ChooseFirstRoundBoosters,
-        allowedActions: [GameAction.Pass],
-        player: this.player,
-      });
+    this.events.publish({
+      type: EventType.AwaitingPlayerInput,
+      gameState: GameState.ChooseFirstRoundBoosters,
+      allowedActions: [GameAction.Pass],
+      player: this.player,
     });
   }
 

@@ -1,4 +1,4 @@
-import { Faction, Observer, Player } from '../../src';
+import { Faction, LocalObserver, Observer, Player } from '../../src';
 import { Terrans } from '../../src/factions/terrans';
 import { PlayerBase } from '../../src/players/player-base';
 
@@ -14,7 +14,7 @@ export class TestPlayer extends PlayerBase {
 
   constructor(options: Partial<TestPlayerOptions> = {}) {
     const { id, name, faction, events } = options;
-    const e = events ?? new Observer();
+    const e = events ?? new LocalObserver();
     super(id ?? '', faction ?? new Terrans(e), e);
     this.name = name ?? 'Testy McTesterson III';
   }
