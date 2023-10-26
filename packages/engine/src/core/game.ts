@@ -37,6 +37,10 @@ export class Game implements State {
       EventType.AwaitingPlayerInput,
       this.onAwaitingPlayerInput.bind(this),
     );
+    events.subscribe(
+      EventType.RoundBoosterSelected,
+      this.onRoundBoosterSelected.bind(this),
+    );
   }
 
   get currentState(): GameState {
@@ -120,6 +124,7 @@ export class Game implements State {
   }
 
   chooseRoundBoosterAndPass(roundBooster: RoundBooster): void {
+    console.log(typeof this._currentState);
     this._currentState.chooseRoundBoosterAndPass(roundBooster);
   }
 
@@ -175,10 +180,31 @@ export class Game implements State {
   /*
    * Event handlers
    */
-  private onAwaitingPlayerInput(eventArgs: EventArgs) {
-    if (this._context && eventArgs.type === EventType.AwaitingPlayerInput) {
-      if (eventArgs.player) this._context.currentPlayer = eventArgs.player;
-      this._context.allowedActions = eventArgs.allowedActions;
+  private onAwaitingPlayerInput(e: EventArgs) {
+    if (this._context && e.type === EventType.AwaitingPlayerInput) {
+      if (e.player) this._context.currentPlayer = e.player;
+      this._context.allowedActions = e.allowedActions;
+    }
+  }
+
+  private onRoundBoosterSelected(e: EventArgs): void {
+    if (this._context && e.type === EventType.RoundBoosterSelected) {
+      const index = this._context.roundBoosters.findIndex(
+        (booster) => booster.id === e.roundBooster.id,
+      );
+
+      if (index === -1) {
+        throw new GPError(
+          ErrorCode.RoundBoosterUnavailable,
+          'The round booster you have selected is unavailable at this time.',
+        );
+      }
+
+      this._context.roundBoosters.splice(index, 1);
+
+      if (e.exchangeFor) {
+        this._context.roundBoosters.push(e.exchangeFor);
+      }
     }
   }
 

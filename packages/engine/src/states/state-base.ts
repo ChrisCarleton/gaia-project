@@ -56,10 +56,7 @@ export abstract class StateBase implements State {
     throw ActionNotSupportedError;
   }
 
-  chooseRoundBoosterAndPass(
-    roundBooster: RoundBooster,
-    exchangeFor?: RoundBooster,
-  ): void {
+  chooseRoundBoosterAndPass(roundBooster: RoundBooster): void {
     throw ActionNotSupportedError;
   }
 }

@@ -177,6 +177,6 @@ function onPass() {
 }
 
 function onSelectRoundBooster(roundBooster: RoundBooster) {
-  console.log(roundBooster);
+  game.chooseRoundBoosterAndPass(roundBooster);
 }
 </script>

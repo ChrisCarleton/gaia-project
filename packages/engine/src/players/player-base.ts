@@ -69,6 +69,10 @@ export abstract class PlayerBase implements Player {
     events.subscribe(EventType.IncomeGained, this.onIncomeReceived);
     events.subscribe(EventType.ResourcesSpent, this.onResourcesSpent);
     events.subscribe(EventType.VPAwarded, this.onVPAwarded.bind(this));
+    events.subscribe(
+      EventType.RoundBoosterSelected,
+      this.onRoundBoosterSelected.bind(this),
+    );
   }
 
   abstract name: string;
@@ -141,6 +145,12 @@ export abstract class PlayerBase implements Player {
       this._resources.knowledge -= e.resources.knowledge ?? 0;
       this._resources.ore -= e.resources.ore ?? 0;
       this._resources.qic -= e.resources.qic ?? 0;
+    }
+  }
+
+  private onRoundBoosterSelected(e: EventArgs): void {
+    if (e.type === EventType.RoundBoosterSelected) {
+      this._roundBooster = e.roundBooster;
     }
   }
 

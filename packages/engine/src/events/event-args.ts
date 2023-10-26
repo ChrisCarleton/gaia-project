@@ -62,6 +62,7 @@ type RoundBoosterSelectedEventArgs = {
   type: EventType.RoundBoosterSelected;
   player: Player;
   roundBooster: RoundBooster;
+  exchangeFor?: RoundBooster;
 };
 
 type VPAwardedEventArgs = {

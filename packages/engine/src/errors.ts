@@ -11,6 +11,7 @@ export enum ErrorCode {
 
   // Invalid action errors
   InvalidMinePlacement,
+  RoundBoosterUnavailable,
 }
 
 export class GPError extends Error {

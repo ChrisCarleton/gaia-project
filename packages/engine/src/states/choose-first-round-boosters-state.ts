@@ -8,6 +8,7 @@ import {
   Player,
   RoundBooster,
 } from '..';
+import { GameCompletedState } from './game-completed-state';
 import { StateBase } from './state-base';
 
 export class ChooseFirstRoundBoostersState extends StateBase {
@@ -25,7 +26,7 @@ export class ChooseFirstRoundBoostersState extends StateBase {
   }
 
   init(): void {
-    /* TODO: Request players to choose their round booster. */
+    console.log('State changed!');
     this.events.publish({
       type: EventType.AwaitingPlayerInput,
       gameState: GameState.ChooseFirstRoundBoosters,
@@ -34,5 +35,37 @@ export class ChooseFirstRoundBoostersState extends StateBase {
     });
   }
 
-  chooseRoundBoosterAndPass(roundBooster: RoundBooster): void {}
+  chooseRoundBoosterAndPass(roundBooster: RoundBooster): void {
+    console.log('Round booster selected', roundBooster);
+    this.events.publish({
+      type: EventType.RoundBoosterSelected,
+      player: this.player,
+      roundBooster,
+    });
+
+    const index = this.context.players.findIndex(
+      (player) => player.id === this.player.id,
+    );
+    if (index === -1) {
+      // This should never happen.
+      throw new Error(
+        'Unexpected error. The current player could not be found in the game context.',
+      );
+    }
+
+    if (index > 0) {
+      this.changeState(
+        new ChooseFirstRoundBoostersState(
+          this.context,
+          this.events,
+          this.changeState,
+          this.context.players[index - 1],
+        ),
+      );
+    } else {
+      this.changeState(
+        new GameCompletedState(this.context, this.events, this.changeState),
+      );
+    }
+  }
 }
