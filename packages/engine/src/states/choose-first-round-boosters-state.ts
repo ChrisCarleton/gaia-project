@@ -8,6 +8,7 @@ import {
   Player,
   RoundBooster,
 } from '..';
+import { SerializedState } from '../core/serialization';
 import { StateBase } from './state-base';
 
 export class ChooseFirstRoundBoostersState extends StateBase {
@@ -35,4 +36,13 @@ export class ChooseFirstRoundBoostersState extends StateBase {
   }
 
   chooseRoundBoosterAndPass(roundBooster: RoundBooster): void {}
+
+  toJSON(): SerializedState {
+    return {
+      type: GameState.ChooseFirstRoundBoosters,
+      player: this.context.players.findIndex(
+        (player) => player.id === this.player.id,
+      ),
+    };
+  }
 }

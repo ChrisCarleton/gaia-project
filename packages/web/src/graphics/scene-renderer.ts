@@ -138,7 +138,7 @@ export class SceneRenderer {
       this.scene.add(hexMesh);
 
       if (mapHex.planet) {
-        const planet = createPlanet(3.5, mapHex.planet, v);
+        const planet = createPlanet(3.5, mapHex.planet.type, v);
         this.sprites.push(planet);
         this.objLocations[planet.mesh.id] = mapHex;
         this.scene.add(planet.mesh);

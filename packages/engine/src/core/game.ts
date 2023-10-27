@@ -1,4 +1,4 @@
-import { EventArgs, FactionType, Map, RoundBooster } from '..';
+import { EventArgs, FactionType, Map, PlayerFactory, RoundBooster } from '..';
 import {
   ErrorCode,
   EventHandler,
@@ -17,30 +17,80 @@ import {
   BuildFirstMinesState,
 } from '../states/build-first-mines-state';
 import { GameNotStartedState } from '../states/game-not-started-state';
+import { loadState } from '../states/load-state';
+import { DefaultGameContext } from './game-context';
+import { GameMap } from './maps';
+import { RoundBoosters } from './round-boosters';
 import {
-  GameContextInstance,
   GameContextSchema,
   SerializedGameContext,
-} from './game-context';
-import { RoundBoosters } from './round-boosters';
+  SerializedState,
+} from './serialization';
+
+type ReloadOptions = {
+  gameData: SerializedGameContext;
+  players: Player[];
+};
 
 export class Game implements State {
   private readonly _events: Observer;
   private _context: GameContext | undefined;
+  private _state: State;
 
-  private _currentState: State;
-
-  private constructor(events: Observer, context?: GameContext) {
+  private constructor(events: Observer, reload?: ReloadOptions) {
     this._events = events;
-    this._currentState = new GameNotStartedState();
     events.subscribe(
       EventType.AwaitingPlayerInput,
       this.onAwaitingPlayerInput.bind(this),
     );
+    this._state = new GameNotStartedState();
+
+    if (reload) {
+      this._context = this.reloadGameContext(reload);
+      this._state = loadState(
+        reload.gameData.currentState,
+        this._context,
+        events,
+        this.changeState,
+      );
+    }
+
+    if (!this._state) {
+      this._state = new GameNotStartedState();
+    }
+  }
+
+  private reloadGameContext({ gameData, players }: ReloadOptions): GameContext {
+    const map = new GameMap(
+      gameData.map.map((hex) => {
+        const { q, r } = hex.location;
+        return {
+          location: [q, r],
+          planet: hex.planet
+            ? {
+                type: hex.planet.type,
+                hasLantidMine: hex.planet.hasLantidMine,
+                player: hex.planet.player
+                  ? players[hex.planet.player]
+                  : undefined,
+                structure: hex.planet.structure,
+              }
+            : undefined,
+          hasIvitsStation: hex.hasIvitsStation,
+        };
+      }),
+    );
+
+    const context = new DefaultGameContext(map, players);
+
+    context.currentPlayer = players[gameData.currentPlayer];
+    context.currentRound = gameData.currentRound;
+
+    return context;
   }
 
   get currentState(): GameState {
-    return this._currentState.currentState;
+    return this._state.currentState ?? GameState.GameNotStarted;
   }
 
   get context(): Readonly<GameContext> {
@@ -58,7 +108,7 @@ export class Game implements State {
     players = players.sort(() => Math.random() - 0.5);
 
     // Initialize the game context.
-    this._context = new GameContextInstance(map, players);
+    this._context = new DefaultGameContext(map, players);
 
     // Select a random subset of round boosters.
     // We need a number of boosters equal to the number of players + 3.
@@ -67,7 +117,7 @@ export class Game implements State {
       .slice(0, players.length + 3);
 
     // Set the initial state so that the players can place their first mines.
-    this._currentState = new BuildFirstMinesState(
+    this._state = new BuildFirstMinesState(
       this._context,
       this._events,
       this.changeState,
@@ -76,7 +126,7 @@ export class Game implements State {
         pass: BuildFirstMinesPass.First,
       },
     );
-    setTimeout(() => this._currentState.init(), 0);
+    setTimeout(() => this._state.init(), 0);
   }
 
   subscribeToEvent(event: EventType, handler: EventHandler): void {
@@ -88,48 +138,92 @@ export class Game implements State {
   }
 
   buildMine(location: MapHex): void {
-    this._currentState.buildMine(location);
+    this._state.buildMine(location);
   }
 
   startGaiaProject(): void {
-    this._currentState.startGaiaProject();
+    this._state.startGaiaProject();
   }
 
   upgradeStructure(): void {
-    this._currentState.upgradeStructure();
+    this._state.upgradeStructure();
   }
 
   formFederation(): void {
-    this._currentState.formFederation();
+    this._state.formFederation();
   }
 
   advanceResearch(): void {
-    this._currentState.advanceResearch();
+    this._state.advanceResearch();
   }
 
   powerOrQicAction(): void {
-    this._currentState.powerOrQicAction();
+    this._state.powerOrQicAction();
   }
 
   specialAction(): void {
-    this._currentState.specialAction();
+    this._state.specialAction();
   }
 
   freeAction(): void {
-    this._currentState.freeAction();
+    this._state.freeAction();
   }
 
   chooseRoundBoosterAndPass(roundBooster: RoundBooster): void {
-    this._currentState.chooseRoundBoosterAndPass(roundBooster);
+    this._state.chooseRoundBoosterAndPass(roundBooster);
+  }
+
+  serialize(): SerializedGameContext {
+    const playerIndexes: Record<string, number> = {};
+    this.context.players.forEach((player, index) => {
+      playerIndexes[player.id] = index;
+    });
+
+    return {
+      currentPlayer: this.context.currentPlayer
+        ? playerIndexes[this.context.currentPlayer.id]
+        : -1,
+      currentRound: this.context.currentRound,
+      currentState: this._state.toJSON(),
+      map: this.context.map.hexes().map((hex) => {
+        const [q, r] = hex.location;
+        return {
+          location: { q, r },
+          hasIvitsStation: hex.hasIvitsStation,
+          planet: hex.planet
+            ? {
+                type: hex.planet.type,
+                player: hex.planet.player
+                  ? playerIndexes[hex.planet.player.id]
+                  : undefined,
+                hasLantidMine: hex.planet.hasLantidMine,
+                structure: hex.planet.structure,
+              }
+            : undefined,
+        };
+      }),
+      players: this.context.players.map((player) => ({
+        faction: player.faction.factionType,
+        id: player.id,
+        name: player.name,
+        powerCycle: {
+          gaia: player.powerCycle.gaia,
+          l1: player.powerCycle.level1,
+          l2: player.powerCycle.level2,
+          l3: player.powerCycle.level3,
+        },
+        research: player.research,
+        resources: player.resources,
+        vp: player.vp,
+      })),
+    };
   }
 
   private changeState(newState: State) {
-    this._currentState = newState;
-    setTimeout(() => newState.init(), 0);
-  }
-
-  toJSON(): SerializedGameContext {
-    return {};
+    if (this._context) {
+      this._state = newState;
+      setTimeout(() => this._state.init(), 0);
+    }
   }
 
   private validatePlayers(players: Player[]): void {
@@ -191,11 +285,24 @@ export class Game implements State {
     return game;
   }
 
-  static loadGameFromContext(context: unknown, events: Observer): Game {
-    // TODO: Deserialize a serialized game context.
-    // return new GameContextInstance()
+  static resumeGame(
+    gameData: unknown,
+    playerFactory: PlayerFactory,
+    events: Observer,
+  ): Game {
+    const context = GameContextSchema.parse(gameData);
 
-    const parseResult = GameContextSchema.parse(context);
-    throw new Error('Not implemented.');
+    const players = context.players.map((playerData) =>
+      playerFactory.deserializePlayer(playerData),
+    );
+
+    return new Game(events, {
+      gameData: context,
+      players,
+    });
+  }
+
+  toJSON(): SerializedState {
+    return this._state.toJSON();
   }
 }

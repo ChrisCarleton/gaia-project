@@ -1,5 +1,6 @@
 import { FactionType } from '..';
 import { FactionFactory, Observer, Player } from '..';
+import { SerializedPlayer } from '../core/serialization';
 import { AIPlayer } from './ai-player';
 import { HumanPlayer } from './human-player';
 
@@ -23,5 +24,42 @@ export class PlayerFactory {
       this.events,
     );
     return new AIPlayer(id, factionEntity, this.events);
+  }
+
+  deserializePlayer(playerData: SerializedPlayer): Player {
+    const faction = this.factionFactory.createFaction(
+      playerData.faction,
+      this.events,
+    );
+
+    const player = new HumanPlayer(
+      playerData.id,
+      playerData.name,
+      faction,
+      this.events,
+    );
+
+    player.powerCycleManager.setValues({
+      gaia: playerData.powerCycle.gaia,
+      level1: playerData.powerCycle.l1,
+      level2: playerData.powerCycle.l2,
+      level3: playerData.powerCycle.l3,
+    });
+
+    player.research.ai = playerData.research.ai;
+    player.research.economics = playerData.research.economics;
+    player.research.gaia = playerData.research.gaia;
+    player.research.navigation = playerData.research.navigation;
+    player.research.science = playerData.research.science;
+    player.research.terraforming = playerData.research.terraforming;
+
+    player.resources.credits = playerData.resources.credits;
+    player.resources.knowledge = playerData.resources.knowledge;
+    player.resources.ore = playerData.resources.ore;
+    player.resources.qic = playerData.resources.qic;
+
+    player.vp = playerData.vp;
+
+    return player;
   }
 }

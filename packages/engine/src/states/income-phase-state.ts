@@ -7,6 +7,7 @@ import {
   Observer,
   RoundBoosterBonusType,
 } from '..';
+import { SerializedState } from '../core/serialization';
 import { StateBase } from './state-base';
 
 export class IncomePhaseState extends StateBase {
@@ -85,5 +86,11 @@ export class IncomePhaseState extends StateBase {
     }
 
     return currentValue;
+  }
+
+  toJSON(): SerializedState {
+    return {
+      type: GameState.IncomePhase,
+    };
   }
 }

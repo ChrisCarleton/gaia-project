@@ -1,6 +1,6 @@
 import { PowerCycle, PowerCycleManager } from '..';
 
-export class PowerCycleManagerInstance implements PowerCycleManager {
+export class DefaultPowerCycleManager implements PowerCycleManager {
   private readonly _powerCycle: PowerCycle;
 
   constructor(powerCycle?: PowerCycle) {
@@ -82,6 +82,13 @@ export class PowerCycleManagerInstance implements PowerCycleManager {
     return charged;
   }
 
+  setValues(values: PowerCycle): void {
+    this._powerCycle.gaia = values.gaia;
+    this._powerCycle.level1 = values.level1;
+    this._powerCycle.level2 = values.level2;
+    this._powerCycle.level3 = values.level3;
+  }
+
   get level1(): number {
     return this._powerCycle.level1;
   }
@@ -96,6 +103,10 @@ export class PowerCycleManagerInstance implements PowerCycleManager {
 
   get gaia(): number {
     return this._powerCycle.gaia;
+  }
+
+  get brainStonePosition(): 'gaia' | 1 | 2 | 3 | undefined {
+    return this._powerCycle.brainStonePosition;
   }
 
   get totalUncharged(): number {

@@ -14,31 +14,38 @@ import {
   ScoringTrackPositions,
   StructureType,
 } from '..';
-import { PowerCycleManagerInstance } from '../core/power-cycle-manager';
+import { DefaultPowerCycleManager } from '../core/default-power-cycle-manager';
+import { SerializedPlayer } from '../core/serialization';
 import { PlayerStructureDataInstance } from './player-structure-data';
 
 export abstract class PlayerBase implements Player {
-  protected readonly _research: ResearchProgress;
-  protected readonly _resources: Resources;
-  protected readonly _structures: Record<StructureType, PlayerStructureData>;
-  protected readonly _powerCycle: PowerCycleManager;
-  protected _roundBooster?: RoundBooster;
-  protected _vp: number;
-  protected scoringTrackPositionA: number;
-  protected scoringTrackPositionB: number;
+  protected readonly events;
 
-  constructor(
-    readonly id: string,
-    readonly faction: Faction,
-    protected readonly events: Observer,
-  ) {
-    this._powerCycle = new PowerCycleManagerInstance(
+  readonly id: string;
+  readonly faction: Faction;
+  readonly powerCycleManager: PowerCycleManager;
+  readonly research: ResearchProgress;
+  readonly resources: Resources;
+  readonly structuresMap: Record<StructureType, PlayerStructureData>;
+
+  vp: number;
+  roundBooster?: RoundBooster;
+  scoringTrackPositionA: number;
+  scoringTrackPositionB: number;
+
+  constructor(id: string, faction: Faction, events: Observer) {
+    this.id = id;
+    this.faction = faction;
+    this.events = events;
+
+    this.powerCycleManager = new DefaultPowerCycleManager(
       faction.startingPowerCycle,
     );
-    this._research = faction.startingResearch;
-    this._resources = faction.startingResources;
+
+    this.research = faction.startingResearch;
+    this.resources = faction.startingResources;
     const structureCounts = faction.startingStructures;
-    this._structures = {
+    this.structuresMap = {
       [StructureType.Academy]: new PlayerStructureDataInstance(
         structureCounts.academy,
       ),
@@ -64,7 +71,7 @@ export abstract class PlayerBase implements Player {
 
     this.scoringTrackPositionA = 0;
     this.scoringTrackPositionB = 0;
-    this._vp = 10;
+    this.vp = 10;
 
     events.subscribe(EventType.IncomeGained, this.onIncomeReceived);
     events.subscribe(EventType.ResourcesSpent, this.onResourcesSpent);
@@ -74,23 +81,11 @@ export abstract class PlayerBase implements Player {
   abstract name: string;
 
   get powerCycle(): Readonly<PowerCycle> {
-    return this._powerCycle;
-  }
-
-  get research(): Readonly<ResearchProgress> {
-    return this._research;
-  }
-
-  get resources(): Readonly<Resources> {
-    return this._resources;
+    return this.powerCycleManager;
   }
 
   get structures(): Readonly<PlayerStructures> {
-    return this._structures;
-  }
-
-  get roundBooster(): RoundBooster | undefined {
-    return this._roundBooster;
+    return this.structuresMap;
   }
 
   get scoringTrackPositions(): Readonly<ScoringTrackPositions> {
@@ -100,16 +95,41 @@ export abstract class PlayerBase implements Player {
     };
   }
 
-  get vp(): number {
-    return this._vp;
+  toJSON(): SerializedPlayer {
+    return {
+      faction: this.faction.factionType,
+      id: this.id,
+      name: this.name,
+      powerCycle: {
+        gaia: this.powerCycle.gaia,
+        l1: this.powerCycle.level1,
+        l2: this.powerCycle.level2,
+        l3: this.powerCycle.level3,
+      },
+      research: {
+        ai: this.research.ai,
+        economics: this.research.economics,
+        gaia: this.research.gaia,
+        navigation: this.research.navigation,
+        science: this.research.science,
+        terraforming: this.research.terraforming,
+      },
+      resources: {
+        credits: this.resources.credits,
+        knowledge: this.resources.knowledge,
+        ore: this.resources.ore,
+        qic: this.resources.qic,
+      },
+      vp: this.vp,
+    };
   }
 
   private onIncomeReceived(e: EventArgs): void {
     if (e.type === EventType.IncomeGained && e.player.id === this.id) {
-      this._resources.credits += e.income.credits ?? 0;
-      this._resources.knowledge += e.income.knowledge ?? 0;
-      this._resources.ore += e.income.ore ?? 0;
-      this._resources.qic += e.income.qic ?? 0;
+      this.resources.credits += e.income.credits ?? 0;
+      this.resources.knowledge += e.income.knowledge ?? 0;
+      this.resources.ore += e.income.ore ?? 0;
+      this.resources.qic += e.income.qic ?? 0;
 
       this.handlePowerIncome(e.income.powerNodes, e.income.chargePower);
     }
@@ -123,30 +143,30 @@ export abstract class PlayerBase implements Player {
     if (
       addNodes &&
       chargeNodes &&
-      this._powerCycle.totalUncharged < chargeNodes
+      this.powerCycleManager.totalUncharged < chargeNodes
     ) {
-      this._powerCycle.addNodes(addNodes);
-      this._powerCycle.chargeNodes(chargeNodes);
+      this.powerCycleManager.addNodes(addNodes);
+      this.powerCycleManager.chargeNodes(chargeNodes);
       return;
     }
 
     // Otherwise, charge nodes first to boost the odds that more level 2 nodes get charged to level 3.
-    this._powerCycle.chargeNodes(chargeNodes ?? 0);
-    this._powerCycle.addNodes(addNodes ?? 0);
+    this.powerCycleManager.chargeNodes(chargeNodes ?? 0);
+    this.powerCycleManager.addNodes(addNodes ?? 0);
   }
 
   private onResourcesSpent(e: EventArgs): void {
     if (e.type === EventType.ResourcesSpent && e.player.id === this.id) {
-      this._resources.credits -= e.resources.credits ?? 0;
-      this._resources.knowledge -= e.resources.knowledge ?? 0;
-      this._resources.ore -= e.resources.ore ?? 0;
-      this._resources.qic -= e.resources.qic ?? 0;
+      this.resources.credits -= e.resources.credits ?? 0;
+      this.resources.knowledge -= e.resources.knowledge ?? 0;
+      this.resources.ore -= e.resources.ore ?? 0;
+      this.resources.qic -= e.resources.qic ?? 0;
     }
   }
 
   private onVPAwarded(e: EventArgs): void {
     if (e.type === EventType.VPAwarded && e.player.id === this.id) {
-      this._vp += e.vp;
+      this.vp += e.vp;
     }
   }
 }

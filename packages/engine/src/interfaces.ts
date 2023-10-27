@@ -1,3 +1,4 @@
+import { SerializedPlayer, SerializedState } from './core/serialization';
 import { FactionType } from './factions';
 
 // Map
@@ -18,11 +19,13 @@ export type AxialCoordinates = [number, number];
 
 export interface MapHex {
   location: AxialCoordinates;
-  planet?: PlanetType;
-  player?: Player;
-  structure?: StructureType;
-  isSatellite: boolean;
-  lantidCohabitation: boolean;
+  planet?: {
+    type: PlanetType;
+    player?: Player;
+    structure?: StructureType;
+    hasLantidMine?: boolean;
+  };
+  hasIvitsStation?: boolean;
 }
 
 export interface Map {
@@ -81,6 +84,7 @@ export interface PowerCycle {
   level2: number;
   level3: number;
   gaia: number;
+  brainStonePosition?: 'gaia' | 1 | 2 | 3;
 }
 
 export interface PowerCycleManager extends Readonly<PowerCycle> {
@@ -88,6 +92,7 @@ export interface PowerCycleManager extends Readonly<PowerCycle> {
   addNodes(nodes: number): void;
   removeNodes(nodes: number): void;
   chargeNodes(nodes: number): number;
+  setValues(values: PowerCycle): void;
 }
 
 export type ResearchProgress = {
@@ -149,7 +154,10 @@ export interface PlayerStructureData {
 }
 
 export type PlayerStructures = {
-  [key in StructureType]: Pick<PlayerStructureData, 'available' | 'locations'>;
+  [key in StructureType]: Pick<
+    PlayerStructureData,
+    'active' | 'available' | 'locations'
+  >;
 };
 
 export type ScoringTrackPositions = {
@@ -160,14 +168,16 @@ export type ScoringTrackPositions = {
 export interface Player {
   readonly id: string;
   readonly faction: Faction;
-  name: string;
-  powerCycle: Readonly<PowerCycle>;
-  resources: Readonly<Resources>;
-  research: Readonly<ResearchProgress>;
-  structures: Readonly<PlayerStructures>;
-  roundBooster?: RoundBooster;
-  scoringTrackPositions: Readonly<ScoringTrackPositions>;
-  vp: number;
+  readonly name: string;
+  readonly powerCycle: Readonly<PowerCycle>;
+  readonly resources: Readonly<Resources>;
+  readonly research: Readonly<ResearchProgress>;
+  readonly structures: Readonly<PlayerStructures>;
+  readonly roundBooster?: Readonly<RoundBooster>;
+  readonly scoringTrackPositions: Readonly<ScoringTrackPositions>;
+  readonly vp: number;
+
+  toJSON(): SerializedPlayer;
 }
 
 export interface ResearchBoard {
@@ -233,8 +243,6 @@ export interface GameContext {
   currentPlayer: Player | undefined;
   allowedActions: Readonly<GameAction[]>;
   roundBoosters: RoundBooster[];
-
-  toJSON(): Record<string, unknown>;
 }
 
 export enum GameState {
@@ -267,4 +275,6 @@ export interface State {
   specialAction(): void;
   freeAction(): void;
   chooseRoundBoosterAndPass(roundBooster: RoundBooster): void;
+
+  toJSON(): SerializedState;
 }

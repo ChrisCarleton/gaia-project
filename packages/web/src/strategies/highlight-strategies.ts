@@ -13,12 +13,12 @@ class BuildFirstMinesHighlightStrategy implements HighlightStrategy {
   determineHighlight(player: Player, mapHex: MapHex): HexHighlightStatus {
     if (mapHex.planet) {
       // Planet must match the user's homeworld
-      if (mapHex.planet !== player.faction.homeWorld) {
+      if (mapHex.planet.type !== player.faction.homeWorld) {
         return HexHighlightStatus.Bad;
       }
 
       // Planet cannot be occupied or have a structure built on it.
-      if (mapHex.player || mapHex.structure) {
+      if (mapHex.planet.player || mapHex.planet.structure) {
         return HexHighlightStatus.Bad;
       }
 

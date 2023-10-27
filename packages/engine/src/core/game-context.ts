@@ -1,5 +1,3 @@
-import { z } from 'zod';
-
 import {
   GameAction,
   GameContext,
@@ -10,30 +8,27 @@ import {
   RoundBooster,
 } from '../interfaces';
 
-export const GameContextSchema = z.object({});
-export type SerializedGameContext = z.infer<typeof GameContextSchema>;
+export class DefaultGameContext implements GameContext {
+  private readonly _map: Map;
 
-export class GameContextInstance implements GameContext {
-  private _currentRound: number;
   private _players: Player[];
   private _rounds: Round[];
   private _researchBoard: ResearchBoard;
   private _roundBoosters: RoundBooster[];
 
-  private _currentPlayer: Player | undefined;
-  private _allowedActions: Readonly<GameAction[]> = [];
+  allowedActions: Readonly<GameAction[]> = [];
+  currentPlayer: Player | undefined;
+  currentRound: number;
 
-  constructor(
-    readonly map: Map,
-    players: Player[],
-  ) {
+  constructor(map: Map, players: Player[]) {
     const researchTrack = {
       mastered: false,
       advancedTechTile: {},
       standardTechTiles: [],
     };
+    this._map = map;
     this._players = players;
-    this._currentRound = 1;
+    this.currentRound = 1;
     this._rounds = [];
     this._researchBoard = {
       terraformingFederationToken: {},
@@ -53,10 +48,6 @@ export class GameContextInstance implements GameContext {
     return this._players;
   }
 
-  get currentRound(): number {
-    return this._currentRound;
-  }
-
   get roundBoosters(): RoundBooster[] {
     return this._roundBoosters;
   }
@@ -72,22 +63,7 @@ export class GameContextInstance implements GameContext {
     return this._researchBoard;
   }
 
-  get currentPlayer(): Player | undefined {
-    return this._currentPlayer;
-  }
-  set currentPlayer(val: Player | undefined) {
-    this._currentPlayer = val;
-  }
-
-  get allowedActions(): Readonly<GameAction[]> {
-    return this._allowedActions;
-  }
-  set allowedActions(val: Readonly<GameAction[]>) {
-    this._allowedActions = val;
-  }
-
-  toJSON(): Record<string, unknown> {
-    // TODO: Serialize!
-    return {};
+  get map(): Map {
+    return this._map;
   }
 }

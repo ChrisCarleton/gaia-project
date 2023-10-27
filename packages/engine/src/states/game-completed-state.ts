@@ -1,10 +1,6 @@
-import {
-  ChangeStateFunction,
-  EventType,
-  GameContext,
-  GameState,
-  Observer,
-} from '..';
+import { SerializedState } from '../core/serialization';
+import { EventType, Observer } from '../events';
+import { ChangeStateFunction, GameContext, GameState } from '../interfaces';
 import { StateBase } from './state-base';
 
 export class GameCompletedState extends StateBase {
@@ -48,5 +44,11 @@ export class GameCompletedState extends StateBase {
       type: EventType.GameEnded,
       playerRanking,
     });
+  }
+
+  toJSON(): SerializedState {
+    return {
+      type: GameState.GameEnded,
+    };
   }
 }

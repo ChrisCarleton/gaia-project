@@ -1,3 +1,4 @@
+import { SerializedState } from '../core/serialization';
 import { ErrorCode, GPError } from '../errors';
 import { Observer } from '../events';
 import {
@@ -23,6 +24,7 @@ export abstract class StateBase implements State {
 
   abstract readonly currentState: GameState;
   abstract init(): void;
+  abstract toJSON(): SerializedState;
 
   buildMine(location: MapHex): void {
     throw ActionNotSupportedError;
