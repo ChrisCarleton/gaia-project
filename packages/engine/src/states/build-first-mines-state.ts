@@ -10,6 +10,7 @@ import {
   GameState,
   MapHex,
   Player,
+  StructureType,
 } from '../interfaces';
 import { ChooseFirstRoundBoostersState } from './choose-first-round-boosters-state';
 import { StateBase } from './state-base';
@@ -33,7 +34,7 @@ type DetermineNextPlayerStrategy = (
   players: Readonly<Player[]>,
   currentIndex: number,
 ) => DetermineNextPlayerStrategyResult;
-const DetermineNextPlayer: Record<
+export const DetermineNextPlayer: Record<
   BuildFirstMinesPass,
   DetermineNextPlayerStrategy
 > = {
@@ -137,9 +138,7 @@ export class BuildFirstMinesState extends StateBase {
   }
 
   buildMine(location: MapHex): void {
-    // Identify the player. Unlike normal turn order, initial mine selection is done twice:
-    // Once in turn order, then again in reverse turn order.
-    // ... and the Xenos get to place a third mine after all that!
+    // Identify the player
     const player = this.context.players[this.options.turnIndex];
 
     // Validate hex. Must be unoccupied and contain a planet matching the player's home world.
@@ -163,6 +162,9 @@ export class BuildFirstMinesState extends StateBase {
         'Mine can only be placed on an unoccupied planet.',
       );
     }
+
+    location.planet.player = player;
+    location.planet.structure = StructureType.Mine;
 
     // Place mine event.
     this.events.publish({
@@ -189,7 +191,7 @@ export class BuildFirstMinesState extends StateBase {
           this.context,
           this.events,
           this.changeState,
-          this.context.players[this.context.players.length - 1],
+          this.context.players.length - 1,
         ),
       );
     }

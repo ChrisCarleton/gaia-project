@@ -1,4 +1,4 @@
-import { FactionType, PlanetType } from '@gaia-project/engine';
+import { FactionType, PlanetType, StructureType } from '@gaia-project/engine';
 
 export const FactionTypeNames: Record<FactionType, string> = {
   [FactionType.Ambas]: 'Ambas',
@@ -28,3 +28,13 @@ export const PlanetTypeNames: Record<PlanetType, string> = {
   [PlanetType.Transdim]: 'Transdim',
   [PlanetType.Volcanic]: 'Volcanic',
 } as const;
+
+export const StructureTypeNamesPlural: Record<StructureType, string> = {
+  [StructureType.Academy]: 'Acadamies',
+  [StructureType.Gaiaformer]: 'Gaiaformers',
+  [StructureType.Mine]: 'Mines',
+  [StructureType.PlanetaryInstitute]: 'Planetary institute', // There is no pluralization for this... players only get one.
+  [StructureType.ResearchLab]: 'Research labs',
+  [StructureType.Satellite]: 'Satellites',
+  [StructureType.TradingStation]: 'Trading stations',
+};

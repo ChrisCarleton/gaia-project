@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { SerializedState } from '../core/serialization';
 import { ErrorCode, GPError } from '../errors';
 import { Observer } from '../events';

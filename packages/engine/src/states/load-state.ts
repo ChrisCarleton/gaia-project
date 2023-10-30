@@ -30,7 +30,7 @@ export function loadState(
         context,
         events,
         changeState,
-        context.players[data.player],
+        data.player,
       );
 
     case GameState.GameEnded:

@@ -1,12 +1,14 @@
-import { MapHex, PlayerStructureData } from '../interfaces';
+import { AxialCoordinates, PlayerStructureData } from '../interfaces';
+
+const InvalidMaximumError = new Error('Maximum cannot be less than zero.');
 
 export class PlayerStructureDataInstance implements PlayerStructureData {
   private max: number;
-  private _locations: MapHex[];
+  private _locations: AxialCoordinates[];
 
   constructor(maxAvailable: number) {
     if (maxAvailable < 0) {
-      throw new Error('Maximum cannot be less than zero.');
+      throw InvalidMaximumError;
     }
 
     this.max = maxAvailable;
@@ -21,27 +23,31 @@ export class PlayerStructureDataInstance implements PlayerStructureData {
     return this.locations.length;
   }
 
-  get locations(): Readonly<MapHex[]> {
+  get locations(): Readonly<AxialCoordinates[]> {
     return this._locations;
   }
 
   setMax(max: number): void {
     if (max < 0) {
-      throw new Error('Maximum cannot be less than zero.');
+      throw InvalidMaximumError;
     }
 
     this.max = max;
   }
 
-  place(location: MapHex): void {
+  place(location: AxialCoordinates): void {
     if (this.available < 1) {
-      // TODO: Error
+      throw new Error(
+        'Unable to place structure. Player does not have one available.',
+      );
     }
-
     this._locations.push(location);
   }
 
-  remove(location: MapHex): void {
-    throw new Error('Method not implemented.');
+  remove(location: AxialCoordinates): void {
+    const index = this._locations.findIndex((loc) => location === loc);
+    if (index > -1) {
+      this._locations.splice(index, 1);
+    }
   }
 }

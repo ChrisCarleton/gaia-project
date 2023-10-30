@@ -146,11 +146,11 @@ export interface Faction {
 export interface PlayerStructureData {
   available: number;
   active: number;
-  locations: Readonly<MapHex[]>;
+  locations: Readonly<AxialCoordinates[]>;
 
   setMax(max: number): void;
-  place(location: MapHex): void;
-  remove(location: MapHex): void;
+  place(location: AxialCoordinates): void;
+  remove(location: AxialCoordinates): void;
 }
 
 export type PlayerStructures = {

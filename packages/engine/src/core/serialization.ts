@@ -19,19 +19,22 @@ const ChooseFirstRoundBoostersStateSchema = z.object({
 });
 
 // No variablity... just the state type.
-const GenericStateSchema = z.object({
-  type: z.union([
-    z.literal(GameState.GameEnded),
-    z.literal(GameState.GameNotStarted),
-    z.literal(GameState.IncomePhase),
-  ]),
+const GameEndedStateSchema = z.object({
+  type: z.literal(GameState.GameEnded),
+});
+const GameNotStartedStateSchema = z.object({
+  type: z.literal(GameState.GameNotStarted),
+});
+const IncomePhaseStateSchema = z.object({
+  type: z.literal(GameState.IncomePhase),
 });
 
 const StateSchema = z.discriminatedUnion('type', [
-  GenericStateSchema,
-
   BuildFirstMinesStateSchema,
   ChooseFirstRoundBoostersStateSchema,
+  GameEndedStateSchema,
+  GameNotStartedStateSchema,
+  IncomePhaseStateSchema,
 ]);
 export type SerializedState = z.infer<typeof StateSchema>;
 

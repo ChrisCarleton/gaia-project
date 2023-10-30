@@ -1,5 +1,4 @@
 <template>
-  <!-- <PageTitle title="Game Test" /> -->
   <GameEndedDialog
     :player-rankings="gameState.playerRankings"
     :visible="gameState.gameOver"
@@ -7,7 +6,14 @@
   <RoundBoostersDialog
     :boosters="roundBoosters"
     :visible="gameState.selectingRoundBooster"
+    @cancel="gameState.selectingRoundBooster = false"
     @confirm="onSelectRoundBooster"
+  />
+
+  <SerializationDialog
+    :game="game"
+    :visible="showSerializationDialog"
+    @close="showSerializationDialog = false"
   />
   <section class="section">
     <div class="tile is-ancestor">
@@ -33,7 +39,14 @@
             @pass="onPass"
           />
         </div>
-        <!-- <MapInfoTile :highlighted-tile="currentHex" /> -->
+
+        <div class="tile is-parent">
+          <div class="tile is-child box">
+            <button class="button" @click="showSerializationDialog = true">
+              Serialize Game
+            </button>
+          </div>
+        </div>
       </div>
 
       <div
@@ -63,6 +76,7 @@
 <script lang="ts" setup>
 import GameEndedDialog from '@/components/dialog/GameEndedDialog.vue';
 import RoundBoostersDialog from '@/components/dialog/RoundBoostersDialog.vue';
+import SerializationDialog from '@/components/dialog/SerializationDialog.vue';
 import ActionMenuTile from '@/components/game/ActionMenuTile.vue';
 import BuildFirstMineTile from '@/components/game/BuildFirstMineTile.vue';
 import PlayerInfoTile from '@/components/game/PlayerInfoTile.vue';
@@ -115,6 +129,7 @@ const renderWindow = ref<InstanceType<typeof RenderWindow> | null>();
 const roundBoosters = computed(() => game.context.roundBoosters);
 
 const currentHex = ref<MapHex | undefined>();
+const showSerializationDialog = ref(false);
 const events = new LocalObserver();
 
 events.subscribe(EventType.AwaitingPlayerInput, (e) => {
@@ -125,9 +140,22 @@ events.subscribe(EventType.AwaitingPlayerInput, (e) => {
   }
 });
 
-events.subscribe(EventType.MineBuilt, (e) => {
+events.subscribe(EventType.MineBuilt, async (e) => {
   if (e.type === EventType.MineBuilt) {
     renderWindow.value?.addStructure(e.location, e.player, StructureType.Mine);
+    await store.dispatch(
+      Action.ToastSuccess,
+      `${e.player.name} has built a mine.`,
+    );
+  }
+});
+
+events.subscribe(EventType.RoundBoosterSelected, async (e) => {
+  if (e.type === EventType.RoundBoosterSelected) {
+    await store.dispatch(
+      Action.ToastSuccess,
+      `${e.player.name} has selected a round booster.`,
+    );
   }
 });
 
@@ -177,6 +205,7 @@ function onPass() {
 }
 
 function onSelectRoundBooster(roundBooster: RoundBooster) {
-  console.log(roundBooster);
+  gameState.selectingRoundBooster = false;
+  game.chooseRoundBoosterAndPass(roundBooster);
 }
 </script>

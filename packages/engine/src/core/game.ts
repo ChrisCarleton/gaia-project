@@ -120,7 +120,7 @@ export class Game implements State {
     this._state = new BuildFirstMinesState(
       this._context,
       this._events,
-      this.changeState,
+      this.changeState.bind(this),
       {
         turnIndex: 0,
         pass: BuildFirstMinesPass.First,
@@ -220,10 +220,8 @@ export class Game implements State {
   }
 
   private changeState(newState: State) {
-    if (this._context) {
-      this._state = newState;
-      setTimeout(() => this._state.init(), 0);
-    }
+    this._state = newState;
+    setTimeout(() => this._state.init(), 0);
   }
 
   private validatePlayers(players: Player[]): void {
@@ -269,10 +267,10 @@ export class Game implements State {
   /*
    * Event handlers
    */
-  private onAwaitingPlayerInput(eventArgs: EventArgs) {
-    if (this._context && eventArgs.type === EventType.AwaitingPlayerInput) {
-      if (eventArgs.player) this._context.currentPlayer = eventArgs.player;
-      this._context.allowedActions = eventArgs.allowedActions;
+  private onAwaitingPlayerInput(e: EventArgs) {
+    if (this._context && e.type === EventType.AwaitingPlayerInput) {
+      if (e.player) this._context.currentPlayer = e.player;
+      this._context.allowedActions = e.allowedActions;
     }
   }
 

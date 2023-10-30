@@ -74,7 +74,12 @@ export abstract class PlayerBase implements Player {
     this.vp = 10;
 
     events.subscribe(EventType.IncomeGained, this.onIncomeReceived);
+    events.subscribe(EventType.MineBuilt, this.onMineBuilt.bind(this));
     events.subscribe(EventType.ResourcesSpent, this.onResourcesSpent);
+    events.subscribe(
+      EventType.RoundBoosterSelected,
+      this.onRoundBoosterSelected.bind(this),
+    );
     events.subscribe(EventType.VPAwarded, this.onVPAwarded.bind(this));
   }
 
@@ -164,9 +169,21 @@ export abstract class PlayerBase implements Player {
     }
   }
 
+  private onRoundBoosterSelected(e: EventArgs): void {
+    if (e.type === EventType.RoundBoosterSelected && e.player.id === this.id) {
+      this.roundBooster = e.roundBooster;
+    }
+  }
+
   private onVPAwarded(e: EventArgs): void {
     if (e.type === EventType.VPAwarded && e.player.id === this.id) {
       this.vp += e.vp;
+    }
+  }
+
+  private onMineBuilt(e: EventArgs): void {
+    if (e.type === EventType.MineBuilt && e.player.id === this.id) {
+      this.structuresMap[StructureType.Mine].place(e.location.location);
     }
   }
 }
