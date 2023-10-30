@@ -19,11 +19,10 @@
 
 <script lang="ts" setup>
 import DialogBase from '@/components/dialog/DialogBase.vue';
-import { Game } from '@gaia-project/engine';
 import { computed, ref } from 'vue';
 
 interface SerializationDialogProps {
-  game: Game;
+  game: unknown;
   visible: boolean;
 }
 
@@ -31,7 +30,7 @@ const props = withDefaults(defineProps<SerializationDialogProps>(), {
   visible: false,
 });
 
-const data = computed(() => JSON.stringify(props.game.serialize()));
+const data = computed(() => JSON.stringify(props.game));
 const showCopied = ref(false);
 
 defineEmits<{

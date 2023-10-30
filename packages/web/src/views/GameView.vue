@@ -11,7 +11,7 @@
   />
 
   <SerializationDialog
-    :game="game"
+    :game="gameState.serializedGameState"
     :visible="showSerializationDialog"
     @close="showSerializationDialog = false"
   />
@@ -105,6 +105,9 @@ import {
   PlayerFactory,
 } from '@gaia-project/engine';
 import { computed, reactive, ref } from 'vue';
+import { object, unknown } from 'zod';
+
+import SavedGameState from './game-context.json';
 
 interface GameState {
   allowedActions: Set<GameAction>;
@@ -113,6 +116,7 @@ interface GameState {
   playerRankings?: Readonly<Player[]>;
   round: number;
   selectingRoundBooster: boolean;
+  serializedGameState: unknown;
 }
 
 const store = useStore();
@@ -122,6 +126,7 @@ const gameState = reactive<GameState>({
   gameOver: false,
   round: 0,
   selectingRoundBooster: false,
+  serializedGameState: {},
 });
 const viewState = ref<PlayerViewState>(PlayerViewState.Players);
 const highlightStatus = ref<HexHighlightStatus>(HexHighlightStatus.Neutral);
@@ -136,6 +141,7 @@ events.subscribe(EventType.AwaitingPlayerInput, (e) => {
   if (e.type === EventType.AwaitingPlayerInput) {
     gameState.currentPlayer = e.player;
     gameState.allowedActions = new Set<GameAction>(e.allowedActions);
+    gameState.serializedGameState = game.serialize();
     viewState.value = PlayerViewState.Players;
   }
 });
@@ -169,14 +175,16 @@ events.subscribe(EventType.GameEnded, (e) => {
 
 const factionFactory = new FactionFactory();
 const playerFactory = new PlayerFactory(events, factionFactory);
-const players = [
-  playerFactory.createPlayer('0', FactionType.Terrans, 'Julian'),
-  playerFactory.createPlayer('1', FactionType.Ambas, 'Bubbles'),
-  playerFactory.createPlayer('2', FactionType.BalTaks, 'Ricky'),
-];
+// const players = [
+//   playerFactory.createPlayer('0', FactionType.Terrans, 'Julian'),
+//   playerFactory.createPlayer('1', FactionType.Ambas, 'Bubbles'),
+//   playerFactory.createPlayer('2', FactionType.BalTaks, 'Ricky'),
+// ];
 
-const map = new BasicMapModel().createMap(players.length);
-const game = Game.beginNewGame(players, map, events);
+// const map = new BasicMapModel().createMap(players.length);
+// const game = Game.beginNewGame(players, map, events);
+
+const game = Game.resumeGame(SavedGameState, playerFactory, events);
 
 function onHexHighlight(mapHex: MapHex) {
   currentHex.value = mapHex;

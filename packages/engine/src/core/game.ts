@@ -51,12 +51,9 @@ export class Game implements State {
         reload.gameData.currentState,
         this._context,
         events,
-        this.changeState,
+        this.changeState.bind(this),
       );
-    }
-
-    if (!this._state) {
-      this._state = new GameNotStartedState();
+      setTimeout(() => this._state.init(), 0);
     }
   }
 
@@ -291,7 +288,7 @@ export class Game implements State {
     const context = GameContextSchema.parse(gameData);
 
     const players = context.players.map((playerData) =>
-      playerFactory.deserializePlayer(playerData),
+      playerFactory.deserializePlayer(playerData, context),
     );
 
     return new Game(events, {

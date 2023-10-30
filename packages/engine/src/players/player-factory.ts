@@ -1,6 +1,6 @@
 import { FactionType } from '..';
 import { FactionFactory, Observer, Player } from '..';
-import { SerializedPlayer } from '../core/serialization';
+import { SerializedGameContext, SerializedPlayer } from '../core/serialization';
 import { AIPlayer } from './ai-player';
 import { HumanPlayer } from './human-player';
 
@@ -26,7 +26,10 @@ export class PlayerFactory {
     return new AIPlayer(id, factionEntity, this.events);
   }
 
-  deserializePlayer(playerData: SerializedPlayer): Player {
+  deserializePlayer(
+    playerData: SerializedPlayer,
+    gameData: SerializedGameContext,
+  ): Player {
     const faction = this.factionFactory.createFaction(
       playerData.faction,
       this.events,
@@ -59,6 +62,20 @@ export class PlayerFactory {
     player.resources.qic = playerData.resources.qic;
 
     player.vp = playerData.vp;
+
+    // Scan the map to place the player's structures.
+    // TODO: Deserialize Lanid mines and Ivits space stations.
+    const playerIndex = gameData.players.findIndex((p) => p.id === player.id);
+    for (const hex of gameData.map) {
+      if (
+        hex.planet &&
+        hex.planet.structure &&
+        hex.planet.player === playerIndex
+      ) {
+        const { q, r } = hex.location;
+        player.structuresMap[hex.planet.structure].place([q, r]);
+      }
+    }
 
     return player;
   }
