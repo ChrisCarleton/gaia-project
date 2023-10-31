@@ -8,7 +8,7 @@ import {
   RoundBooster,
 } from '..';
 import { SerializedState } from '../core/serialization';
-import { GameCompletedState } from './game-completed-state';
+import { IncomePhaseState } from './income-phase-state';
 import { StateBase } from './state-base';
 
 export class ChooseFirstRoundBoostersState extends StateBase {
@@ -41,7 +41,7 @@ export class ChooseFirstRoundBoostersState extends StateBase {
       (rb) => rb.id === roundBooster.id,
     );
     if (index === -1) {
-      // TODO: Throw error
+      throw new Error('Unknown round booster.');
     }
 
     this.context.roundBoosters.splice(index, 1);
@@ -54,7 +54,7 @@ export class ChooseFirstRoundBoostersState extends StateBase {
     if (this.player === 0) {
       // All done. Advance the game to the next phase.
       this.changeState(
-        new GameCompletedState(this.context, this.events, this.changeState),
+        new IncomePhaseState(this.context, this.events, this.changeState),
       );
     } else {
       this.changeState(

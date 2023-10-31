@@ -6,8 +6,10 @@ import {
   Income,
   Observer,
   RoundBoosterBonusType,
+  StructureType,
 } from '..';
 import { SerializedState } from '../core/serialization';
+import { GameCompletedState } from './game-completed-state';
 import { StateBase } from './state-base';
 
 export class IncomePhaseState extends StateBase {
@@ -29,11 +31,27 @@ export class IncomePhaseState extends StateBase {
 
       /*
         TODO: Perform income calculations for each player.
-          * Income from structures
-          * Income from round booster
+          * ✅ Income from structures
+          * ✅ Income from round booster
           * Income from research
           * Income from tech tiles
       */
+
+      // Income from structures.
+      const factionIncome = player.faction.income;
+      income.push(
+        factionIncome[StructureType.Mine][player.structures.mine.active],
+        factionIncome[StructureType.TradingStation][
+          player.structures.tradingStation.active
+        ],
+        factionIncome[StructureType.ResearchLab][
+          player.structures.researchLab.active
+        ],
+        factionIncome[StructureType.PlanetaryInstitute][
+          player.structures.planetaryInstitute.active
+        ],
+      );
+      // TODO: Check for acadamy income.
 
       // Round booster income.
       if (player.roundBooster) {
@@ -56,6 +74,9 @@ export class IncomePhaseState extends StateBase {
     });
 
     // TODO: Change state.
+    this.changeState(
+      new GameCompletedState(this.context, this.events, this.changeState),
+    );
   }
 
   private reduceIncome(total: Income, currrentValue: Income): Income {

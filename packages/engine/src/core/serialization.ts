@@ -1,11 +1,51 @@
 import { z } from 'zod';
 
 import { FactionType } from '../factions';
-import { GameState, PlanetType, StructureType } from '../interfaces';
+import {
+  FreeAction,
+  GameState,
+  PlanetType,
+  RoundBoosterBonusType,
+  RoundBoosterPassBonusDiscriminator,
+  StructureType,
+} from '../interfaces';
 import { BuildFirstMinesPass } from '../states/build-first-mines-state';
 
 const ResourceSchema = z.number().int().min(0);
 const ResearchProgressSchema = z.number().int().min(0).max(5);
+
+const RoundBoosterActionBonusSchema = z.object({
+  type: z.literal(RoundBoosterBonusType.Action),
+  action: z.nativeEnum(FreeAction),
+});
+const RoundBoosterIncomeBonusSchema = z.object({
+  type: z.literal(RoundBoosterBonusType.Income),
+  income: z
+    .object({
+      credits: z.number().int(),
+      ore: z.number().int(),
+      knowledge: z.number().int(),
+      qic: z.number().int(),
+      powerNodes: z.number().int(),
+      chargePower: z.number().int(),
+    })
+    .partial(),
+});
+const RoundBoosterPassBonusSchema = z.object({
+  type: z.literal(RoundBoosterBonusType.BonusOnPass),
+  discriminator: z.nativeEnum(RoundBoosterPassBonusDiscriminator),
+  vp: z.number().int().positive(),
+});
+const RoundBoosterBonusSchema = z.discriminatedUnion('type', [
+  RoundBoosterActionBonusSchema,
+  RoundBoosterPassBonusSchema,
+  RoundBoosterIncomeBonusSchema,
+]);
+const RoundBoosterSchema = z.object({
+  id: z.number().int().min(0),
+  a: RoundBoosterBonusSchema,
+  b: RoundBoosterBonusSchema,
+});
 
 const BuildFirstMinesStateSchema = z.object({
   type: z.literal(GameState.BuildFirstMines),
@@ -65,12 +105,14 @@ const PlayerSchema = z.object({
     l2: ResourceSchema,
     l3: ResourceSchema,
   }),
+
   resources: z.object({
     credits: ResourceSchema,
     knowledge: ResourceSchema,
     ore: ResourceSchema,
     qic: ResourceSchema,
   }),
+
   research: z.object({
     terraforming: ResearchProgressSchema,
     navigation: ResearchProgressSchema,
@@ -79,6 +121,9 @@ const PlayerSchema = z.object({
     economics: ResearchProgressSchema,
     science: ResearchProgressSchema,
   }),
+
+  roundBooster: RoundBoosterSchema.optional(),
+
   vp: z.number().int(),
 });
 export type SerializedPlayer = z.infer<typeof PlayerSchema>;
@@ -93,5 +138,6 @@ export const GameContextSchema = z.object({
   //   // TODO: Validate for faction conflicts.
   // }),
   map: MapHexSchema.array(),
+  roundBoosters: RoundBoosterSchema.array(),
 });
 export type SerializedGameContext = z.infer<typeof GameContextSchema>;

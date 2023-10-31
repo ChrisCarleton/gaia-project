@@ -4,10 +4,7 @@
   "currentState": { "type": "chooseFirstRoundBoosters", "player": 2 },
   "map": [
     { "location": { "q": 0, "r": 0 } },
-    {
-      "location": { "q": -1, "r": 1 },
-      "planet": { "type": "swamp", "player": 1, "structure": "mine" }
-    },
+    { "location": { "q": -1, "r": 1 }, "planet": { "type": "swamp" } },
     { "location": { "q": 0, "r": 1 } },
     { "location": { "q": 1, "r": 0 } },
     { "location": { "q": 1, "r": -1 }, "planet": { "type": "ice" } },
@@ -22,10 +19,7 @@
     { "location": { "q": 2, "r": -2 } },
     { "location": { "q": 1, "r": -2 } },
     { "location": { "q": 0, "r": -2 }, "planet": { "type": "titanium" } },
-    {
-      "location": { "q": -1, "r": -1 },
-      "planet": { "type": "volcanic", "player": 2, "structure": "mine" }
-    },
+    { "location": { "q": -1, "r": -1 }, "planet": { "type": "volcanic" } },
     { "location": { "q": -2, "r": 0 } },
     { "location": { "q": -2, "r": 1 } },
     { "location": { "q": -2, "r": -3 } },
@@ -57,7 +51,10 @@
     { "location": { "q": -4, "r": 1 } },
     { "location": { "q": -5, "r": 1 } },
     { "location": { "q": -6, "r": 2 } },
-    { "location": { "q": -7, "r": 4 }, "planet": { "type": "swamp" } },
+    {
+      "location": { "q": -7, "r": 4 },
+      "planet": { "type": "swamp", "player": 1, "structure": "mine" }
+    },
     { "location": { "q": -6, "r": 4 } },
     { "location": { "q": -5, "r": 4 } },
     { "location": { "q": -4, "r": 3 } },
@@ -84,10 +81,7 @@
     { "location": { "q": -1, "r": 4 } },
     { "location": { "q": -1, "r": 3 }, "planet": { "type": "transdim" } },
     { "location": { "q": -2, "r": 3 } },
-    {
-      "location": { "q": -3, "r": 3 },
-      "planet": { "type": "terra", "player": 0, "structure": "mine" }
-    },
+    { "location": { "q": -3, "r": 3 }, "planet": { "type": "terra" } },
     { "location": { "q": -4, "r": 4 } },
     { "location": { "q": -5, "r": 5 } },
     { "location": { "q": -5, "r": 6 } },
@@ -118,7 +112,10 @@
     { "location": { "q": 5, "r": -3 } },
     { "location": { "q": 4, "r": -2 }, "planet": { "type": "gaia" } },
     { "location": { "q": 3, "r": 0 } },
-    { "location": { "q": 4, "r": 0 }, "planet": { "type": "terra" } },
+    {
+      "location": { "q": 4, "r": 0 },
+      "planet": { "type": "terra", "player": 0, "structure": "mine" }
+    },
     { "location": { "q": 5, "r": 0 }, "planet": { "type": "desert" } },
     { "location": { "q": 6, "r": -1 } },
     { "location": { "q": 7, "r": -2 } },
@@ -142,10 +139,7 @@
     { "location": { "q": 1, "r": -3 } },
     { "location": { "q": 2, "r": -3 } },
     { "location": { "q": 3, "r": -3 }, "planet": { "type": "oxide" } },
-    {
-      "location": { "q": 4, "r": -4 },
-      "planet": { "type": "volcanic", "player": 2, "structure": "mine" }
-    },
+    { "location": { "q": 4, "r": -4 }, "planet": { "type": "volcanic" } },
     { "location": { "q": 5, "r": -5 } },
     { "location": { "q": 5, "r": -6 }, "planet": { "type": "transdim" } },
     { "location": { "q": 5, "r": -7 } },
@@ -159,7 +153,10 @@
     { "location": { "q": 7, "r": 2 } },
     { "location": { "q": 8, "r": 1 }, "planet": { "type": "gaia" } },
     { "location": { "q": 8, "r": 0 } },
-    { "location": { "q": 7, "r": 0 }, "planet": { "type": "volcanic" } },
+    {
+      "location": { "q": 7, "r": 0 },
+      "planet": { "type": "volcanic", "player": 2, "structure": "mine" }
+    },
     { "location": { "q": 6, "r": 1 } },
     { "location": { "q": 5, "r": 3 } },
     { "location": { "q": 6, "r": 3 } },
@@ -200,7 +197,10 @@
     { "location": { "q": 8, "r": -8 } },
     { "location": { "q": 7, "r": -7 }, "planet": { "type": "gaia" } },
     { "location": { "q": 6, "r": -5 } },
-    { "location": { "q": 7, "r": -5 }, "planet": { "type": "volcanic" } },
+    {
+      "location": { "q": 7, "r": -5 },
+      "planet": { "type": "volcanic", "player": 2, "structure": "mine" }
+    },
     { "location": { "q": 8, "r": -5 }, "planet": { "type": "desert" } },
     { "location": { "q": 9, "r": -6 } },
     { "location": { "q": 10, "r": -7 } },
@@ -260,6 +260,38 @@
       },
       "resources": { "credits": 15, "ore": 4, "knowledge": 3, "qic": 1 },
       "vp": 10
+    }
+  ],
+  "roundBoosters": [
+    {
+      "id": 0,
+      "a": { "type": "income", "income": { "ore": 1 } },
+      "b": { "type": "income", "income": { "knowledge": 1 } }
+    },
+    {
+      "id": 7,
+      "a": { "type": "income", "income": { "ore": 1 } },
+      "b": { "type": "passBonus", "discriminator": "tradingStations", "vp": 2 }
+    },
+    {
+      "id": 8,
+      "a": { "type": "income", "income": { "chargePower": 4 } },
+      "b": { "type": "passBonus", "discriminator": "acadamiesAndPI", "vp": 4 }
+    },
+    {
+      "id": 1,
+      "a": { "type": "income", "income": { "credits": 2 } },
+      "b": { "type": "income", "income": { "qic": 1 } }
+    },
+    {
+      "id": 9,
+      "a": { "type": "income", "income": { "credits": 4 } },
+      "b": { "type": "passBonus", "discriminator": "gaiaPlanets", "vp": 1 }
+    },
+    {
+      "id": 5,
+      "a": { "type": "income", "income": { "ore": 1 } },
+      "b": { "type": "passBonus", "discriminator": "mines", "vp": 1 }
     }
   ]
 }

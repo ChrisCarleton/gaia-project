@@ -67,9 +67,10 @@ export class Game implements State {
             ? {
                 type: hex.planet.type,
                 hasLantidMine: hex.planet.hasLantidMine,
-                player: hex.planet.player
-                  ? players[hex.planet.player]
-                  : undefined,
+                player:
+                  typeof hex.planet.player === 'number'
+                    ? players[hex.planet.player]
+                    : undefined,
                 structure: hex.planet.structure,
               }
             : undefined,
@@ -82,6 +83,7 @@ export class Game implements State {
 
     context.currentPlayer = players[gameData.currentPlayer];
     context.currentRound = gameData.currentRound;
+    context.roundBoosters = [...gameData.roundBoosters];
 
     return context;
   }
@@ -211,8 +213,10 @@ export class Game implements State {
         },
         research: player.research,
         resources: player.resources,
+        roundBooster: player.roundBooster,
         vp: player.vp,
       })),
+      roundBoosters: [...this.context.roundBoosters],
     };
   }
 

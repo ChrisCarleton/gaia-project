@@ -61,10 +61,13 @@ export abstract class FactionBase implements Faction {
       { knowledge: 3 },
       { knowledge: 4 },
     ],
-    [StructureType.PlanetaryInstitute]: {
-      chargePower: 4,
-      powerNodes: 1,
-    },
+    [StructureType.PlanetaryInstitute]: [
+      {},
+      {
+        chargePower: 4,
+        powerNodes: 1,
+      },
+    ],
   };
 
   get acadamyBonuses(): [Readonly<AcadamyBonus>, Readonly<AcadamyBonus>] {

@@ -61,6 +61,8 @@ export class PlayerFactory {
     player.resources.ore = playerData.resources.ore;
     player.resources.qic = playerData.resources.qic;
 
+    player.roundBooster = playerData.roundBooster;
+
     player.vp = playerData.vp;
 
     // Scan the map to place the player's structures.

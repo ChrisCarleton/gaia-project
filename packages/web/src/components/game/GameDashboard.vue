@@ -106,7 +106,7 @@ import {
 } from '@gaia-project/engine';
 import { computed, reactive, ref } from 'vue';
 
-import SavedGameState from './game-context.json';
+import SavedGameState from '../../views/game-context.json';
 
 interface GameState {
   allowedActions: Set<GameAction>;

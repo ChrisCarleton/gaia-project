@@ -104,7 +104,7 @@ export type FactionIncome = {
   [StructureType.Mine]: IncomeArray;
   [StructureType.TradingStation]: IncomeArray;
   [StructureType.ResearchLab]: IncomeArray;
-  [StructureType.PlanetaryInstitute]: Readonly<Income>;
+  [StructureType.PlanetaryInstitute]: IncomeArray;
 };
 
 export enum FreeAction {
