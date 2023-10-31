@@ -11,7 +11,7 @@
   />
 
   <SerializationDialog
-    :game="gameState.serializedGameState"
+    :game="currentGameSnapshot"
     :visible="showSerializationDialog"
     @close="showSerializationDialog = false"
   />
@@ -82,7 +82,7 @@ import BuildFirstMineTile from '@/components/game/BuildFirstMineTile.vue';
 import PlayerInfoTile from '@/components/game/PlayerInfoTile.vue';
 import RenderWindow from '@/components/game/RenderWindow.vue';
 import { HexHighlightStatus } from '@/graphics/map';
-import { Action, useStore } from '@/store';
+import { Action, Mutation, useStore } from '@/store';
 import {
   ClickStrategies,
   HighlightStrategies,
@@ -104,9 +104,12 @@ import {
   MapHex,
   PlayerFactory,
 } from '@gaia-project/engine';
+import { SerializedGameContext } from '@gaia-project/engine/src/core/serialization';
 import { computed, reactive, ref } from 'vue';
 
-import SavedGameState from '../../views/game-context.json';
+interface GameDashboardProps {
+  context: SerializedGameContext | undefined;
+}
 
 interface GameState {
   allowedActions: Set<GameAction>;
@@ -115,8 +118,9 @@ interface GameState {
   playerRankings?: Readonly<Player[]>;
   round: number;
   selectingRoundBooster: boolean;
-  serializedGameState: unknown;
 }
+
+const props = defineProps<GameDashboardProps>();
 
 const store = useStore();
 
@@ -125,12 +129,12 @@ const gameState = reactive<GameState>({
   gameOver: false,
   round: 0,
   selectingRoundBooster: false,
-  serializedGameState: {},
 });
 const viewState = ref<PlayerViewState>(PlayerViewState.Players);
 const highlightStatus = ref<HexHighlightStatus>(HexHighlightStatus.Neutral);
 const renderWindow = ref<InstanceType<typeof RenderWindow> | null>();
 const roundBoosters = computed(() => game.context.roundBoosters);
+const currentGameSnapshot = computed(() => store.state.currentGameSnapshot);
 
 const currentHex = ref<MapHex | undefined>();
 const showSerializationDialog = ref(false);
@@ -140,8 +144,9 @@ events.subscribe(EventType.AwaitingPlayerInput, (e) => {
   if (e.type === EventType.AwaitingPlayerInput) {
     gameState.currentPlayer = e.player;
     gameState.allowedActions = new Set<GameAction>(e.allowedActions);
-    gameState.serializedGameState = game.serialize();
     viewState.value = PlayerViewState.Players;
+
+    store.commit(Mutation.GameSnapshot, game.serialize());
   }
 });
 
@@ -174,16 +179,20 @@ events.subscribe(EventType.GameEnded, (e) => {
 
 const factionFactory = new FactionFactory();
 const playerFactory = new PlayerFactory(events, factionFactory);
-// const players = [
-//   playerFactory.createPlayer('0', FactionType.Terrans, 'Julian'),
-//   playerFactory.createPlayer('1', FactionType.Ambas, 'Bubbles'),
-//   playerFactory.createPlayer('2', FactionType.BalTaks, 'Ricky'),
-// ];
 
-// const map = new BasicMapModel().createMap(players.length);
-// const game = Game.beginNewGame(players, map, events);
+let game: Game;
+if (props.context) {
+  game = Game.resumeGame(props.context, playerFactory, events);
+} else {
+  const players = [
+    playerFactory.createPlayer('0', FactionType.Terrans, 'Julian'),
+    playerFactory.createPlayer('1', FactionType.Ambas, 'Bubbles'),
+    playerFactory.createPlayer('2', FactionType.BalTaks, 'Ricky'),
+  ];
 
-const game = Game.resumeGame(SavedGameState, playerFactory, events);
+  const map = new BasicMapModel().createMap(players.length);
+  game = Game.beginNewGame(players, map, events);
+}
 
 function onHexHighlight(mapHex: MapHex) {
   currentHex.value = mapHex;

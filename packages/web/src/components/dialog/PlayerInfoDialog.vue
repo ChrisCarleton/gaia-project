@@ -142,10 +142,9 @@ function getIncomeForStructure(type: StructureType): string {
 
     case StructureType.PlanetaryInstitute:
       if (deployed) {
-        const income = player.faction.income[StructureType.PlanetaryInstitute];
-        return `Gain ${income.powerNodes ?? 0} power nodes; charge ${
-          income.chargePower ?? 0
-        } power nodes.`;
+        const { powerNodes, chargePower } =
+          player.faction.income[type][deployed];
+        return `Gain ${powerNodes} power nodes & charge ${chargePower} power nodes.`;
       }
 
       return 'none';
