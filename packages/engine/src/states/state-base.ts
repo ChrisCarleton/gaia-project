@@ -7,6 +7,7 @@ import {
   GameContext,
   GameState,
   MapHex,
+  ResearchArea,
   RoundBooster,
   State,
 } from '../interfaces';
@@ -31,7 +32,7 @@ export abstract class StateBase implements State {
     throw ActionNotSupportedError;
   }
 
-  startGaiaProject(): void {
+  startGaiaProject(location: MapHex): void {
     throw ActionNotSupportedError;
   }
 
@@ -43,7 +44,7 @@ export abstract class StateBase implements State {
     throw ActionNotSupportedError;
   }
 
-  advanceResearch(): void {
+  advanceResearch(area: ResearchArea): void {
     throw ActionNotSupportedError;
   }
 

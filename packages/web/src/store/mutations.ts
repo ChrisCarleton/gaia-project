@@ -10,6 +10,14 @@ export const mutations: MutationTree<GaiaProjectState> = {
     state.currentGameSnapshot = payload;
   },
 
+  [Mutation.LoadGame](state, payload: SerializedGameContext) {
+    state.gameState = payload;
+  },
+
+  [Mutation.RestartGame](state) {
+    state.gameState = undefined;
+  },
+
   [Mutation.SignInUser](state, payload: User) {
     state.currentUser = payload;
   },

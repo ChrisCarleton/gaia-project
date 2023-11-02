@@ -29,7 +29,7 @@ export class ChooseFirstRoundBoostersState extends StateBase {
     this.events.publish({
       type: EventType.AwaitingPlayerInput,
       gameState: GameState.ChooseFirstRoundBoosters,
-      allowedActions: [GameAction.Pass],
+      allowedActions: [GameAction.SelectRoundBooster],
       player: this.context.players[this.player],
     });
   }

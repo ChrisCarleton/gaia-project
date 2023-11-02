@@ -60,7 +60,7 @@ import { RoundBooster } from '@gaia-project/engine';
 import { ref } from 'vue';
 
 interface RoundBoostersDialogProps {
-  boosters: RoundBooster[];
+  boosters: Readonly<RoundBooster[]>;
   showCancel?: boolean;
   visible: boolean;
 }

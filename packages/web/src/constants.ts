@@ -1,4 +1,9 @@
-import { FactionType, PlanetType, StructureType } from '@gaia-project/engine';
+import {
+  FactionType,
+  PlanetType,
+  ResearchArea,
+  StructureType,
+} from '@gaia-project/engine';
 
 export const FactionTypeNames: Record<FactionType, string> = {
   [FactionType.Ambas]: 'Ambas',
@@ -27,6 +32,15 @@ export const PlanetTypeNames: Record<PlanetType, string> = {
   [PlanetType.Titanium]: 'Titanium',
   [PlanetType.Transdim]: 'Transdim',
   [PlanetType.Volcanic]: 'Volcanic',
+} as const;
+
+export const ResearchAreaNames: Record<ResearchArea, string> = {
+  [ResearchArea.AI]: 'AI',
+  [ResearchArea.Economics]: 'Economics',
+  [ResearchArea.Gaia]: 'Gaiaforming',
+  [ResearchArea.Navigation]: 'Navigation',
+  [ResearchArea.Science]: 'Science',
+  [ResearchArea.Terraforming]: 'Terraforming',
 } as const;
 
 export const StructureTypeNamesPlural: Record<StructureType, string> = {

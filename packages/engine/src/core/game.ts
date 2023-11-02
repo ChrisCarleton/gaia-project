@@ -1,4 +1,11 @@
-import { EventArgs, FactionType, Map, PlayerFactory, RoundBooster } from '..';
+import {
+  EventArgs,
+  FactionType,
+  Map,
+  PlayerFactory,
+  ResearchArea,
+  RoundBooster,
+} from '..';
 import {
   ErrorCode,
   EventHandler,
@@ -140,8 +147,8 @@ export class Game implements State {
     this._state.buildMine(location);
   }
 
-  startGaiaProject(): void {
-    this._state.startGaiaProject();
+  startGaiaProject(location: MapHex): void {
+    this._state.startGaiaProject(location);
   }
 
   upgradeStructure(): void {
@@ -152,8 +159,8 @@ export class Game implements State {
     this._state.formFederation();
   }
 
-  advanceResearch(): void {
-    this._state.advanceResearch();
+  advanceResearch(area: ResearchArea): void {
+    this._state.advanceResearch(area);
   }
 
   powerOrQicAction(): void {

@@ -8,6 +8,7 @@ export enum Action {
 export enum Mutation {
   GameSnapshot = 'gameSnapshot',
   LoadGame = 'loadGame',
+  RestartGame = 'restartGame',
 
   SignInUser = 'signInUser',
   SignOutUser = 'signOutUser',

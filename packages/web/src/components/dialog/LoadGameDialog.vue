@@ -53,6 +53,7 @@ import { reactive } from 'vue';
 
 interface LoadGameDialogState {
   contextText: string;
+  parsedContext?: SerializedGameContext;
 }
 
 interface LoadGameDialogProps {
@@ -73,8 +74,18 @@ const emit = defineEmits<{
 }>();
 
 function isValidGameContext(value: string): ValidatorResponse {
-  const result = GameContextSchema.safeParse(value);
+  let parsedJSON: unknown;
+  try {
+    parsedJSON = JSON.parse(value);
+  } catch {
+    return {
+      $valid: false,
+    };
+  }
+
+  const result = GameContextSchema.safeParse(parsedJSON);
   if (result.success) {
+    data.parsedContext = result.data;
     return {
       $valid: true,
     };
@@ -100,7 +111,7 @@ const v$ = useVuelidate(validation, data);
 async function onLoad(): Promise<void> {
   const isValid = await v$.value.$validate();
   if (isValid) {
-    emit('load', GameContextSchema.parse(data.contextText));
+    emit('load', data.parsedContext!);
   }
 }
 </script>

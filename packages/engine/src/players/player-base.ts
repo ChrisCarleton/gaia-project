@@ -73,7 +73,7 @@ export abstract class PlayerBase implements Player {
     this.scoringTrackPositionB = 0;
     this.vp = 10;
 
-    events.subscribe(EventType.IncomeGained, this.onIncomeReceived);
+    events.subscribe(EventType.IncomeGained, this.onIncomeReceived.bind(this));
     events.subscribe(EventType.MineBuilt, this.onMineBuilt.bind(this));
     events.subscribe(EventType.ResourcesSpent, this.onResourcesSpent);
     events.subscribe(

@@ -11,6 +11,9 @@ export enum ErrorCode {
 
   // Invalid action errors
   InvalidMinePlacement,
+
+  // Resource issues
+  InsufficientPower,
 }
 
 export class GPError extends Error {

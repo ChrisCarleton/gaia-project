@@ -29,6 +29,7 @@
     </div>
 
     <div v-if="currentUser" class="navbar-end">
+      <a click="navbar-item" @click="onRestartGame"> Start New Game </a>
       <a class="navbar-item" @click="state.showLoadGameDialog = true">
         Load Game
       </a>
@@ -66,6 +67,7 @@
     </div>
 
     <div v-else class="navbar-end">
+      <a class="navbar-item" @click="onRestartGame"> Start New Game </a>
       <a class="navbar-item" @click="state.showLoadGameDialog = true">
         Load Game
       </a>
@@ -111,5 +113,10 @@ router.beforeEach(() => {
 
 function onLoad(context: SerializedGameContext) {
   store.commit(Mutation.LoadGame, context);
+  state.showLoadGameDialog = false;
+}
+
+function onRestartGame(): void {
+  store.commit(Mutation.RestartGame);
 }
 </script>

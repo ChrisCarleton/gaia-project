@@ -92,6 +92,12 @@ export interface PowerCycleManager extends Readonly<PowerCycle> {
   addNodes(nodes: number): void;
   removeNodes(nodes: number): void;
   chargeNodes(nodes: number): number;
+  spendNodes(nodes: number): void;
+
+  // Gaia?
+  allocateGaiaNodes(nodes: number): void;
+  restoreGaiaNodes(isTerrans?: boolean): void;
+
   setValues(values: PowerCycle): void;
 }
 
@@ -228,7 +234,9 @@ export interface RoundBooster {
 
 export interface RoundScoringTile {}
 
-export interface FinalScoringTile {}
+export interface FinalScoringTile {
+  neutralPlayerRank: number;
+}
 
 export interface Round {
   scoringTile: RoundScoringTile;
@@ -246,7 +254,10 @@ export interface GameContext {
 }
 
 export enum GameState {
+  ActionPhase,
   ChooseFirstRoundBoosters = 'chooseFirstRoundBoosters',
+  CleanupPhase = 'cleanupPhase',
+  GaiaPhase = 'gaiaPhase',
   GameEnded = 'gameEnded',
   GameNotStarted = 'gameNotStarted',
   BuildFirstMines = 'pickFirstMines',
@@ -255,7 +266,15 @@ export enum GameState {
 
 export enum GameAction {
   BuildMine = 'buildMine',
+  FormFederation = 'formFederation',
+  Free = 'free',
+  GaiaProject = 'gaiaProject',
   Pass = 'pass',
+  PowerOrQic = 'powerOrQIC',
+  Research = 'research',
+  SelectRoundBooster = 'selectRoundBooster',
+  Special = 'special',
+  UpgradeStructure = 'upgradeStructure',
 }
 
 export type ChangeStateFunction = (nextState: State) => void;
@@ -267,10 +286,10 @@ export interface State {
 
   // Player actions
   buildMine(location: MapHex): void;
-  startGaiaProject(): void;
+  startGaiaProject(location: MapHex): void;
   upgradeStructure(): void;
   formFederation(): void;
-  advanceResearch(): void;
+  advanceResearch(area: ResearchArea): void;
   powerOrQicAction(): void;
   specialAction(): void;
   freeAction(): void;

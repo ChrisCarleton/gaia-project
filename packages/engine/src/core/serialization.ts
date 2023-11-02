@@ -47,6 +47,11 @@ const RoundBoosterSchema = z.object({
   b: RoundBoosterBonusSchema,
 });
 
+const ActionPhaseStateSchema = z.object({
+  type: z.literal(GameState.ActionPhase),
+  player: z.number().int(),
+});
+
 const BuildFirstMinesStateSchema = z.object({
   type: z.literal(GameState.BuildFirstMines),
   pass: z.nativeEnum(BuildFirstMinesPass),
@@ -59,6 +64,12 @@ const ChooseFirstRoundBoostersStateSchema = z.object({
 });
 
 // No variablity... just the state type.
+const CleanupPhaseStateSchema = z.object({
+  type: z.literal(GameState.CleanupPhase),
+});
+const GaiaPhaseStateSchema = z.object({
+  type: z.literal(GameState.GaiaPhase),
+});
 const GameEndedStateSchema = z.object({
   type: z.literal(GameState.GameEnded),
 });
@@ -70,8 +81,11 @@ const IncomePhaseStateSchema = z.object({
 });
 
 const StateSchema = z.discriminatedUnion('type', [
+  ActionPhaseStateSchema,
   BuildFirstMinesStateSchema,
+  CleanupPhaseStateSchema,
   ChooseFirstRoundBoostersStateSchema,
+  GaiaPhaseStateSchema,
   GameEndedStateSchema,
   GameNotStartedStateSchema,
   IncomePhaseStateSchema,
