@@ -35,9 +35,9 @@ export const PlanetTypeNames: Record<PlanetType, string> = {
 } as const;
 
 export const ResearchAreaNames: Record<ResearchArea, string> = {
-  [ResearchArea.AI]: 'AI',
-  [ResearchArea.Economics]: 'Economics',
-  [ResearchArea.Gaia]: 'Gaiaforming',
+  [ResearchArea.AI]: 'Artificial Intelligence',
+  [ResearchArea.Economics]: 'Economy',
+  [ResearchArea.Gaia]: 'Gaia Project',
   [ResearchArea.Navigation]: 'Navigation',
   [ResearchArea.Science]: 'Science',
   [ResearchArea.Terraforming]: 'Terraforming',
