@@ -3,7 +3,10 @@
     :player-rankings="gameState.playerRankings"
     :visible="gameState.gameOver"
   />
-  <ResearchDialog :player="gameState.currentPlayer" />
+  <ResearchDialog
+    :player="gameState.currentPlayer"
+    :visible="gameState.showResearchDialog"
+  />
   <RoundBoostersDialog
     :boosters="gameState.roundBoosters"
     :visible="gameState.selectingRoundBooster"
@@ -134,6 +137,7 @@ interface GameState {
   round: number;
   roundBoosters: Readonly<RoundBooster[]>;
   selectingRoundBooster: boolean;
+  showResearchDialog: boolean;
   showSerializationDialog: boolean;
 }
 
@@ -152,6 +156,7 @@ const gameState = reactive<GameState>({
   round: 0,
   roundBoosters: [],
   selectingRoundBooster: false,
+  showResearchDialog: false,
   showSerializationDialog: false,
 });
 

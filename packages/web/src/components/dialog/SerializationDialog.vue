@@ -38,7 +38,7 @@ defineEmits<{
 }>();
 
 function copyJSON() {
-  navigator.clipboard.writeText(data.value);
+  navigator.clipboard.writeText(JSON.stringify(props.game, null, 2));
   showCopied.value = true;
   setTimeout(() => (showCopied.value = false), 2500);
 }
