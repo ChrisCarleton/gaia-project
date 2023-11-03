@@ -1,6 +1,5 @@
 import { ErrorCode, GPError, PowerCycle, PowerCycleManager } from '..';
 
-// TODO: Add logic for brainstone
 export class DefaultPowerCycleManager implements PowerCycleManager {
   private readonly _powerCycle: PowerCycle;
 
