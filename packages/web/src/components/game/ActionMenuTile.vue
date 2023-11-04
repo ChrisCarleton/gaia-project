@@ -1,18 +1,34 @@
 <template>
-  <div class="tile is-child box">
-    <aside class="menu">
-      <p class="menu-label">Select Action</p>
-      <ul class="menu-list">
-        <li v-if="allowedActions.has(GameAction.BuildMine)">
-          <a @click="$emit('buildmine')">Build mine</a>
-        </li>
+  <nav class="tile is-child panel">
+    <p class="panel-heading">Select Action</p>
+    <a
+      v-if="allowedActions.has(GameAction.BuildMine)"
+      class="panel-block"
+      @click="$emit('buildmine')"
+      >Build mine</a
+    >
 
-        <li v-if="allowedActions.has(GameAction.Pass)">
-          <a @click="$emit('pass')">Pass</a>
-        </li>
-      </ul>
-    </aside>
-  </div>
+    <a
+      v-if="allowedActions.has(GameAction.SelectRoundBooster)"
+      class="panel-block"
+      @click="$emit('pass')"
+      >Select Round Booster</a
+    >
+
+    <a
+      v-if="allowedActions.has(GameAction.Research)"
+      class="panel-block"
+      @click="$emit('research')"
+      >Research</a
+    >
+
+    <a
+      v-if="allowedActions.has(GameAction.Pass)"
+      class="panel-block"
+      @click="$emit('pass')"
+      >Pass</a
+    >
+  </nav>
 </template>
 
 <script lang="ts" setup>
@@ -27,6 +43,7 @@ defineProps<ActionMenuTileProps>();
 
 defineEmits<{
   (e: 'buildmine'): void;
+  (e: 'research'): void;
   (e: 'pass'): void;
 }>();
 </script>

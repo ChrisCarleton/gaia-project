@@ -1,4 +1,4 @@
-import { AxialCoordinates, MapHex, PlanetType } from '../../interfaces';
+import { AxialCoordinates, MapHex } from '../../interfaces';
 import { MapTileData } from './map-tile-data';
 
 function parseStringCoordinates(val: string): AxialCoordinates {
@@ -10,9 +10,11 @@ export function getMapTiles(): MapHex[][] {
   return MapTileData.map((tile) => {
     const hexes: MapHex[] = Object.entries(tile).map(([key, value]) => ({
       location: parseStringCoordinates(key),
-      planet: value ? (value as PlanetType) : undefined,
-      isSatellite: false,
-      lantidCohabitation: false,
+      planet: value
+        ? {
+            type: value,
+          }
+        : undefined,
     }));
     return hexes;
   });

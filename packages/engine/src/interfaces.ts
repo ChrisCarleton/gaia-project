@@ -1,3 +1,4 @@
+import { SerializedPlayer, SerializedState } from './core/serialization';
 import { FactionType } from './factions';
 
 // Map
@@ -18,11 +19,13 @@ export type AxialCoordinates = [number, number];
 
 export interface MapHex {
   location: AxialCoordinates;
-  planet?: PlanetType;
-  player?: Player;
-  structure?: StructureType;
-  isSatellite: boolean;
-  lantidCohabitation: boolean;
+  planet?: {
+    type: PlanetType;
+    player?: Player;
+    structure?: StructureType;
+    hasLantidMine?: boolean;
+  };
+  hasIvitsStation?: boolean;
 }
 
 export interface Map {
@@ -81,13 +84,7 @@ export interface PowerCycle {
   level2: number;
   level3: number;
   gaia: number;
-}
-
-export interface PowerCycleManager extends Readonly<PowerCycle> {
-  readonly totalUncharged: number;
-  addNodes(nodes: number): void;
-  removeNodes(nodes: number): void;
-  chargeNodes(nodes: number): number;
+  brainStonePosition?: 'gaia' | 1 | 2 | 3;
 }
 
 export type ResearchProgress = {
@@ -99,7 +96,7 @@ export type FactionIncome = {
   [StructureType.Mine]: IncomeArray;
   [StructureType.TradingStation]: IncomeArray;
   [StructureType.ResearchLab]: IncomeArray;
-  [StructureType.PlanetaryInstitute]: Readonly<Income>;
+  [StructureType.PlanetaryInstitute]: IncomeArray;
 };
 
 export enum FreeAction {
@@ -141,15 +138,18 @@ export interface Faction {
 export interface PlayerStructureData {
   available: number;
   active: number;
-  locations: Readonly<MapHex[]>;
+  locations: Readonly<AxialCoordinates[]>;
 
   setMax(max: number): void;
-  place(location: MapHex): void;
-  remove(location: MapHex): void;
+  place(location: AxialCoordinates): void;
+  remove(location: AxialCoordinates): void;
 }
 
 export type PlayerStructures = {
-  [key in StructureType]: Pick<PlayerStructureData, 'available' | 'locations'>;
+  [key in StructureType]: Pick<
+    PlayerStructureData,
+    'active' | 'available' | 'locations'
+  >;
 };
 
 export type ScoringTrackPositions = {
@@ -160,14 +160,16 @@ export type ScoringTrackPositions = {
 export interface Player {
   readonly id: string;
   readonly faction: Faction;
-  name: string;
-  powerCycle: Readonly<PowerCycle>;
-  resources: Readonly<Resources>;
-  research: Readonly<ResearchProgress>;
-  structures: Readonly<PlayerStructures>;
-  roundBooster?: RoundBooster;
-  scoringTrackPositions: Readonly<ScoringTrackPositions>;
-  vp: number;
+  readonly name: string;
+  readonly powerCycle: Readonly<PowerCycle>;
+  readonly resources: Readonly<Resources>;
+  readonly research: Readonly<ResearchProgress>;
+  readonly structures: Readonly<PlayerStructures>;
+  readonly roundBooster?: Readonly<RoundBooster>;
+  readonly scoringTrackPositions: Readonly<ScoringTrackPositions>;
+  readonly vp: number;
+
+  toJSON(): SerializedPlayer;
 }
 
 export interface ResearchBoard {
@@ -218,7 +220,9 @@ export interface RoundBooster {
 
 export interface RoundScoringTile {}
 
-export interface FinalScoringTile {}
+export interface FinalScoringTile {
+  neutralPlayerRank: number;
+}
 
 export interface Round {
   scoringTile: RoundScoringTile;
@@ -233,12 +237,13 @@ export interface GameContext {
   currentPlayer: Player | undefined;
   allowedActions: Readonly<GameAction[]>;
   roundBoosters: RoundBooster[];
-
-  toJSON(): Record<string, unknown>;
 }
 
 export enum GameState {
+  ActionPhase,
   ChooseFirstRoundBoosters = 'chooseFirstRoundBoosters',
+  CleanupPhase = 'cleanupPhase',
+  GaiaPhase = 'gaiaPhase',
   GameEnded = 'gameEnded',
   GameNotStarted = 'gameNotStarted',
   BuildFirstMines = 'pickFirstMines',
@@ -247,7 +252,15 @@ export enum GameState {
 
 export enum GameAction {
   BuildMine = 'buildMine',
+  FormFederation = 'formFederation',
+  Free = 'free',
+  GaiaProject = 'gaiaProject',
   Pass = 'pass',
+  PowerOrQic = 'powerOrQIC',
+  Research = 'research',
+  SelectRoundBooster = 'selectRoundBooster',
+  Special = 'special',
+  UpgradeStructure = 'upgradeStructure',
 }
 
 export type ChangeStateFunction = (nextState: State) => void;
@@ -259,12 +272,14 @@ export interface State {
 
   // Player actions
   buildMine(location: MapHex): void;
-  startGaiaProject(): void;
+  startGaiaProject(location: MapHex): void;
   upgradeStructure(): void;
   formFederation(): void;
-  advanceResearch(): void;
+  advanceResearch(area: ResearchArea): void;
   powerOrQicAction(): void;
   specialAction(): void;
   freeAction(): void;
   chooseRoundBoosterAndPass(roundBooster: RoundBooster): void;
+
+  toJSON(): SerializedState;
 }

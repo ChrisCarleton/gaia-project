@@ -8,6 +8,7 @@ export function createTestContext(data?: Partial<GameContext>): GameContext {
     advancedTechTile: {},
     standardTechTiles: [],
   };
+
   return {
     currentRound: data?.currentRound ?? 1,
     roundBoosters: data?.roundBoosters ?? [],
@@ -32,9 +33,5 @@ export function createTestContext(data?: Partial<GameContext>): GameContext {
     rounds: data?.rounds ?? [],
     allowedActions: [],
     currentPlayer: undefined,
-
-    toJSON() {
-      return {};
-    },
   };
 }

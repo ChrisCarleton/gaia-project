@@ -1,4 +1,5 @@
 import { ErrorCode, GPError, GameState, State } from '..';
+import { SerializedState } from '../core/serialization';
 
 const NotStartedError = new GPError(
   ErrorCode.GameNotStarted,
@@ -58,5 +59,11 @@ export class GameNotStartedState implements State {
 
   doEndGameScoring(): void {
     throw NotStartedError;
+  }
+
+  toJSON(): SerializedState {
+    return {
+      type: GameState.GameNotStarted,
+    };
   }
 }

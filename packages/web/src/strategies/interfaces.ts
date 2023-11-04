@@ -1,7 +1,7 @@
 import { HexHighlightStatus } from '@/graphics/map';
 import { Game, MapHex, Player } from '@gaia-project/engine';
 
-export enum PlayerViewState {
+export enum MenuPanelState {
   Players,
   BuildFirstMine,
 }

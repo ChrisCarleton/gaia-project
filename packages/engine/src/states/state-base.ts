@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { SerializedState } from '../core/serialization';
 import { ErrorCode, GPError } from '../errors';
 import { Observer } from '../events';
 import {
@@ -5,6 +7,7 @@ import {
   GameContext,
   GameState,
   MapHex,
+  ResearchArea,
   RoundBooster,
   State,
 } from '../interfaces';
@@ -23,12 +26,13 @@ export abstract class StateBase implements State {
 
   abstract readonly currentState: GameState;
   abstract init(): void;
+  abstract toJSON(): SerializedState;
 
   buildMine(location: MapHex): void {
     throw ActionNotSupportedError;
   }
 
-  startGaiaProject(): void {
+  startGaiaProject(location: MapHex): void {
     throw ActionNotSupportedError;
   }
 
@@ -40,7 +44,7 @@ export abstract class StateBase implements State {
     throw ActionNotSupportedError;
   }
 
-  advanceResearch(): void {
+  advanceResearch(area: ResearchArea): void {
     throw ActionNotSupportedError;
   }
 

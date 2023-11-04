@@ -15,6 +15,21 @@
       "runtimeArgs": ["--nolazy", "-r", "ts-node/register/transpile-only"],
       "envFile": ".env",
       "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Engine Tests",
+      "cwd": "${workspaceFolder}/packages/engine",
+      "runtimeArgs": [
+        "--inspect-brk",
+        "${workspaceRoot}/node_modules/.bin/jest",
+        "--runInBand",
+        "--coverage",
+        "false"
+      ],
+      "envFile": ".env",
+      "console": "integratedTerminal"
     }
   ]
 }

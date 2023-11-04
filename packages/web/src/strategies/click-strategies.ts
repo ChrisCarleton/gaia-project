@@ -1,6 +1,6 @@
 import { Game, MapHex, Player } from '@gaia-project/engine';
 
-import { ClickStrategy, PlayerViewState } from './interfaces';
+import { ClickStrategy, MenuPanelState } from './interfaces';
 
 class GenericClickStrategy implements ClickStrategy {
   async handleClick(): Promise<void> {
@@ -14,7 +14,7 @@ class BuildFirstMineClickStrategy implements ClickStrategy {
   }
 }
 
-export const ClickStrategies: Record<PlayerViewState, ClickStrategy> = {
-  [PlayerViewState.Players]: new GenericClickStrategy(),
-  [PlayerViewState.BuildFirstMine]: new BuildFirstMineClickStrategy(),
+export const ClickStrategies: Record<MenuPanelState, ClickStrategy> = {
+  [MenuPanelState.Players]: new GenericClickStrategy(),
+  [MenuPanelState.BuildFirstMine]: new BuildFirstMineClickStrategy(),
 } as const;

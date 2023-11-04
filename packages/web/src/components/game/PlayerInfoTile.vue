@@ -1,4 +1,9 @@
 <template>
+  <PlayerInfoDialog
+    :player="player"
+    :visible="showInfoDialog"
+    @close="toggleDialogVisible"
+  />
   <div class="tile is-parent is-3">
     <div class="tile is-child card">
       <!-- Header -->
@@ -21,14 +26,19 @@
                 </span>
               </div>
             </div>
-          </div>
-
-          <div class="level-right">
             <div class="level-item">
               <div>
                 <span class="heading">Homeworld</span>
                 <span class="is-family-code"> {{ homeworldType }} </span>
               </div>
+            </div>
+          </div>
+
+          <div class="level-right">
+            <div class="level-item">
+              <button class="button is-ghost" @click="toggleDialogVisible">
+                more...
+              </button>
             </div>
           </div>
         </div>
@@ -83,35 +93,15 @@
           </div>
         </div>
       </div>
-
-      <!-- Footer -->
-      <!-- <footer v-if="isActive" class="card-footer">
-        <a
-          v-if="allowedActions.has(GameAction.BuildMine)"
-          href="#"
-          class="card-footer-item"
-          @click="$emit('buildmine')"
-        >
-          Build Mine
-        </a>
-
-        <a
-          v-if="allowedActions.has(GameAction.Pass)"
-          href="#"
-          class="card-footer-item"
-          @click="$emit('pass')"
-        >
-          Pass
-        </a>
-      </footer> -->
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import PlayerInfoDialog from '@/components/dialog/PlayerInfoDialog.vue';
 import { FactionTypeNames, PlanetTypeNames } from '@/constants';
 import { Player } from '@gaia-project/engine';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 interface PlayerInfoTileProps {
   player: Player;
@@ -119,6 +109,8 @@ interface PlayerInfoTileProps {
 }
 
 const props = defineProps<PlayerInfoTileProps>();
+const showInfoDialog = ref(false);
+
 defineEmits<{
   (e: 'buildmine'): void;
   (e: 'pass'): void;
@@ -130,4 +122,8 @@ const factionName = computed(
 const homeworldType = computed(
   () => PlanetTypeNames[props.player.faction.homeWorld],
 );
+
+function toggleDialogVisible() {
+  showInfoDialog.value = !showInfoDialog.value;
+}
 </script>

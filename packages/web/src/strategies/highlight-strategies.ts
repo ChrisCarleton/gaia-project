@@ -1,7 +1,7 @@
 import { HexHighlightStatus } from '@/graphics/map';
 import { MapHex, Player } from '@gaia-project/engine';
 
-import { HighlightStrategy, PlayerViewState } from './interfaces';
+import { HighlightStrategy, MenuPanelState } from './interfaces';
 
 class GenericHighlightStrategy implements HighlightStrategy {
   determineHighlight(): HexHighlightStatus {
@@ -13,12 +13,12 @@ class BuildFirstMinesHighlightStrategy implements HighlightStrategy {
   determineHighlight(player: Player, mapHex: MapHex): HexHighlightStatus {
     if (mapHex.planet) {
       // Planet must match the user's homeworld
-      if (mapHex.planet !== player.faction.homeWorld) {
+      if (mapHex.planet.type !== player.faction.homeWorld) {
         return HexHighlightStatus.Bad;
       }
 
       // Planet cannot be occupied or have a structure built on it.
-      if (mapHex.player || mapHex.structure) {
+      if (mapHex.planet.player || mapHex.planet.structure) {
         return HexHighlightStatus.Bad;
       }
 
@@ -31,7 +31,7 @@ class BuildFirstMinesHighlightStrategy implements HighlightStrategy {
 
 const genericStrategy = new GenericHighlightStrategy();
 
-export const HighlightStrategies: Record<PlayerViewState, HighlightStrategy> = {
-  [PlayerViewState.BuildFirstMine]: new BuildFirstMinesHighlightStrategy(),
-  [PlayerViewState.Players]: genericStrategy,
+export const HighlightStrategies: Record<MenuPanelState, HighlightStrategy> = {
+  [MenuPanelState.BuildFirstMine]: new BuildFirstMinesHighlightStrategy(),
+  [MenuPanelState.Players]: genericStrategy,
 } as const;

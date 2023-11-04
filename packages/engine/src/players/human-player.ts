@@ -13,7 +13,7 @@ export class HumanPlayer extends PlayerBase {
   get name(): string {
     return this._name;
   }
-  set name(value: string) {
-    this._name = value;
+  set name(val: string) {
+    this._name = val;
   }
 }

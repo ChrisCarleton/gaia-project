@@ -1,4 +1,9 @@
 <template>
+  <LoadGameDialog
+    :visible="state.showLoadGameDialog"
+    @cancel="state.showLoadGameDialog = false"
+    @load="onLoad"
+  />
   <nav class="navbar is-black" role="navigation">
     <div class="navbar-brand">
       <RouterLink class="navbar-item" to="/">
@@ -24,10 +29,15 @@
     </div>
 
     <div v-if="currentUser" class="navbar-end">
+      <a click="navbar-item" @click="onRestartGame"> Start New Game </a>
+      <a class="navbar-item" @click="state.showLoadGameDialog = true">
+        Load Game
+      </a>
+
       <div
         ref="dropdownElement"
         :class="`navbar-item has-dropdown${
-          dropdownExpanded ? ' is-active' : ''
+          state.dropdownExpanded ? ' is-active' : ''
         }`"
       >
         <a @click="toggleDropdown">
@@ -43,7 +53,7 @@
           </div>
         </a>
 
-        <div v-if="dropdownExpanded" class="navbar-dropdown">
+        <div v-if="state.dropdownExpanded" class="navbar-dropdown">
           <RouterLink to="/profile">
             <div class="navbar-item">Profile</div>
           </RouterLink>
@@ -56,32 +66,57 @@
       </div>
     </div>
 
-    <div v-else class="navbar-end"></div>
+    <div v-else class="navbar-end">
+      <a class="navbar-item" @click="onRestartGame"> Start New Game </a>
+      <a class="navbar-item" @click="state.showLoadGameDialog = true">
+        Load Game
+      </a>
+    </div>
   </nav>
 </template>
 
 <script lang="ts" setup>
+import LoadGameDialog from '@/components/dialog/LoadGameDialog.vue';
 import router from '@/router';
-import { useStore } from '@/store';
+import { Mutation, useStore } from '@/store';
 import { useDetectOutsideClick } from '@/utils';
-import { computed, ref } from 'vue';
+import { SerializedGameContext } from '@gaia-project/engine/src/core/serialization';
+import { computed, reactive, ref } from 'vue';
+
+interface NavbarState {
+  dropdownExpanded: boolean;
+  showLoadGameDialog: boolean;
+}
 
 const store = useStore();
 const currentUser = computed(() => store.state.currentUser);
 const avatar = computed(() => currentUser.value?.avatar ?? '');
-const dropdownExpanded = ref(false);
 const dropdownElement = ref<HTMLDivElement>();
 
+const state = reactive<NavbarState>({
+  dropdownExpanded: false,
+  showLoadGameDialog: false,
+});
+
 function toggleDropdown() {
-  dropdownExpanded.value = !dropdownExpanded.value;
+  state.dropdownExpanded = !state.dropdownExpanded;
 }
 
 // Close the dropdown if the user clicks outside of it.
 useDetectOutsideClick(dropdownElement, () => {
-  dropdownExpanded.value = false;
+  state.dropdownExpanded = false;
 });
 
 router.beforeEach(() => {
-  dropdownExpanded.value = false;
+  state.dropdownExpanded = false;
 });
+
+function onLoad(context: SerializedGameContext) {
+  store.commit(Mutation.LoadGame, context);
+  state.showLoadGameDialog = false;
+}
+
+function onRestartGame(): void {
+  store.commit(Mutation.RestartGame);
+}
 </script>

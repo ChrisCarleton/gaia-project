@@ -100,6 +100,7 @@ export class SceneRenderer {
     this.environmentLights.forEach((light) => {
       this.scene.add(light);
     });
+
     this.scene.add(this.camera);
     this.animate();
   }
@@ -128,8 +129,8 @@ export class SceneRenderer {
     this.events.addListener(e, handler);
   }
 
-  private initMap() {
-    this.game.context.map.hexes().forEach((mapHex) => {
+  private async initMap(): Promise<void> {
+    for await (const mapHex of this.game.context.map.hexes()) {
       const hexMesh = createMapHex(HexRadius);
       this.objLocations[hexMesh.id] = mapHex;
       const v = mapCoordsToWorldCoords(mapHex.location);
@@ -138,12 +139,20 @@ export class SceneRenderer {
       this.scene.add(hexMesh);
 
       if (mapHex.planet) {
-        const planet = createPlanet(3.5, mapHex.planet, v);
+        const planet = createPlanet(3.5, mapHex.planet.type, v);
         this.sprites.push(planet);
         this.objLocations[planet.mesh.id] = mapHex;
         this.scene.add(planet.mesh);
+
+        if (mapHex.planet.structure && mapHex.planet.player) {
+          await this.addStructure(
+            mapHex,
+            mapHex.planet.player,
+            mapHex.planet.structure,
+          );
+        }
       }
-    });
+    }
   }
 
   private onMouseMove(e: MouseEvent) {
