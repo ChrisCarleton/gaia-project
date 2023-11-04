@@ -1,6 +1,6 @@
-import { ErrorCode, GPError, PowerCycle, PowerCycleManager } from '..';
+import { ErrorCode, GPError, PowerCycle } from '..';
 
-export class DefaultPowerCycleManager implements PowerCycleManager {
+export class PowerCycleManager implements Readonly<PowerCycle> {
   private readonly _powerCycle: PowerCycle;
 
   constructor(powerCycle?: PowerCycle) {
@@ -17,39 +17,50 @@ export class DefaultPowerCycleManager implements PowerCycleManager {
     this._powerCycle.level1 += nodes;
   }
 
-  removeNodes(nodes: number): number {
+  removeNodes(nodes: number): void {
     // Remove nodes with the least charge first and remove fully-charged nodes as a last resort.
     if (nodes < 0) throw new Error('Cannot remove a negative number of nodes.');
-
-    let removed = 0;
-
-    if (this._powerCycle.level1 >= nodes) {
-      this._powerCycle.level1 -= nodes;
-      return nodes;
-    } else if (this._powerCycle.level1 > 0) {
-      removed += nodes;
-      nodes -= this._powerCycle.level1;
-      this._powerCycle.level1 = 0;
+    if (nodes > this.totalNodesInCycle) {
+      throw new GPError(
+        ErrorCode.InsufficientPower,
+        `Unable to remove ${nodes} from your power cycle. You do not have that many nodes.`,
+      );
     }
 
-    if (this._powerCycle.level2 >= nodes) {
-      this._powerCycle.level2 -= nodes;
-      return removed + nodes;
-    } else if (this._powerCycle.level2 > 0) {
-      removed += nodes;
-      nodes -= this._powerCycle.level1;
-      this._powerCycle.level2 = 0;
-    }
+    const removingAllNodes = nodes === this.totalNodesInCycle;
+    this.removeNodesFromPowerCycle(nodes);
 
-    if (this._powerCycle.level3 >= nodes) {
-      this._powerCycle.level3 -= nodes;
-      nodes += removed;
-    } else if (this._powerCycle.level3 > 0) {
-      removed += nodes;
-      this._powerCycle.level3 = 0;
-    }
+    // Avoid taking the brainstone except as a last resort.
+    const brainstoneInCycle =
+      this.brainStonePosition === 1 ||
+      this.brainStonePosition === 2 ||
+      this.brainStonePosition === 3;
 
-    return removed;
+    if (brainstoneInCycle) {
+      if (removingAllNodes) {
+        // Remove the brainstone only as a last resort if we're removing ALL nodes from the cycle.
+        this._powerCycle.brainStonePosition = undefined;
+      } else {
+        // Otherwise, make sure the brainstone stays where it is and sacrifice a more highly charged node in its place, if necessary.
+        // If there are other nodes available in the brainstone's present level we can just assume that one of those were used.
+        if (this.brainStonePosition === 1 && this.level1 === 0) {
+          // Find an available node in level 2 or 3 to use instead.
+          this._powerCycle.level1 += 1;
+          if (this.level2 > 0) {
+            console.log('Situation handled');
+            this._powerCycle.level2 -= 1;
+          } else {
+            this._powerCycle.level3 -= 1;
+          }
+        }
+
+        if (this.brainStonePosition === 2 && this.level2 === 0) {
+          // Remove an available node in level 3 instead.
+          this._powerCycle.level2 += 1;
+          this._powerCycle.level3 -= 1;
+        }
+      }
+    }
   }
 
   chargeNodes(nodes: number): number {
@@ -98,6 +109,10 @@ export class DefaultPowerCycleManager implements PowerCycleManager {
   }
 
   spendNodes(nodes: number): void {
+    if (nodes < 0) {
+      throw new Error('You cannot spend a negative number of nodes.');
+    }
+
     // Validate that we have enough power available. (Brainstone counts as three nodes if it is fully charged.)
     if (nodes > this.totalCharged) {
       throw new GPError(
@@ -108,12 +123,24 @@ export class DefaultPowerCycleManager implements PowerCycleManager {
 
     /*
       Special logic applies if the brainstone is fully-charged:
-      If we need to spend three or more power, or if we do not have sufficient normal power nodes, we'll use the brainstone.
-      The brainstone counts as three nodes on its own, so that "lowers the cost" by two.
+        - If we need to spend three or more power, we'll use the brainstone.
+        - If we need to spend less than three power, use regular nodes.
+        - If we need to spend less than three power but we do not have sufficient regular nodes, we need sacrifice the brainstone.
     */
-    if (this.brainStonePosition === 3 && (nodes >= 3 || this.level3 < nodes)) {
-      nodes -= 2;
-      this._powerCycle.brainStonePosition = 1;
+    if (this.brainStonePosition === 3) {
+      if (nodes >= 3) {
+        // Use the brainstone to "lower the cost" by two.
+        nodes -= 2;
+        this._powerCycle.brainStonePosition = 1;
+      }
+
+      if (this.level3 - 1 < nodes) {
+        // If we do not have sufficient regular nodes then we have to sacrifice the brainstone.
+        this._powerCycle.level1 += 1;
+        this._powerCycle.level3 -= 1;
+        this._powerCycle.brainStonePosition = 1;
+        return;
+      }
     }
 
     // Otherwise, just spend nodes regularly.
@@ -122,69 +149,17 @@ export class DefaultPowerCycleManager implements PowerCycleManager {
   }
 
   allocateGaiaNodes(nodes: number): void {
-    // Ensure that we have enough power nodes in the cycle (not including the Gaia area) to perform the action.
-    const totalNodesInCycle = this.level1 + this.level2 + this.level3;
-    if (nodes > totalNodesInCycle) {
-      throw new GPError(
-        ErrorCode.InsufficientPower,
-        `You must have ${nodes} power nodes available in your power cycle to allocate to your Gaia Project but you only have ${totalNodesInCycle}.`,
-      );
-    }
-
-    // Take least charged nodes first.
-    if (this.level1 < nodes) {
-      nodes -= this.level1;
-      this._powerCycle.gaia += this.level1;
-      this._powerCycle.level1 = 0;
-    } else {
-      this._powerCycle.gaia += nodes;
-      this._powerCycle.level1 -= nodes;
-      return;
-    }
-
-    if (this.level2 < nodes) {
-      nodes -= this.level2;
-      this._powerCycle.gaia += this.level2;
-      this._powerCycle.level2 = 0;
-    } else {
-      this._powerCycle.gaia += nodes;
-      this._powerCycle.level2 -= nodes;
-      return;
-    }
-
-    this._powerCycle.gaia += nodes;
-    this._powerCycle.level3 -= nodes;
-
-    // Avoid taking the brainstone except as a last resort.
     const brainstoneInCycle =
       this.brainStonePosition === 1 ||
       this.brainStonePosition === 2 ||
       this.brainStonePosition === 3;
-    const mustUseBrainstone = brainstoneInCycle && nodes === totalNodesInCycle;
+    const allocateBrainstone =
+      brainstoneInCycle && nodes === this.totalNodesInCycle;
 
-    if (brainstoneInCycle) {
-      if (mustUseBrainstone) {
-        this._powerCycle.brainStonePosition = 'gaia';
-      } else {
-        // Make sure the brainstone stays where it is and sacrifice a more highly charged node in its place, if necessary.
-        // If there are other nodes available in the brainstone's present level we can just assume that one of those were used.
-        if (this.brainStonePosition === 1 && this.level1 === 0) {
-          // Find an available node in level 2 or 3 to use instead.
-          this._powerCycle.level1 += 1;
-          if (this.level2 > 0) {
-            this._powerCycle.level2 -= 1;
-          } else {
-            this._powerCycle.level3 -= 1;
-          }
-        }
+    this.removeNodes(nodes);
+    this._powerCycle.gaia += nodes;
 
-        if (this.brainStonePosition === 2 && this.level2 === 0) {
-          // Use an available node in level 3 instead.
-          this._powerCycle.level2 += 1;
-          this._powerCycle.level3 -= 1;
-        }
-      }
-    }
+    if (allocateBrainstone) this._powerCycle.brainStonePosition = 'gaia';
   }
 
   restoreGaiaNodes(isTerrans: boolean = false): void {
@@ -237,5 +212,34 @@ export class DefaultPowerCycleManager implements PowerCycleManager {
   get totalCharged(): number {
     // If the brainstone is one of the level 3 nodes, it behaves as if it were three nodes.
     return this.brainStonePosition === 3 ? this.level3 + 2 : this.level3;
+  }
+
+  get totalNodesInCycle(): number {
+    return this.level1 + this.level2 + this.level3;
+  }
+
+  private removeNodesFromPowerCycle(nodes: number): void {
+    if (this.level1 >= nodes) {
+      // We can remove all nodes from level 1.
+      this._powerCycle.level1 -= nodes;
+      return;
+    } else {
+      // Remove all nodes from level 1 and then continue looking.
+      nodes -= this.level1;
+      this._powerCycle.level1 = 0;
+    }
+
+    if (this.level2 >= nodes) {
+      // We can remove remaining nodes from level 2.
+      this._powerCycle.level2 -= nodes;
+      return;
+    } else {
+      // Remove all nodes from level 2 and then continue looking.
+      nodes -= this.level2;
+      this._powerCycle.level2 = 0;
+    }
+
+    // Remove remaining nodes from level 3.
+    this._powerCycle.level3 -= nodes;
   }
 }

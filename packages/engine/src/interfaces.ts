@@ -87,20 +87,6 @@ export interface PowerCycle {
   brainStonePosition?: 'gaia' | 1 | 2 | 3;
 }
 
-export interface PowerCycleManager extends Readonly<PowerCycle> {
-  readonly totalUncharged: number;
-  addNodes(nodes: number): void;
-  removeNodes(nodes: number): void;
-  chargeNodes(nodes: number): number;
-  spendNodes(nodes: number): void;
-
-  // Gaia?
-  allocateGaiaNodes(nodes: number): void;
-  restoreGaiaNodes(isTerrans?: boolean): void;
-
-  setValues(values: PowerCycle): void;
-}
-
 export type ResearchProgress = {
   [key in ResearchArea]: number;
 };

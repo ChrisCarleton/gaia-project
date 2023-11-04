@@ -7,14 +7,13 @@ import {
   PlayerStructureData,
   PlayerStructures,
   PowerCycle,
-  PowerCycleManager,
   ResearchProgress,
   Resources,
   RoundBooster,
   ScoringTrackPositions,
   StructureType,
 } from '..';
-import { DefaultPowerCycleManager } from '../core/default-power-cycle-manager';
+import { PowerCycleManager } from '../core/power-cycle-manager';
 import { SerializedPlayer } from '../core/serialization';
 import { PlayerStructureDataInstance } from './player-structure-data';
 
@@ -38,9 +37,7 @@ export abstract class PlayerBase implements Player {
     this.faction = faction;
     this.events = events;
 
-    this.powerCycleManager = new DefaultPowerCycleManager(
-      faction.startingPowerCycle,
-    );
+    this.powerCycleManager = new PowerCycleManager(faction.startingPowerCycle);
 
     this.research = faction.startingResearch;
     this.resources = faction.startingResources;
