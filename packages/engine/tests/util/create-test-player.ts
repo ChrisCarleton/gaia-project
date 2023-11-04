@@ -1,25 +1,71 @@
-import { Faction, LocalObserver, Observer, Player } from '../../src';
-import { Terrans } from '../../src/factions/terrans';
-import { PlayerBase } from '../../src/players/player-base';
+import { mockDeep } from 'jest-mock-extended';
+import { v4 as uuid } from 'uuid';
 
-export type TestPlayerOptions = {
+import {
+  Faction,
+  FactionHomeWorlds,
+  FactionType,
+  Player,
+  PlayerStructures,
+  PowerCycle,
+  ResearchProgress,
+  Resources,
+} from '../../src';
+import { SerializedPlayer } from '../../src/core/serialization';
+
+type TestPlayerOptions = {
+  faction: FactionType;
   id: string;
   name: string;
-  faction: Faction;
-  events: Observer;
+  powerCycle: Partial<PowerCycle>;
+  research: Partial<ResearchProgress>;
+  resources: Partial<Resources>;
+  vp: number;
 };
 
-export class TestPlayer extends PlayerBase {
-  name: string;
-
-  constructor(options: Partial<TestPlayerOptions> = {}) {
-    const { id, name, faction, events } = options;
-    const e = events ?? new LocalObserver();
-    super(id ?? '', faction ?? new Terrans(e), e);
-    this.name = name ?? 'Testy McTesterson III';
-  }
-}
-
 export function createTestPlayer(options?: Partial<TestPlayerOptions>): Player {
-  return new TestPlayer(options);
+  const factionType = options?.faction ?? FactionType.Terrans;
+  const faction = mockDeep<Faction>({
+    factionType,
+    homeWorld: FactionHomeWorlds[factionType],
+  });
+
+  return {
+    id: options?.id ?? uuid(),
+    faction,
+    name: options?.name ?? 'Testy McTesterson',
+    powerCycle: {
+      level1: 0,
+      level2: 0,
+      level3: 0,
+      gaia: 0,
+      ...options?.powerCycle,
+    },
+    research: {
+      ai: 0,
+      economics: 0,
+      gaia: 0,
+      navigation: 0,
+      science: 0,
+      terraforming: 0,
+      ...options?.research,
+    },
+    resources: {
+      credits: 0,
+      knowledge: 0,
+      ore: 0,
+      qic: 0,
+      ...options?.resources,
+    },
+    scoringTrackPositions: {
+      trackA: 0,
+      trackB: 0,
+    },
+    structures: mockDeep<PlayerStructures>(),
+    vp: options?.vp ?? 0,
+
+    toJSON(): SerializedPlayer {
+      return mockDeep<SerializedPlayer>();
+    },
+  };
 }
