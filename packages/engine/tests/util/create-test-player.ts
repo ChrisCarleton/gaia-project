@@ -10,6 +10,7 @@ import {
   PowerCycle,
   ResearchProgress,
   Resources,
+  RoundBooster,
   StructureType,
 } from '../../src';
 import { SerializedPlayer } from '../../src/core/serialization';
@@ -20,6 +21,7 @@ type TestPlayerOptions = {
   id: string;
   name: string;
   powerCycle: Partial<PowerCycle>;
+  roundBooster: RoundBooster;
   research: Partial<ResearchProgress>;
   resources: Partial<Resources>;
   structures: Partial<Record<StructureType, number>>;
@@ -85,6 +87,7 @@ export function createTestPlayer(options?: Partial<TestPlayerOptions>): Player {
       gaia: 0,
       ...options?.powerCycle,
     },
+    roundBooster: options?.roundBooster,
     research: {
       ai: 0,
       economics: 0,

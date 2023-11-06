@@ -3,14 +3,18 @@ import { mockDeep } from 'jest-mock-extended';
 import {
   BasicMapModel,
   EventType,
-  FactionType,
+  FreeAction,
   GameContext,
   GameState,
+  ResearchArea,
   ResearchBoard,
+  ResearchProgress,
   RoundBooster,
-  State,
+  RoundBoosterBonusType,
+  RoundBoosterPassBonusDiscriminator,
   StructureType,
 } from '../../../src';
+import { GaiaPhaseState } from '../../../src/states/gaia-phase-state';
 import { IncomePhaseState } from '../../../src/states/income-phase-state';
 import { TestObserver, createTestPlayer } from '../../util';
 
@@ -18,7 +22,8 @@ const events = new TestObserver();
 const map = new BasicMapModel().createMap(2);
 
 type PlayerOptions = {
-  rountBooster: RoundBooster;
+  research: Partial<Record<ResearchArea, number>>;
+  roundBooster: RoundBooster;
   structures: Partial<Record<StructureType, number>>;
 };
 
@@ -28,6 +33,8 @@ describe('Income Phase State', () => {
       createTestPlayer({
         id: '0',
         name: 'Test Player',
+        research: options?.research,
+        roundBooster: options?.roundBooster,
         structures: options?.structures,
       }),
     ];
@@ -43,8 +50,6 @@ describe('Income Phase State', () => {
       rounds: [],
     };
   }
-
-  beforeEach(() => {});
 
   afterEach(() => {
     events.reset();
@@ -74,18 +79,120 @@ describe('Income Phase State', () => {
     expect(args.type).toBe(EventType.IncomeGained);
     if (args.type === EventType.IncomeGained) {
       expect(args.player).toBe(context.players[0]);
-      expect(args.income).toEqual({});
+      expect(args.income).toMatchSnapshot();
     }
     expect(changeState).toBeCalledTimes(1);
   });
 
-  it('will award income from round boosters', () => {});
+  const roundBoosters: Record<string, RoundBooster> = {
+    'no income': {
+      id: 0,
+      a: {
+        type: RoundBoosterBonusType.BonusOnPass,
+        discriminator: RoundBoosterPassBonusDiscriminator.Mines,
+        vp: 2,
+      },
+      b: {
+        type: RoundBoosterBonusType.Action,
+        action: FreeAction.BuildMineOrStartGaiaWithRangeBoost,
+      },
+    },
+    'single income': {
+      id: 1,
+      a: {
+        type: RoundBoosterBonusType.BonusOnPass,
+        discriminator:
+          RoundBoosterPassBonusDiscriminator.PlanetaryInstitutesAndAcadamies,
+        vp: 4,
+      },
+      b: {
+        type: RoundBoosterBonusType.Income,
+        income: {
+          qic: 1,
+          powerNodes: 2,
+        },
+      },
+    },
+    'dual income': {
+      id: 2,
+      a: {
+        type: RoundBoosterBonusType.Income,
+        income: {
+          ore: 7,
+          knowledge: 2,
+        },
+      },
+      b: {
+        type: RoundBoosterBonusType.Income,
+        income: {
+          credits: 4,
+          powerNodes: 2,
+        },
+      },
+    },
+  };
 
-  it('will award income from research progress', () => {});
+  Object.entries(roundBoosters).forEach(([test, roundBooster]) => {
+    it(`will award income from round boosters: ${test}`, () => {
+      const context = createContext({ roundBooster });
+      const changeState = jest.fn();
+      const state = new IncomePhaseState(context, events, changeState);
+
+      state.init();
+
+      expect(events.events).toHaveLength(1);
+      const [args] = events.events;
+      expect(args.type).toBe(EventType.IncomeGained);
+      if (args.type === EventType.IncomeGained) {
+        expect(args.player).toBe(context.players[0]);
+        expect(args.income).toMatchSnapshot();
+      }
+      expect(changeState).toBeCalledTimes(1);
+    });
+  });
+
+  const ResearchVariations: Partial<ResearchProgress>[] = [
+    { economics: 0, science: 0 },
+    { economics: 0, science: 2 },
+    { economics: 0, science: 4 },
+    { economics: 0, science: 5 },
+    { economics: 1, science: 0 },
+    { economics: 3, science: 0 },
+    { economics: 5, science: 0 },
+    { economics: 2, science: 3 },
+    { economics: 4, science: 2 },
+  ];
+
+  ResearchVariations.forEach((research) => {
+    it(`will award income from research progress: Economics ${research.economics}, Science ${research.science}`, () => {
+      const context = createContext({ research });
+      const changeState = jest.fn();
+      const state = new IncomePhaseState(context, events, changeState);
+
+      state.init();
+
+      expect(events.events).toHaveLength(1);
+      const [args] = events.events;
+      expect(args.type).toBe(EventType.IncomeGained);
+      if (args.type === EventType.IncomeGained) {
+        expect(args.player).toBe(context.players[0]);
+        expect(args.income).toMatchSnapshot();
+      }
+    });
+  });
 
   it.todo('Test income from Tech Tiles');
 
-  it('will combine all income correctly', () => {});
+  it.todo('will combine all income correctly');
 
-  it('will advance to the first Gaia phase when done', () => {});
+  it('will advance to the first Gaia phase when done', () => {
+    const context = createContext();
+    const changeState = jest.fn();
+    const state = new IncomePhaseState(context, events, changeState);
+
+    state.init();
+
+    expect(changeState).toBeCalledTimes(1);
+    expect(changeState.mock.lastCall![0]).toBeInstanceOf(GaiaPhaseState);
+  });
 });
