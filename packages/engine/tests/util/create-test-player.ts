@@ -10,8 +10,10 @@ import {
   PowerCycle,
   ResearchProgress,
   Resources,
+  StructureType,
 } from '../../src';
 import { SerializedPlayer } from '../../src/core/serialization';
+import { DefaultStructureIncome } from '../../src/factions/faction-defaults';
 
 type TestPlayerOptions = {
   faction: FactionType;
@@ -20,6 +22,7 @@ type TestPlayerOptions = {
   powerCycle: Partial<PowerCycle>;
   research: Partial<ResearchProgress>;
   resources: Partial<Resources>;
+  structures: Partial<Record<StructureType, number>>;
   vp: number;
 };
 
@@ -28,7 +31,48 @@ export function createTestPlayer(options?: Partial<TestPlayerOptions>): Player {
   const faction = mockDeep<Faction>({
     factionType,
     homeWorld: FactionHomeWorlds[factionType],
+    income: DefaultStructureIncome,
   });
+
+  const structures: PlayerStructures = options?.structures
+    ? {
+        academy: {
+          active: options.structures.academy ?? 0,
+          available: 2,
+          locations: [],
+        },
+        gaiaformer: {
+          active: options.structures.gaiaformer ?? 0,
+          available: 0,
+          locations: [],
+        },
+        mine: {
+          active: options.structures.mine ?? 0,
+          available: 8,
+          locations: [],
+        },
+        planetaryInstitute: {
+          active: options.structures.planetaryInstitute ?? 0,
+          available: 1,
+          locations: [],
+        },
+        researchLab: {
+          active: options.structures.researchLab ?? 0,
+          available: 3,
+          locations: [],
+        },
+        satellite: {
+          active: options.structures.satellite ?? 0,
+          available: 25,
+          locations: [],
+        },
+        tradingStation: {
+          active: options.structures.tradingStation ?? 0,
+          available: 4,
+          locations: [],
+        },
+      }
+    : mockDeep<PlayerStructures>();
 
   return {
     id: options?.id ?? uuid(),
@@ -61,7 +105,7 @@ export function createTestPlayer(options?: Partial<TestPlayerOptions>): Player {
       trackA: 0,
       trackB: 0,
     },
-    structures: mockDeep<PlayerStructures>(),
+    structures,
     vp: options?.vp ?? 0,
 
     toJSON(): SerializedPlayer {
