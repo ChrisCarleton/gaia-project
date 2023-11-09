@@ -1,132 +1,132 @@
 <template>
-  <DialogBase
-    title="Research"
-    :visible="visible && !!player"
-    @close="$emit('close')"
-  >
-    <template #default>
-      <div v-if="player">
-        <div v-for="area in ResearchAreas" :key="area" class="field">
-          <label class="label">{{ ResearchAreaNames[area] }}</label>
-          <div class="field is-grouped">
-            <div class="control">
-              <label class="label">{{ player.research[area] }} / 5</label>
-            </div>
-
-            <div class="control is-expanded">
-              <progress
-                class="progress is-large"
-                max="5"
-                :value="player.research[area]"
-              >
-                {{ player.research[area] }}
-              </progress>
-            </div>
-
-            <div v-if="data.confirmArea === undefined" class="control">
-              <button
-                class="button is-primary is-small"
-                :disabled="!hasSufficientKnowledge"
-                @click="() => onResearchClicked(area)"
-              >
-                +1
-              </button>
-            </div>
-
-            <div v-if="data.confirmArea === undefined" class="control">
-              <button
-                class="button is-ghost is-small"
-                @click="toggleExpandedInfo(area)"
-              >
-                ...
-              </button>
-            </div>
-
-            <div v-if="data.confirmArea === area" class="control">
-              <button
-                class="button is-success is-small"
-                title="Spend 4 knowledge and upgrade"
-                :disabled="!hasSufficientKnowledge"
-                @click="() => onConfirmResearch(area)"
-              >
-                ✔️
-              </button>
-            </div>
-
-            <div v-if="data.confirmArea === area" class="control">
-              <button
-                class="button is-danger is-small"
-                :disabled="!hasSufficientKnowledge"
-                @click="onCancelResearch"
-              >
-                ❌
-              </button>
+  <DetailsViewBase title="Research" :visible="visible" @close="$emit('close')">
+    <div v-if="player">
+      <div class="box content block">
+        <div class="field is-horizontal">
+          <div class="field-label">
+            <label class="label is-normal">Knowledge:</label>
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <div class="control">
+                <span
+                  :class="`is-family-code ${
+                    hasSufficientKnowledge
+                      ? 'has-text-success'
+                      : 'has-text-danger'
+                  }`"
+                >
+                  {{ player.resources.knowledge }} / 4
+                </span>
+                <span class="help is-danger">
+                  Insufficient knowledge! You must have at least 4 knowledge to
+                  advance your research.
+                </span>
+              </div>
             </div>
           </div>
+        </div>
+      </div>
+      <div v-for="area in ResearchAreas" :key="area" class="field">
+        <label class="label">{{ ResearchAreaNames[area] }}</label>
+        <div class="field is-grouped">
+          <div class="control">
+            <label class="label">{{ player.research[area] }} / 5</label>
+          </div>
 
-          <article v-if="data.expandedArea === area" class="message is-small">
-            <div class="message-body">
-              <table class="table is-narrow is-hoverable is-striped">
-                <thead>
-                  <th>Level</th>
-                  <th>Description</th>
-                </thead>
-                <tbody>
-                  <tr
-                    v-for="(description, index) in ResearchAreaDescriptions[
-                      area
-                    ]"
-                    :key="index"
+          <div class="control is-expanded">
+            <progress
+              class="progress is-large"
+              max="5"
+              :value="player.research[area]"
+            >
+              {{ player.research[area] }}
+            </progress>
+          </div>
+
+          <div v-if="data.confirmArea === undefined" class="control">
+            <button
+              class="button is-primary is-small"
+              :disabled="!hasSufficientKnowledge"
+              @click="() => onResearchClicked(area)"
+            >
+              +1
+            </button>
+          </div>
+
+          <div v-if="data.confirmArea === undefined" class="control">
+            <button
+              class="button is-ghost is-small"
+              @click="toggleExpandedInfo(area)"
+            >
+              ...
+            </button>
+          </div>
+
+          <div v-if="data.confirmArea === area" class="control">
+            <button
+              class="button is-success is-small"
+              title="Spend 4 knowledge and upgrade"
+              :disabled="!hasSufficientKnowledge"
+              @click="() => onConfirmResearch(area)"
+            >
+              ✔️
+            </button>
+          </div>
+
+          <div v-if="data.confirmArea === area" class="control">
+            <button
+              class="button is-danger is-small"
+              :disabled="!hasSufficientKnowledge"
+              @click="onCancelResearch"
+            >
+              ❌
+            </button>
+          </div>
+        </div>
+
+        <article v-if="data.expandedArea === area" class="message is-small">
+          <div class="message-body">
+            <table class="table is-narrow is-hoverable is-striped">
+              <thead>
+                <th>Level</th>
+                <th>Description</th>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(description, index) in ResearchAreaDescriptions[area]"
+                  :key="index"
+                >
+                  <td class="has-text-right">
+                    <strong>{{ index }}</strong>
+                  </td>
+                  <td
+                    v-if="index === player.research[area]"
+                    class="has-text-warning"
                   >
-                    <td class="has-text-right">
-                      <strong>{{ index }}</strong>
-                    </td>
-                    <td
-                      v-if="index === player.research[area]"
-                      class="has-text-warning"
-                    >
-                      <strong>{{ description }}</strong>
-                    </td>
-                    <td v-else-if="index < player.research[area]">
-                      <s>{{ description }}</s>
-                    </td>
-                    <td v-else>
-                      {{ description }}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </article>
-        </div>
-      </div>
-    </template>
-    <template #buttons>
-      <button class="button" @click="$emit('close')">Done</button>
-
-      <div class="field is-horizontal">
-        <div class="field-label">
-          <label class="label">Knowledge:</label>
-        </div>
-        <div class="field-body">
-          <div
-            :class="`control has-text-${
-              hasSufficientKnowledge ? 'success' : 'danger'
-            }`"
-          >
-            <span>{{ knowledge }} / 4</span>
+                    <strong>{{ description }}</strong>
+                  </td>
+                  <td v-else-if="index < player.research[area]">
+                    <s>{{ description }}</s>
+                  </td>
+                  <td v-else>
+                    {{ description }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-        </div>
+        </article>
       </div>
-    </template>
-  </DialogBase>
+    </div>
+  </DetailsViewBase>
 </template>
 
 <script lang="ts" setup>
-import DialogBase from '@/components/dialog/DialogBase.vue';
-import { ResearchAreaNames } from '@/constants';
-import { Player, ResearchArea } from '@gaia-project/engine';
+import { Player, ResearchArea, ResearchAreaNames } from '@gaia-project/engine';
 import { computed, reactive } from 'vue';
+
+import DetailsViewBase from './DetailsViewBase.vue';
 
 interface ResearchDialogProps {
   player: Player | undefined;
@@ -197,7 +197,7 @@ The Lost Planet counts as its own planet type, and as a planet with a mine. You 
 const ResearchAreas = Object.values(ResearchArea);
 
 const props = withDefaults(defineProps<ResearchDialogProps>(), {
-  visible: true,
+  visible: false,
 });
 
 const data = reactive<ResearchDialogData>({
@@ -211,7 +211,7 @@ const emit = defineEmits<{
 }>();
 
 const knowledge = computed(() => props.player?.resources.knowledge ?? 0);
-const hasSufficientKnowledge = computed(() => knowledge.value >= 1);
+const hasSufficientKnowledge = computed(() => knowledge.value >= 4);
 
 function onResearchClicked(area: ResearchArea): void {
   data.confirmArea = area;

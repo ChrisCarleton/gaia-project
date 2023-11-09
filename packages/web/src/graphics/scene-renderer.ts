@@ -130,7 +130,7 @@ export class SceneRenderer {
   }
 
   private async initMap(): Promise<void> {
-    for await (const mapHex of this.game.context.map.hexes()) {
+    for await (const mapHex of Object.values(this.game.context.map)) {
       const hexMesh = createMapHex(HexRadius);
       this.objLocations[hexMesh.id] = mapHex;
       const v = mapCoordsToWorldCoords(mapHex.location);

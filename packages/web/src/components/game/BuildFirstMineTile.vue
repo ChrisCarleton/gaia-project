@@ -32,8 +32,7 @@
 </template>
 
 <script lang="ts" setup>
-import { PlanetTypeNames } from '@/constants';
-import { Player } from '@gaia-project/engine';
+import { PlanetTypeNames, Player } from '@gaia-project/engine';
 
 interface BuildFirstMineTileProps {
   player: Player;

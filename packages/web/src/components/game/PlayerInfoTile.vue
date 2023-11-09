@@ -1,8 +1,8 @@
 <template>
-  <PlayerInfoDialog
+  <PlayerDetails
     :player="player"
-    :visible="showInfoDialog"
-    @close="toggleDialogVisible"
+    :visible="showDetails"
+    @close="toggleDetailsVisible"
   />
   <div class="tile is-parent is-3">
     <div class="tile is-child card">
@@ -36,7 +36,7 @@
 
           <div class="level-right">
             <div class="level-item">
-              <button class="button is-ghost" @click="toggleDialogVisible">
+              <button class="button is-ghost" @click="toggleDetailsVisible">
                 more...
               </button>
             </div>
@@ -98,9 +98,12 @@
 </template>
 
 <script lang="ts" setup>
-import PlayerInfoDialog from '@/components/dialog/PlayerInfoDialog.vue';
-import { FactionTypeNames, PlanetTypeNames } from '@/constants';
-import { Player } from '@gaia-project/engine';
+import PlayerDetails from '@/components/details/PlayerDetails.vue';
+import {
+  FactionTypeNames,
+  PlanetTypeNames,
+  Player,
+} from '@gaia-project/engine';
 import { computed, ref } from 'vue';
 
 interface PlayerInfoTileProps {
@@ -109,7 +112,7 @@ interface PlayerInfoTileProps {
 }
 
 const props = defineProps<PlayerInfoTileProps>();
-const showInfoDialog = ref(false);
+const showDetails = ref(false);
 
 defineEmits<{
   (e: 'buildmine'): void;
@@ -123,7 +126,7 @@ const homeworldType = computed(
   () => PlanetTypeNames[props.player.faction.homeWorld],
 );
 
-function toggleDialogVisible() {
-  showInfoDialog.value = !showInfoDialog.value;
+function toggleDetailsVisible() {
+  showDetails.value = !showDetails.value;
 }
 </script>
