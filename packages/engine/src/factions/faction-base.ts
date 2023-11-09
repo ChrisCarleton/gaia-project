@@ -1,18 +1,22 @@
+import { Observer } from '../events';
 import {
   AcadamyBonus,
   AcadamyBonusType,
   Faction,
   FactionIncome,
+  FactionType,
   FreeAction,
-  Observer,
   PlanetType,
   PowerCycle,
   ResearchProgress,
   Resources,
   StructureType,
-} from '..';
-import { DefaultStructureIncome, DefaultStructures } from './faction-defaults';
-import { FactionType } from './faction-type';
+} from '../interfaces';
+import {
+  DefaultAcadamyBonuses,
+  DefaultStructureIncome,
+  DefaultStructures,
+} from './faction-defaults';
 
 export abstract class FactionBase implements Faction {
   protected events: Observer;
@@ -30,10 +34,7 @@ export abstract class FactionBase implements Faction {
   readonly income: Readonly<FactionIncome> = DefaultStructureIncome;
 
   get acadamyBonuses(): [Readonly<AcadamyBonus>, Readonly<AcadamyBonus>] {
-    return [
-      { type: AcadamyBonusType.Income, income: { knowledge: 2 } },
-      { type: AcadamyBonusType.Action, action: FreeAction.GenerateQIC },
-    ];
+    return DefaultAcadamyBonuses;
   }
 
   get startingStructures(): Readonly<Record<StructureType, number>> {

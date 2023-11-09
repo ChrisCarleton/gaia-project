@@ -1,12 +1,13 @@
+import { Observer } from '../events';
 import {
-  Observer,
+  FactionType,
   PlanetType,
   PowerCycle,
   ResearchProgress,
   Resources,
-} from '..';
+} from '../interfaces';
 import { FactionBase } from './faction-base';
-import { FactionType } from './faction-type';
+import { DefaultStartingResearch } from './faction-defaults';
 
 export class Ambas extends FactionBase {
   constructor(events: Observer) {
@@ -32,12 +33,8 @@ export class Ambas extends FactionBase {
 
   get startingResearch(): Readonly<ResearchProgress> {
     return {
-      ai: 0,
-      gaia: 0,
+      ...DefaultStartingResearch,
       navigation: 1,
-      terraforming: 0,
-      science: 0,
-      economics: 0,
     };
   }
 

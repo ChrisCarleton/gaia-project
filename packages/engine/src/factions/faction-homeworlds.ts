@@ -1,5 +1,4 @@
-import { PlanetType } from '..';
-import { FactionType } from './faction-type';
+import { FactionType, PlanetType } from '../interfaces';
 
 export const FactionHomeWorlds: Record<FactionType, PlanetType> = {
   [FactionType.Ambas]: PlanetType.Swamp,

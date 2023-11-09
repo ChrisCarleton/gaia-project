@@ -3,9 +3,11 @@ import { mockDeep } from 'jest-mock-extended';
 import {
   BasicMapModel,
   EventType,
+  FactionIncome,
   FreeAction,
   GameContext,
   GameState,
+  Income,
   ResearchArea,
   ResearchBoard,
   ResearchProgress,
@@ -25,6 +27,14 @@ type PlayerOptions = {
   research: Partial<Record<ResearchArea, number>>;
   roundBooster: RoundBooster;
   structures: Partial<Record<StructureType, number>>;
+  structureIncome: Partial<FactionIncome>;
+};
+
+const NullStructureIncome: FactionIncome = {
+  [StructureType.Mine]: new Array<Income>(9).fill({}),
+  [StructureType.TradingStation]: new Array<Income>(5).fill({}),
+  [StructureType.PlanetaryInstitute]: [{}, {}],
+  [StructureType.ResearchLab]: new Array<Income>(4).fill({}),
 };
 
 describe('Income Phase State', () => {
@@ -36,6 +46,7 @@ describe('Income Phase State', () => {
         research: options?.research,
         roundBooster: options?.roundBooster,
         structures: options?.structures,
+        structureIncome: options?.structureIncome,
       }),
     ];
 
@@ -134,7 +145,10 @@ describe('Income Phase State', () => {
 
   Object.entries(roundBoosters).forEach(([test, roundBooster]) => {
     it(`will award income from round boosters: ${test}`, () => {
-      const context = createContext({ roundBooster });
+      const context = createContext({
+        roundBooster,
+        structureIncome: NullStructureIncome,
+      });
       const changeState = jest.fn();
       const state = new IncomePhaseState(context, events, changeState);
 
@@ -165,7 +179,10 @@ describe('Income Phase State', () => {
 
   ResearchVariations.forEach((research) => {
     it(`will award income from research progress: Economics ${research.economics}, Science ${research.science}`, () => {
-      const context = createContext({ research });
+      const context = createContext({
+        research,
+        structureIncome: NullStructureIncome,
+      });
       const changeState = jest.fn();
       const state = new IncomePhaseState(context, events, changeState);
 

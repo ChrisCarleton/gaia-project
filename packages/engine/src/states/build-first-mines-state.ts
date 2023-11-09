@@ -2,9 +2,9 @@ import { SerializedState } from '../core/serialization';
 import { ErrorCode, GPError } from '../errors';
 import { EventType } from '../events/event-args';
 import { Observer } from '../events/observer';
-import { FactionType } from '../factions';
 import {
   ChangeStateFunction,
+  FactionType,
   GameAction,
   GameContext,
   GameState,

@@ -1,5 +1,5 @@
 import { AxialCoordinates, Map, MapHex, MapModel } from '../../interfaces';
-import { GameMap } from './game-map';
+import { mapFromHexes } from '../../utils';
 import { getMapTiles } from './map-tiles';
 
 const TileTranslations: AxialCoordinates[] = [
@@ -50,6 +50,6 @@ export class BasicMapModel implements MapModel {
       }
     }
 
-    return new GameMap(hexes);
+    return mapFromHexes(hexes);
   }
 }

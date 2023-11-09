@@ -1,9 +1,9 @@
-import { mockDeep } from 'jest-mock-extended';
 import { v4 as uuid } from 'uuid';
 
 import {
   Faction,
   FactionHomeWorlds,
+  FactionIncome,
   FactionType,
   Player,
   PlayerStructures,
@@ -14,7 +14,12 @@ import {
   StructureType,
 } from '../../src';
 import { SerializedPlayer } from '../../src/core/serialization';
-import { DefaultStructureIncome } from '../../src/factions/faction-defaults';
+import {
+  DefaultAcadamyBonuses,
+  DefaultStartingResearch,
+  DefaultStructureIncome,
+  DefaultStructures,
+} from '../../src/factions/faction-defaults';
 
 type TestPlayerOptions = {
   faction: FactionType;
@@ -24,58 +29,74 @@ type TestPlayerOptions = {
   roundBooster: RoundBooster;
   research: Partial<ResearchProgress>;
   resources: Partial<Resources>;
+  structureIncome: Partial<FactionIncome>;
   structures: Partial<Record<StructureType, number>>;
   vp: number;
 };
 
 export function createTestPlayer(options?: Partial<TestPlayerOptions>): Player {
   const factionType = options?.faction ?? FactionType.Terrans;
-  const faction = mockDeep<Faction>({
+  const faction: Faction = {
     factionType,
     homeWorld: FactionHomeWorlds[factionType],
-    income: DefaultStructureIncome,
-  });
+    income: {
+      ...DefaultStructureIncome,
+      ...options?.structureIncome,
+    },
+    acadamyBonuses: DefaultAcadamyBonuses,
+    startingPowerCycle: {
+      level1: 0,
+      level2: 0,
+      level3: 0,
+      gaia: 0,
+    },
+    startingResearch: DefaultStartingResearch,
+    startingResources: {
+      credits: 0,
+      knowledge: 0,
+      ore: 0,
+      qic: 0,
+    },
+    startingStructures: DefaultStructures,
+  };
 
-  const structures: PlayerStructures = options?.structures
-    ? {
-        academy: {
-          active: options.structures.academy ?? 0,
-          available: 2,
-          locations: [],
-        },
-        gaiaformer: {
-          active: options.structures.gaiaformer ?? 0,
-          available: 0,
-          locations: [],
-        },
-        mine: {
-          active: options.structures.mine ?? 0,
-          available: 8,
-          locations: [],
-        },
-        planetaryInstitute: {
-          active: options.structures.planetaryInstitute ?? 0,
-          available: 1,
-          locations: [],
-        },
-        researchLab: {
-          active: options.structures.researchLab ?? 0,
-          available: 3,
-          locations: [],
-        },
-        satellite: {
-          active: options.structures.satellite ?? 0,
-          available: 25,
-          locations: [],
-        },
-        tradingStation: {
-          active: options.structures.tradingStation ?? 0,
-          available: 4,
-          locations: [],
-        },
-      }
-    : mockDeep<PlayerStructures>();
-
+  const structures: PlayerStructures = {
+    academy: {
+      active: options?.structures?.academy ?? 0,
+      available: 2,
+      locations: [],
+    },
+    gaiaformer: {
+      active: options?.structures?.gaiaformer ?? 0,
+      available: 0,
+      locations: [],
+    },
+    mine: {
+      active: options?.structures?.mine ?? 0,
+      available: 8,
+      locations: [],
+    },
+    planetaryInstitute: {
+      active: options?.structures?.planetaryInstitute ?? 0,
+      available: 1,
+      locations: [],
+    },
+    researchLab: {
+      active: options?.structures?.researchLab ?? 0,
+      available: 3,
+      locations: [],
+    },
+    satellite: {
+      active: options?.structures?.satellite ?? 0,
+      available: 25,
+      locations: [],
+    },
+    tradingStation: {
+      active: options?.structures?.tradingStation ?? 0,
+      available: 4,
+      locations: [],
+    },
+  };
   return {
     id: options?.id ?? uuid(),
     faction,
@@ -112,7 +133,7 @@ export function createTestPlayer(options?: Partial<TestPlayerOptions>): Player {
     vp: options?.vp ?? 0,
 
     toJSON(): SerializedPlayer {
-      return mockDeep<SerializedPlayer>();
+      return {} as SerializedPlayer;
     },
   };
 }

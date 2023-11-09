@@ -12,13 +12,8 @@ export function createTestContext(data?: Partial<GameContext>): GameContext {
   return {
     currentRound: data?.currentRound ?? 1,
     roundBoosters: data?.roundBoosters ?? [],
-    players: data?.players ?? [
-      createTestPlayer(),
-      createTestPlayer(),
-      createTestPlayer(),
-      createTestPlayer(),
-    ],
-    map: data?.map ?? new BasicMapModel().createMap(data?.players?.length ?? 4),
+    players: data?.players ?? [createTestPlayer(), createTestPlayer()],
+    map: data?.map ?? new BasicMapModel().createMap(2),
     researchBoard: data?.researchBoard ?? {
       terraformingFederationToken: {},
       researchTracks: {
@@ -32,6 +27,6 @@ export function createTestContext(data?: Partial<GameContext>): GameContext {
     },
     rounds: data?.rounds ?? [],
     allowedActions: [],
-    currentPlayer: undefined,
+    currentPlayer: data?.currentPlayer,
   };
 }

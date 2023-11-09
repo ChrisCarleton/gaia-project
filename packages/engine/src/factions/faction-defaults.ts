@@ -1,4 +1,28 @@
-import { FactionIncome, StructureType } from '../interfaces';
+import {
+  AcadamyBonus,
+  AcadamyBonusType,
+  FactionIncome,
+  FreeAction,
+  ResearchProgress,
+  StructureType,
+} from '../interfaces';
+
+export const DefaultAcadamyBonuses: [
+  Readonly<AcadamyBonus>,
+  Readonly<AcadamyBonus>,
+] = [
+  { type: AcadamyBonusType.Income, income: { knowledge: 2 } },
+  { type: AcadamyBonusType.Action, action: FreeAction.GenerateQIC },
+];
+
+export const DefaultStartingResearch: ResearchProgress = {
+  ai: 0,
+  gaia: 0,
+  navigation: 0,
+  terraforming: 0,
+  science: 0,
+  economics: 0,
+};
 
 export const DefaultStructures: Record<StructureType, number> = {
   [StructureType.Academy]: 2,

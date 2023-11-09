@@ -1,7 +1,7 @@
-import { Faction, Observer } from '..';
+import { Observer } from '../events';
+import { Faction, FactionType } from '../interfaces';
 import { Ambas } from './ambas';
 import { BalTAks } from './bal-t-aks';
-import { FactionType } from './faction-type';
 import { Terrans } from './terrans';
 
 export class FactionFactory {

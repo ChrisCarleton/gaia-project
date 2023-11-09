@@ -4,6 +4,7 @@ import {
   Income,
   MapHex,
   Player,
+  ResearchArea,
   Resources,
   RoundBooster,
   StructureType,
@@ -11,9 +12,11 @@ import {
 
 export enum EventType {
   AwaitingPlayerInput = 'awaitingPlayerInput',
+  GaiaformerGained = 'gaiaformerGained',
   GameEnded = 'gameEnded',
   MineBuilt = 'mineBuilt',
   IncomeGained = 'incomeGained',
+  ResearchCompleted = 'researchCompleted',
   ResourcesSpent = 'resourcesSpent',
   RoundBoosterSelected = 'roundBooster',
   StructureBuilt = 'structureBuilt',
@@ -25,6 +28,11 @@ type AwaitingPlayerInputEventArgs = {
   player: Player;
   gameState: GameState;
   allowedActions: GameAction[];
+};
+
+type GaiaformerGainedEventArgs = {
+  type: EventType.GaiaformerGained;
+  player: Player;
 };
 
 type GameEndedEventArgs = {
@@ -52,6 +60,12 @@ type IncomeGainedEventArgs = {
   income: Income;
 };
 
+type ResearchCompletedEventArgs = {
+  type: EventType.ResearchCompleted;
+  player: Player;
+  area: ResearchArea;
+};
+
 type ResourcesSpentEventArgs = {
   type: EventType.ResourcesSpent;
   player: Player;
@@ -73,9 +87,11 @@ type VPAwardedEventArgs = {
 
 export type EventArgs =
   | AwaitingPlayerInputEventArgs
+  | GaiaformerGainedEventArgs
   | GameEndedEventArgs
   | IncomeGainedEventArgs
   | MineBuiltEventArgs
+  | ResearchCompletedEventArgs
   | ResourcesSpentEventArgs
   | RoundBoosterSelectedEventArgs
   | StructureBuiltEventArgs

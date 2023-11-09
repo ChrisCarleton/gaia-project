@@ -1,4 +1,5 @@
 import {
+  AxialCoordinates,
   EventArgs,
   FactionType,
   Map,
@@ -25,8 +26,8 @@ import {
 } from '../states/build-first-mines-state';
 import { GameNotStartedState } from '../states/game-not-started-state';
 import { loadState } from '../states/load-state';
+import { mapFromHexes } from '../utils';
 import { DefaultGameContext } from './game-context';
-import { GameMap } from './maps';
 import { RoundBoosters } from './round-boosters';
 import {
   GameContextSchema,
@@ -65,27 +66,26 @@ export class Game implements State {
   }
 
   private reloadGameContext({ gameData, players }: ReloadOptions): GameContext {
-    const map = new GameMap(
-      gameData.map.map((hex) => {
-        const { q, r } = hex.location;
-        return {
-          location: [q, r],
-          planet: hex.planet
-            ? {
-                type: hex.planet.type,
-                hasLantidMine: hex.planet.hasLantidMine,
-                player:
-                  typeof hex.planet.player === 'number'
-                    ? players[hex.planet.player]
-                    : undefined,
-                structure: hex.planet.structure,
-              }
-            : undefined,
-          hasIvitsStation: hex.hasIvitsStation,
-        };
-      }),
-    );
+    const mapHexes = gameData.map.map((hex) => {
+      const { q, r } = hex.location;
+      return {
+        location: [q, r] as AxialCoordinates,
+        planet: hex.planet
+          ? {
+              type: hex.planet.type,
+              hasLantidMine: hex.planet.hasLantidMine,
+              player:
+                typeof hex.planet.player === 'number'
+                  ? players[hex.planet.player]
+                  : undefined,
+              structure: hex.planet.structure,
+            }
+          : undefined,
+        hasIvitsStation: hex.hasIvitsStation,
+      };
+    });
 
+    const map = mapFromHexes(mapHexes);
     const context = new DefaultGameContext(map, players);
 
     context.currentPlayer = players[gameData.currentPlayer];
@@ -191,7 +191,7 @@ export class Game implements State {
         : -1,
       currentRound: this.context.currentRound,
       currentState: this._state.toJSON(),
-      map: this.context.map.hexes().map((hex) => {
+      map: Object.values(this.context.map).map((hex) => {
         const [q, r] = hex.location;
         return {
           location: { q, r },

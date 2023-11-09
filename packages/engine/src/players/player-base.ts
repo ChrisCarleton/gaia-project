@@ -72,6 +72,10 @@ export abstract class PlayerBase implements Player {
 
     events.subscribe(EventType.IncomeGained, this.onIncomeReceived.bind(this));
     events.subscribe(EventType.MineBuilt, this.onMineBuilt.bind(this));
+    events.subscribe(
+      EventType.ResearchCompleted,
+      this.onResearchCompleted.bind(this),
+    );
     events.subscribe(EventType.ResourcesSpent, this.onResourcesSpent);
     events.subscribe(
       EventType.RoundBoosterSelected,
@@ -155,6 +159,12 @@ export abstract class PlayerBase implements Player {
     // Otherwise, charge nodes first to boost the odds that more level 2 nodes get charged to level 3.
     this.powerCycleManager.chargeNodes(chargeNodes ?? 0);
     this.powerCycleManager.addNodes(addNodes ?? 0);
+  }
+
+  private onResearchCompleted(e: EventArgs): void {
+    if (e.type === EventType.ResearchCompleted && e.player.id === this.id) {
+      this.research[e.area]++;
+    }
   }
 
   private onResourcesSpent(e: EventArgs): void {

@@ -9,32 +9,9 @@ import {
   StructureType,
 } from '..';
 import { SerializedState } from '../core/serialization';
+import { reduceIncome } from '../utils';
 import { GaiaPhaseState } from './gaia-phase-state';
 import { StateBase } from './state-base';
-
-function addResource(
-  currentValue: number | undefined,
-  addition: number | undefined,
-): number | undefined {
-  if (typeof addition === 'number') {
-    return typeof currentValue === 'number'
-      ? currentValue + addition
-      : addition;
-  }
-
-  return currentValue;
-}
-
-function reduceIncome(total: Income, currrentValue: Income): Income {
-  return {
-    chargePower: addResource(total.chargePower, currrentValue.chargePower),
-    credits: addResource(total.credits, currrentValue.credits),
-    knowledge: addResource(total.knowledge, currrentValue.knowledge),
-    ore: addResource(total.ore, currrentValue.ore),
-    powerNodes: addResource(total.powerNodes, currrentValue.powerNodes),
-    qic: addResource(total.qic, currrentValue.qic),
-  };
-}
 
 export class IncomePhaseState extends StateBase {
   constructor(
@@ -54,8 +31,8 @@ export class IncomePhaseState extends StateBase {
       const income: Income[] = [];
 
       /*
-        TODO: Perform income calculations for each player.
-          * ✅ Income from structures (remember to check for acadamy income when we get there)
+        Perform income calculations for each player.
+          * ✅ Income from structures (TODO: remember to check for acadamy income when we get there)
           * ✅ Income from round booster
           * ✅ Income from research
           * Income from tech tiles
@@ -133,7 +110,7 @@ export class IncomePhaseState extends StateBase {
         }
       }
 
-      const calculatedIncome = income.reduce(reduceIncome, {});
+      const calculatedIncome = reduceIncome(...income);
       this.events.publish({
         type: EventType.IncomeGained,
         player,

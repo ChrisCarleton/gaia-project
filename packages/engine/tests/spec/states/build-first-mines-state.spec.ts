@@ -29,6 +29,7 @@ const players = [
 
 describe('Build First Mines State', () => {
   const map = new BasicMapModel().createMap(players.length);
+  const mapHexes = Object.values(map);
   let context: GameContext;
 
   function createState(
@@ -84,7 +85,7 @@ describe('Build First Mines State', () => {
       pass: BuildFirstMinesPass.First,
       turnIndex: 0,
     });
-    const emptyHex = map.hexes().find((hex) => !hex.planet)!;
+    const emptyHex = mapHexes.find((hex) => !hex.planet)!;
     expect(() => state.buildMine(emptyHex)).toThrowErrorMatchingSnapshot();
   });
 
@@ -93,11 +94,9 @@ describe('Build First Mines State', () => {
       pass: BuildFirstMinesPass.First,
       turnIndex: 0,
     });
-    const nonHomeworldPlanet = map
-      .hexes()
-      .find(
-        (hex) => hex.planet && hex.planet.type !== players[0].faction.homeWorld,
-      )!;
+    const nonHomeworldPlanet = mapHexes.find(
+      (hex) => hex.planet && hex.planet.type !== players[0].faction.homeWorld,
+    )!;
     expect(() =>
       state.buildMine(nonHomeworldPlanet),
     ).toThrowErrorMatchingSnapshot();
@@ -108,9 +107,9 @@ describe('Build First Mines State', () => {
       pass: BuildFirstMinesPass.First,
       turnIndex: 0,
     });
-    const mapHex = map
-      .hexes()
-      .find((hex) => hex.planet?.type === players[0].faction.homeWorld)!;
+    const mapHex = mapHexes.find(
+      (hex) => hex.planet?.type === players[0].faction.homeWorld,
+    )!;
     mapHex.planet!.structure = StructureType.Mine;
     expect(() => state.buildMine(mapHex!)).toThrowErrorMatchingSnapshot();
   });
@@ -120,9 +119,9 @@ describe('Build First Mines State', () => {
       pass: BuildFirstMinesPass.First,
       turnIndex: 1,
     });
-    const mapHex = map
-      .hexes()
-      .find((hex) => hex.planet?.type === players[1].faction.homeWorld)!;
+    const mapHex = mapHexes.find(
+      (hex) => hex.planet?.type === players[1].faction.homeWorld,
+    )!;
     state.buildMine(mapHex);
 
     const planet = mapHex.planet!;
