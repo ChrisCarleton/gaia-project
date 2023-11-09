@@ -47,7 +47,6 @@ export class PowerCycleManager implements Readonly<PowerCycle> {
           // Find an available node in level 2 or 3 to use instead.
           this._powerCycle.level1 += 1;
           if (this.level2 > 0) {
-            console.log('Situation handled');
             this._powerCycle.level2 -= 1;
           } else {
             this._powerCycle.level3 -= 1;

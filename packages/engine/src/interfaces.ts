@@ -1,5 +1,21 @@
 import { SerializedPlayer, SerializedState } from './core/serialization';
-import { FactionType } from './factions';
+
+export enum FactionType {
+  Ambas = 'ambas',
+  BalTaks = 'balTaks',
+  Bescods = 'bescods',
+  Firaks = 'firaks',
+  Geodens = 'geodens',
+  Gleens = 'gleens',
+  HadschHallas = 'hadschHallas',
+  Itars = 'itars',
+  Ivits = 'ivits',
+  Nevlas = 'nevlas',
+  Lantids = 'lantids',
+  Taklons = 'taklons',
+  Terrans = 'terrans',
+  Xenos = 'xenos',
+}
 
 // Map
 export enum PlanetType {
@@ -28,13 +44,7 @@ export interface MapHex {
   hasIvitsStation?: boolean;
 }
 
-export interface Map {
-  at(pt: AxialCoordinates): MapHex | undefined;
-  distance(from: AxialCoordinates, to: AxialCoordinates): number;
-  inRange(from: AxialCoordinates, distance: number): MapHex[];
-
-  hexes(): ReadonlyArray<MapHex>;
-}
+export type Map = Record<string, MapHex>;
 
 export enum MapModelType {
   Standard = 'standard',
@@ -176,7 +186,6 @@ export interface ResearchBoard {
   terraformingFederationToken: FederationToken;
   researchTracks: {
     [key in ResearchArea]: {
-      mastered: boolean;
       advancedTechTile: TechTile;
       standardTechTiles: TechTile[];
     };

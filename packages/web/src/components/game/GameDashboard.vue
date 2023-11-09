@@ -3,22 +3,18 @@
     :player-rankings="gameState.playerRankings"
     :visible="gameState.gameOver"
   />
-  <ResearchDialog
+  <ResearchDetails
+    :visible="gameState.showResearch"
     :player="gameState.currentPlayer"
-    :visible="gameState.showResearchDialog"
+    @close="gameState.showResearch = false"
   />
-  <RoundBoostersDialog
+  <RoundBoosterDetails
     :boosters="gameState.roundBoosters"
     :visible="gameState.selectingRoundBooster"
     @cancel="gameState.selectingRoundBooster = false"
     @confirm="onSelectRoundBooster"
   />
 
-  <SerializationDialog
-    :game="currentGameSnapshot"
-    :visible="gameState.showSerializationDialog"
-    @close="gameState.showSerializationDialog = false"
-  />
   <section v-if="game" class="section">
     <div class="tile is-ancestor">
       <div class="tile is-parent">
@@ -43,17 +39,22 @@
               gameState.menuPanelState = MenuPanelState.BuildFirstMine
             "
             @pass="onPass"
+            @research="onResearch"
           />
         </div>
 
         <div class="tile is-parent">
           <div class="tile is-child box">
-            <button
-              class="button"
-              @click="gameState.showSerializationDialog = true"
-            >
-              Serialize Game
-            </button>
+            <div class="field is-grouped">
+              <div class="control">
+                <button class="button" @click="serializeGame">
+                  Serialize Game
+                </button>
+              </div>
+              <div v-if="showCopied" class="control">
+                <span class="tag is-success"> ✔️ Copied! </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -87,10 +88,8 @@
 </template>
 
 <script lang="ts" setup>
+import ResearchDetails from '@/components/details/ResearchDetails.vue';
 import GameEndedDialog from '@/components/dialog/GameEndedDialog.vue';
-import ResearchDialog from '@/components/dialog/ResearchDialog.vue';
-import RoundBoostersDialog from '@/components/dialog/RoundBoostersDialog.vue';
-import SerializationDialog from '@/components/dialog/SerializationDialog.vue';
 import ActionMenuTile from '@/components/game/ActionMenuTile.vue';
 import BuildFirstMineTile from '@/components/game/BuildFirstMineTile.vue';
 import PlayerInfoTile from '@/components/game/PlayerInfoTile.vue';
@@ -120,7 +119,9 @@ import {
   PlayerFactory,
 } from '@gaia-project/engine';
 import { SerializedGameContext } from '@gaia-project/engine/src/core/serialization';
-import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
+import { nextTick, onMounted, reactive, ref, watch } from 'vue';
+
+import RoundBoosterDetails from '../details/RoundBoosterDetails.vue';
 
 interface GameDashboardProps {
   context: SerializedGameContext | undefined;
@@ -137,8 +138,7 @@ interface GameState {
   round: number;
   roundBoosters: Readonly<RoundBooster[]>;
   selectingRoundBooster: boolean;
-  showResearchDialog: boolean;
-  showSerializationDialog: boolean;
+  showResearch: boolean;
 }
 
 const props = defineProps<GameDashboardProps>();
@@ -156,12 +156,11 @@ const gameState = reactive<GameState>({
   round: 0,
   roundBoosters: [],
   selectingRoundBooster: false,
-  showResearchDialog: false,
-  showSerializationDialog: false,
+  showResearch: false,
 });
 
 const renderWindow = ref<InstanceType<typeof RenderWindow> | null>();
-const currentGameSnapshot = computed(() => store.state.currentGameSnapshot);
+const showCopied = ref(false);
 let game: Game | undefined;
 
 function onHexHighlight(mapHex: MapHex) {
@@ -200,6 +199,16 @@ function onPass() {
 function onSelectRoundBooster(roundBooster: RoundBooster) {
   gameState.selectingRoundBooster = false;
   game?.chooseRoundBoosterAndPass(roundBooster);
+}
+
+function onResearch(): void {
+  gameState.showResearch = true;
+}
+
+function serializeGame(): void {
+  navigator.clipboard.writeText(JSON.stringify(game, null, 2));
+  showCopied.value = true;
+  setTimeout(() => (showCopied.value = false), 2500);
 }
 
 function initGame(): void {

@@ -3,7 +3,7 @@ import {
   PlanetType,
   ResearchArea,
   StructureType,
-} from '@gaia-project/engine';
+} from './interfaces';
 
 export const FactionTypeNames: Record<FactionType, string> = {
   [FactionType.Ambas]: 'Ambas',

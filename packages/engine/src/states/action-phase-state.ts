@@ -44,25 +44,7 @@ export class ActionPhaseState extends StateBase {
     });
   }
 
-  advanceResearch(area: ResearchArea): void {
-    /*
-      TODO: Validate move.
-        1. Player must have 4 knowledge available.
-        2. If advancing to level 5 in a given track additional rules apply:
-          a. Only one player may occupy level 5 in each of the research tracks.
-          b. Player must have an unactivated federation token available.
-    */
-    /*
-      TODO: Perform action.
-        1. Player pays 4 knowledge.
-        2. Player advances in selected research area.
-        3. If advancing to level 3, the player charges 3 power nodes.
-        4. If advancing to level 5:
-          a. Player must choose a federation token to activate.
-          b. Player may have to choose location of lost planet.
-        5. Player gains any one-time bonuses awarded by the research level.
-    */
-  }
+  advanceResearch(area: ResearchArea): void {}
 
   buildMine(location: MapHex): void {
     /*

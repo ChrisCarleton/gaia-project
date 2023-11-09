@@ -134,3 +134,6 @@ dist
 
 # Generated GrqphQL files
 /packages/api/src/generated/
+
+# A temporary file used for storing serialized game state while I test.
+/packages/web/game.json

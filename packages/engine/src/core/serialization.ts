@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import { FactionType } from '../factions';
 import {
+  FactionType,
   FreeAction,
   GameState,
   PlanetType,

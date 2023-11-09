@@ -24,5 +24,6 @@ module.exports = {
   root: true,
   rules: {
     '@typescript-eslint/no-unused-vars': 'warn',
+    'no-console': 'warn',
   },
 };

@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Build First Mines State will not allow a mine to be built on a planet that already has a structure on it 1`] = `"Mine can only be placed on an unoccupied planet."`;
+
+exports[`Build First Mines State will not allow a mine to be built on a planet that does not match the player's homeworld 1`] = `"Mine can only be built on the player's homeworld type."`;
+
+exports[`Build First Mines State will not allow a mine to be built out in space 1`] = `"New mine must be built on a planet."`;
