@@ -14,9 +14,10 @@ import {
   ResearchBoard,
   Round,
   RoundBooster,
+  StructureType,
 } from '../interfaces';
 import { PlayerFactory } from '../players';
-import { mapFromHexes } from '../utils';
+import { axialToString, mapFromHexes } from '../utils';
 import { RoundBoosters } from './round-boosters';
 import { SerializedGameContext } from './serialization';
 
@@ -74,7 +75,7 @@ export class DefaultGameContext implements GameContext {
       players = players.sort(() => Math.random() - 0.5);
 
       this._players = players;
-      this._currentRound = 1;
+      this._currentRound = 0; // Gets incremented at the start of every income phase.
       this._currentPlayer = this._players[0];
       this._passOrder = [];
 
@@ -110,9 +111,7 @@ export class DefaultGameContext implements GameContext {
       });
       this._map = mapFromHexes(mapHexes);
 
-      this._passOrder = [
-        /* TODO!!! */
-      ];
+      this._passOrder = options.context.passOrder.map((i) => this._players[i]);
       this._currentPlayer = this._players[options.context.currentPlayer];
       this._currentRound = options.context.currentRound;
       this._roundBoosters = [...options.context.roundBoosters];
@@ -136,9 +135,23 @@ export class DefaultGameContext implements GameContext {
     };
     this._rounds = [];
 
+    // Subscribe to relevant events.
     this._events.subscribe(
       EventType.AwaitingPlayerInput,
       this.onAwaitingPlayerInput.bind(this),
+    );
+    this._events.subscribe(EventType.BeginRound, this.onBeginRound.bind(this));
+    this._events.subscribe(
+      EventType.RoundBoosterSelected,
+      this.onRoundBoosterSelected.bind(this),
+    );
+    this._events.subscribe(
+      EventType.MineBuilt,
+      this.onStructurePlaced.bind(this),
+    );
+    this._events.subscribe(
+      EventType.StructureBuilt,
+      this.onStructurePlaced.bind(this),
     );
   }
 
@@ -146,7 +159,7 @@ export class DefaultGameContext implements GameContext {
     return this._allowedActions;
   }
 
-  get currentPlayer(): Player {
+  get currentPlayer(): Readonly<Player> {
     return this._currentPlayer;
   }
 
@@ -177,7 +190,7 @@ export class DefaultGameContext implements GameContext {
     return this._researchBoard;
   }
 
-  get map(): Map {
+  get map(): Readonly<Map> {
     return this._map;
   }
 
@@ -229,13 +242,60 @@ export class DefaultGameContext implements GameContext {
     }
   }
 
-  /*
-   * Event handlers
-   */
+  /** Event Handlers */
+
+  // Set current player and allowed actions when a player is asked for input.
   private onAwaitingPlayerInput(e: EventArgs) {
     if (e.type === EventType.AwaitingPlayerInput) {
       if (e.player) this._currentPlayer = e.player;
       this._allowedActions = e.allowedActions;
+    }
+  }
+
+  // Advance the round number when a new round begins.
+  // Also, turn order changes based on the pass order of the previous round!
+  private onBeginRound(e: EventArgs) {
+    if (e.type === EventType.BeginRound) {
+      this._currentRound = e.round;
+
+      if (this._passOrder.length) {
+        this._players = this._passOrder;
+        this._passOrder = [];
+      }
+    }
+  }
+
+  // Update the map to place the new structure.
+  private onStructurePlaced(e: EventArgs) {
+    if (e.type === EventType.MineBuilt) {
+      const mapKey = axialToString(e.location.location);
+      const hex = this._map[mapKey];
+      if (hex && hex.planet) {
+        hex.planet.player = e.player;
+        hex.planet.structure = StructureType.Mine;
+      }
+    }
+
+    if (e.type === EventType.StructureBuilt) {
+      // TODO
+    }
+  }
+
+  // Remove a round booster from the supply when a player selects one.
+  // If the game has started (round > 0) then this happens when players pass. Keep track of the pass order.
+  // That will be the turn order on the following round.
+  private onRoundBoosterSelected(e: EventArgs) {
+    if (e.type === EventType.RoundBoosterSelected) {
+      const index = this._roundBoosters.findIndex(
+        (rb) => rb.id === e.roundBooster.id,
+      );
+      if (index > -1) {
+        this._roundBoosters.splice(index, 1);
+      }
+
+      if (this._currentRound > 0) {
+        this._passOrder.push(e.player);
+      }
     }
   }
 }

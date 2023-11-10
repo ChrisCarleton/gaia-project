@@ -1,6 +1,10 @@
 import { ErrorCode, GPError } from '../errors';
-import { LocalObserver, Observer, ObserverPublisher } from '../events';
-import { FactionFactory } from '../factions';
+import {
+  DelayedObserver,
+  LocalObserver,
+  Observer,
+  ObserverPublisher,
+} from '../events';
 import {
   GameContext,
   GameState,
@@ -11,7 +15,6 @@ import {
   RoundBooster,
   State,
 } from '../interfaces';
-import { PlayerFactory } from '../players';
 import {
   BuildFirstMinesPass,
   BuildFirstMinesState,
@@ -26,18 +29,19 @@ import {
 } from './serialization';
 
 export class Game implements State {
-  private readonly _playerFactory: PlayerFactory;
   private readonly _events: ObserverPublisher;
+  private readonly _delayedEvents: Observer;
   private _context: GameContext | undefined;
   private _state: State;
 
-  private constructor() {
+  constructor() {
     this._events = new LocalObserver();
-    this._playerFactory = new PlayerFactory(this._events, new FactionFactory());
+    this._delayedEvents = new DelayedObserver(this._events);
     this._state = new GameNotStartedState();
   }
 
-  reloadGame(gameData: SerializedGameContext): void {
+  reloadGame(context: unknown): void {
+    const gameData = GameContextSchema.parse(context);
     this._context = new DefaultGameContext({
       events: this._events,
       context: gameData,
@@ -76,7 +80,7 @@ export class Game implements State {
   }
 
   get events(): Observer {
-    return this._events;
+    return this._delayedEvents;
   }
 
   get currentState(): GameState {
@@ -179,28 +183,13 @@ export class Game implements State {
         vp: player.vp,
       })),
       roundBoosters: [...this.context.roundBoosters],
+      passOrder: this.context.passOrder.map((p) => playerIndexes[p.id]),
     };
   }
 
   private changeState(newState: State) {
     this._state = newState;
     setTimeout(() => this._state.init(), 0);
-  }
-
-  /*
-   * Static methods for starting and loading games
-   */
-  static beginNewGame(mapModel: MapModel, players: PlayerInfo[]): Game {
-    const game = new Game();
-    game.beginGame(players, mapModel);
-    return game;
-  }
-
-  static resumeGame(gameData: unknown): Game {
-    const context = GameContextSchema.parse(gameData);
-    const game = new Game();
-    game.reloadGame(context);
-    return game;
   }
 
   toJSON(): SerializedState {

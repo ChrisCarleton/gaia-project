@@ -38,7 +38,7 @@
         <StatWithHeading heading="Level 1" :stat="player.powerCycle.level1" />
         <StatWithHeading heading="Level 2" :stat="player.powerCycle.level2" />
         <StatWithHeading heading="Level 3" :stat="player.powerCycle.level3" />
-        <StatWithHeading heading="Gaia" :stat="player.powerCycle.level3" />
+        <StatWithHeading heading="Gaia" :stat="player.powerCycle.gaia" />
       </div>
     </div>
 

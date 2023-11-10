@@ -27,6 +27,12 @@ export class IncomePhaseState extends StateBase {
   }
 
   init(): void {
+    // Income phase is the start of a new round.
+    this.events.publish({
+      type: EventType.BeginRound,
+      round: this.context.currentRound + 1,
+    });
+
     this.context.players.forEach((player) => {
       const income: Income[] = [];
 

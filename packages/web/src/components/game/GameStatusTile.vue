@@ -1,17 +1,16 @@
 <template>
-  <div class="level tile is-child box">
-    <div class="level-left">
-      <div v-if="round" class="level-item">
-        <div>
-          <p class="heading">Round #</p>
-          <p class="title">{{ round }}</p>
-        </div>
-      </div>
-      <div class="level-item">
-        <div>
-          <p class="heading">Current Player</p>
-          <p class="title">{{ currentPlayer?.name }}</p>
-        </div>
+  <div class="tile is-child card">
+    <div class="card-header">
+      <p class="card-header-title">Game Status</p>
+    </div>
+
+    <div class="card-content">
+      <div class="level">
+        <StatWithHeading heading="Round #" :stat="round" />
+        <StatWithHeading
+          heading="Current Player"
+          :stat="currentPlayer?.name ?? ''"
+        />
       </div>
     </div>
   </div>
@@ -19,6 +18,8 @@
 
 <script lang="ts" setup>
 import { Player } from '@gaia-project/engine';
+
+import StatWithHeading from '../StatWithHeading.vue';
 
 interface GameStatusTileProps {
   currentPlayer?: Player;

@@ -41,6 +41,7 @@ export class ActionPhaseState extends StateBase {
       ],
       gameState: this.currentState,
       player: this.player,
+      gameContext: this.context,
     });
   }
 

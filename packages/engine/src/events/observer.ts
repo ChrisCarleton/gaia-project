@@ -16,11 +16,6 @@ export interface Observer {
    * @param handler The event handler to remove as a listener.
    */
   unsubscribe(eventType: EventType, handler: EventHandler): void;
-
-  /**
-   * Resets the observer by removing all subscribed event listeners.
-   */
-  reset(): void;
 }
 
 export interface ObserverPublisher extends Observer {

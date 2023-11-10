@@ -32,6 +32,12 @@
         class="tile is-parent is-vertical is-4"
       >
         <div class="tile is-parent">
+          <GameStatusTile
+            :current-player="gameState.currentPlayer"
+            :round="gameState.round"
+          />
+        </div>
+        <div class="tile is-parent">
           <ActionMenuTile
             :current-player="gameState.currentPlayer"
             :allowed-actions="gameState.allowedActions"
@@ -104,8 +110,6 @@ import {
 import {
   EventType,
   GameAction,
-  LocalObserver,
-  Observer,
   Player,
   RoundBooster,
   StructureType,
@@ -115,6 +119,7 @@ import { SerializedGameContext } from '@gaia-project/engine/src/core/serializati
 import { nextTick, onMounted, reactive, ref, watch } from 'vue';
 
 import RoundBoosterDetails from '../details/RoundBoosterDetails.vue';
+import GameStatusTile from './GameStatusTile.vue';
 
 interface GameDashboardProps {
   context: SerializedGameContext | undefined;
@@ -137,7 +142,6 @@ interface GameState {
 const props = defineProps<GameDashboardProps>();
 
 const store = useStore();
-const events: Observer = new LocalObserver();
 const gameState = reactive<GameState>({
   allowedActions: new Set<GameAction>([]),
   gameOver: false,
@@ -151,29 +155,29 @@ const gameState = reactive<GameState>({
 
 const renderWindow = ref<InstanceType<typeof RenderWindow> | null>();
 const showCopied = ref(false);
-let game: Game | undefined;
+const game = ref<Game | undefined>();
 
 function onHexHighlight(mapHex: MapHex) {
-  if (!game) return;
+  if (!game.value) return;
 
   gameState.currentHex = mapHex;
   const status = HighlightStrategies[
     gameState.menuPanelState
   ].determineHighlight(
-    gameState.currentPlayer ?? game.context.players[0],
+    gameState.currentPlayer ?? game.value.context.players[0],
     mapHex,
   );
   renderWindow.value?.setHighlightStatus(status);
 }
 
 async function onHexClick(mapHex: MapHex): Promise<void> {
-  if (!game) return;
+  if (!game.value) return;
 
   gameState.currentHex = mapHex;
   try {
     await ClickStrategies[gameState.menuPanelState].handleClick(
-      game,
-      gameState.currentPlayer ?? game.context.players[0],
+      game.value,
+      gameState.currentPlayer ?? game.value.context.players[0],
       mapHex,
     );
   } catch (error) {
@@ -182,13 +186,13 @@ async function onHexClick(mapHex: MapHex): Promise<void> {
 }
 
 function onPass() {
-  gameState.roundBoosters = game?.context.roundBoosters ?? [];
+  gameState.roundBoosters = game.value?.context.roundBoosters ?? [];
   gameState.selectingRoundBooster = true;
 }
 
 function onSelectRoundBooster(roundBooster: RoundBooster) {
   gameState.selectingRoundBooster = false;
-  game?.chooseRoundBoosterAndPass(roundBooster);
+  game.value?.chooseRoundBoosterAndPass(roundBooster);
 }
 
 function onResearch(): void {
@@ -202,20 +206,8 @@ function serializeGame(): void {
 }
 
 function initGame(): void {
-  // Unregister all prior listeners so we can re-use the observer.
-  events.reset();
-
-  if (props.context) {
-    game = Game.resumeGame(props.context, events);
-  } else {
-    const players = [
-      { id: '0', faction: FactionType.Terrans, name: 'Julian' },
-      { id: '1', faction: FactionType.Ambas, name: 'Bubbles' },
-      { id: '2', faction: FactionType.BalTaks, name: 'Ricky' },
-    ];
-
-    game = Game.beginNewGame(new BasicMapModel(), players, events);
-  }
+  game.value = new Game();
+  const { events } = game.value;
 
   events.subscribe(EventType.AwaitingPlayerInput, (e) => {
     if (e.type === EventType.AwaitingPlayerInput) {
@@ -223,7 +215,13 @@ function initGame(): void {
       gameState.allowedActions = new Set<GameAction>(e.allowedActions);
       gameState.menuPanelState = MenuPanelState.Players;
 
-      store.commit(Mutation.GameSnapshot, game!.serialize());
+      store.commit(Mutation.GameSnapshot, game.value?.serialize());
+    }
+  });
+
+  events.subscribe(EventType.BeginRound, (e) => {
+    if (e.type === EventType.BeginRound) {
+      gameState.round = e.round;
     }
   });
 
@@ -257,11 +255,23 @@ function initGame(): void {
       gameState.menuPanelState = MenuPanelState.Players;
     }
   });
+
+  if (props.context) {
+    game.value.reloadGame(props.context);
+  } else {
+    const players = [
+      { id: '0', faction: FactionType.Terrans, name: 'Julian' },
+      { id: '1', faction: FactionType.Ambas, name: 'Bubbles' },
+      { id: '2', faction: FactionType.BalTaks, name: 'Ricky' },
+    ];
+
+    game.value.beginGame(players, new BasicMapModel());
+  }
 }
 
 onMounted(initGame);
 watch(props, () => {
-  game = undefined;
+  game.value = undefined;
   nextTick(initGame);
 });
 </script>

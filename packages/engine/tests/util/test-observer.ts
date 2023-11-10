@@ -1,17 +1,32 @@
-import { EventArgs, Observer } from '../../src/events';
+import {
+  EventArgs,
+  EventHandler,
+  EventType,
+  LocalObserver,
+  ObserverPublisher,
+} from '../../src/events';
 
-export class TestObserver implements Observer {
+/** Wraps an internal LocalObserver and logs all of the events that are published for inspection. */
+export class TestObserver implements ObserverPublisher {
+  private _internalObserver: ObserverPublisher;
   private _events: EventArgs[];
 
-  constructor() {
+  constructor(internalObserver?: ObserverPublisher) {
+    this._internalObserver = internalObserver ?? new LocalObserver();
     this._events = [];
   }
 
-  subscribe(): void {}
-  unsubscribe(): void {}
+  subscribe(eventType: EventType, handler: EventHandler): void {
+    this._internalObserver.subscribe(eventType, handler);
+  }
+
+  unsubscribe(eventType: EventType, handler: EventHandler): void {
+    this._internalObserver.unsubscribe(eventType, handler);
+  }
 
   publish(e: EventArgs): void {
     this._events.push(e);
+    this._internalObserver.publish(e);
   }
 
   reset(): void {

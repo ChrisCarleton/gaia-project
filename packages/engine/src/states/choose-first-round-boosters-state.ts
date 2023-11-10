@@ -31,6 +31,7 @@ export class ChooseFirstRoundBoostersState extends StateBase {
       gameState: GameState.ChooseFirstRoundBoosters,
       allowedActions: [GameAction.SelectRoundBooster],
       player: this.context.players[this.player],
+      gameContext: this.context,
     });
   }
 

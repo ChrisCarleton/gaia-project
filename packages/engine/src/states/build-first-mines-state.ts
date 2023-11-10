@@ -134,6 +134,7 @@ export class BuildFirstMinesState extends StateBase {
       player: this.context.players[this.options.turnIndex],
       gameState: this.currentState,
       allowedActions: [GameAction.BuildMine],
+      gameContext: this.context,
     });
   }
 

@@ -1,4 +1,4 @@
-import { Faction, Observer } from '..';
+import { EventArgs, EventType, Faction, Observer } from '..';
 import { PlayerBase } from './player-base';
 
 export class AIPlayer extends PlayerBase {
@@ -6,6 +6,10 @@ export class AIPlayer extends PlayerBase {
 
   constructor(id: string, faction: Faction, events: Observer) {
     super(id, faction, events);
+    events.subscribe(
+      EventType.AwaitingPlayerInput,
+      this.onAwaitingAction.bind(this),
+    );
   }
 
   get name(): string {
@@ -16,5 +20,11 @@ export class AIPlayer extends PlayerBase {
     this._name = value;
   }
 
-  // TODO: Hook into AwaitingAction event and use some machine-learning magic.
+  private onAwaitingAction(e: EventArgs) {
+    if (e.type === EventType.AwaitingPlayerInput) {
+      setTimeout(() => {
+        // TODO: AI will need to respond to this event with an action.
+      }, 1);
+    }
+  }
 }

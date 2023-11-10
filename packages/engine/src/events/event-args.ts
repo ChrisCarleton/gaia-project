@@ -1,5 +1,6 @@
 import {
   GameAction,
+  GameContext,
   GameState,
   Income,
   MapHex,
@@ -12,6 +13,7 @@ import {
 
 export enum EventType {
   AwaitingPlayerInput = 'awaitingPlayerInput',
+  BeginRound = 'beginRound',
   GaiaformerGained = 'gaiaformerGained',
   GameEnded = 'gameEnded',
   MineBuilt = 'mineBuilt',
@@ -25,9 +27,15 @@ export enum EventType {
 
 type AwaitingPlayerInputEventArgs = {
   type: EventType.AwaitingPlayerInput;
+  allowedActions: Readonly<GameAction[]>;
   player: Player;
   gameState: GameState;
-  allowedActions: GameAction[];
+  gameContext: Readonly<GameContext>;
+};
+
+type BeginRoundEventArgs = {
+  type: EventType.BeginRound;
+  round: number;
 };
 
 type GaiaformerGainedEventArgs = {
@@ -87,6 +95,7 @@ type VPAwardedEventArgs = {
 
 export type EventArgs =
   | AwaitingPlayerInputEventArgs
+  | BeginRoundEventArgs
   | GaiaformerGainedEventArgs
   | GameEndedEventArgs
   | IncomeGainedEventArgs
