@@ -2,7 +2,6 @@ import { v4 as uuid } from 'uuid';
 
 import {
   Faction,
-  FactionHomeWorlds,
   FactionIncome,
   FactionType,
   Player,
@@ -14,6 +13,7 @@ import {
   StructureType,
 } from '../../src';
 import { SerializedPlayer } from '../../src/core/serialization';
+import { FactionHomeWorlds } from '../../src/factions';
 import {
   DefaultAcadamyBonuses,
   DefaultStartingResearch,
@@ -131,6 +131,7 @@ export function createTestPlayer(options?: Partial<TestPlayerOptions>): Player {
     },
     structures,
     vp: options?.vp ?? 0,
+    passed: false,
 
     toJSON(): SerializedPlayer {
       return {} as SerializedPlayer;

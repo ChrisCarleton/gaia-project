@@ -59,6 +59,7 @@ describe('Income Phase State', () => {
       researchBoard: mockDeep<ResearchBoard>(),
       roundBoosters: [],
       rounds: [],
+      passOrder: [],
     };
   }
 

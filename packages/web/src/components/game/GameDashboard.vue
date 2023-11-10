@@ -110,14 +110,7 @@ import {
   RoundBooster,
   StructureType,
 } from '@gaia-project/engine';
-import {
-  BasicMapModel,
-  FactionFactory,
-  FactionType,
-  Game,
-  MapHex,
-  PlayerFactory,
-} from '@gaia-project/engine';
+import { BasicMapModel, FactionType, Game, MapHex } from '@gaia-project/engine';
 import { SerializedGameContext } from '@gaia-project/engine/src/core/serialization';
 import { nextTick, onMounted, reactive, ref, watch } from 'vue';
 
@@ -145,9 +138,6 @@ const props = defineProps<GameDashboardProps>();
 
 const store = useStore();
 const events: Observer = new LocalObserver();
-const factionFactory = new FactionFactory();
-const playerFactory = new PlayerFactory(events, factionFactory);
-
 const gameState = reactive<GameState>({
   allowedActions: new Set<GameAction>([]),
   gameOver: false,
@@ -216,16 +206,15 @@ function initGame(): void {
   events.reset();
 
   if (props.context) {
-    game = Game.resumeGame(props.context, playerFactory, events);
+    game = Game.resumeGame(props.context, events);
   } else {
     const players = [
-      playerFactory.createPlayer('0', FactionType.Terrans, 'Julian'),
-      playerFactory.createPlayer('1', FactionType.Ambas, 'Bubbles'),
-      playerFactory.createPlayer('2', FactionType.BalTaks, 'Ricky'),
+      { id: '0', faction: FactionType.Terrans, name: 'Julian' },
+      { id: '1', faction: FactionType.Ambas, name: 'Bubbles' },
+      { id: '2', faction: FactionType.BalTaks, name: 'Ricky' },
     ];
 
-    const map = new BasicMapModel().createMap(players.length);
-    game = Game.beginNewGame(players, map, events);
+    game = Game.beginNewGame(new BasicMapModel(), players, events);
   }
 
   events.subscribe(EventType.AwaitingPlayerInput, (e) => {

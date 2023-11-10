@@ -1,6 +1,7 @@
-import { FactionType } from '..';
-import { FactionFactory, Observer, Player } from '..';
 import { SerializedGameContext, SerializedPlayer } from '../core/serialization';
+import { Observer } from '../events';
+import { FactionFactory } from '../factions';
+import { FactionType, Player } from '../interfaces';
 import { AIPlayer } from './ai-player';
 import { HumanPlayer } from './human-player';
 

@@ -31,6 +31,7 @@ export abstract class PlayerBase implements Player {
   roundBooster?: RoundBooster;
   scoringTrackPositionA: number;
   scoringTrackPositionB: number;
+  hasPassed: boolean;
 
   constructor(id: string, faction: Faction, events: Observer) {
     this.id = id;
@@ -69,6 +70,7 @@ export abstract class PlayerBase implements Player {
     this.scoringTrackPositionA = 0;
     this.scoringTrackPositionB = 0;
     this.vp = 10;
+    this.hasPassed = false;
 
     events.subscribe(EventType.IncomeGained, this.onIncomeReceived.bind(this));
     events.subscribe(EventType.MineBuilt, this.onMineBuilt.bind(this));
@@ -99,6 +101,10 @@ export abstract class PlayerBase implements Player {
       trackA: this.scoringTrackPositionA,
       trackB: this.scoringTrackPositionB,
     };
+  }
+
+  get passed(): boolean {
+    return this.hasPassed;
   }
 
   toJSON(): SerializedPlayer {

@@ -54,6 +54,7 @@ describe('Build First Mines State', () => {
       researchBoard: mockDeep<ResearchBoard>(),
       roundBoosters: [],
       rounds: [],
+      passOrder: [],
     };
   });
 

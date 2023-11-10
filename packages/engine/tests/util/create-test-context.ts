@@ -9,10 +9,12 @@ export function createTestContext(data?: Partial<GameContext>): GameContext {
     standardTechTiles: [],
   };
 
+  const players = data?.players ?? [createTestPlayer(), createTestPlayer()];
+
   return {
     currentRound: data?.currentRound ?? 1,
     roundBoosters: data?.roundBoosters ?? [],
-    players: data?.players ?? [createTestPlayer(), createTestPlayer()],
+    players,
     map: data?.map ?? new BasicMapModel().createMap(2),
     researchBoard: data?.researchBoard ?? {
       terraformingFederationToken: {},
@@ -27,6 +29,7 @@ export function createTestContext(data?: Partial<GameContext>): GameContext {
     },
     rounds: data?.rounds ?? [],
     allowedActions: [],
-    currentPlayer: data?.currentPlayer,
+    currentPlayer: data?.currentPlayer ?? players[0],
+    passOrder: [],
   };
 }

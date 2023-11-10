@@ -4,6 +4,7 @@ import {
   FactionType,
   FreeAction,
   GameState,
+  MapHex,
   PlanetType,
   RoundBoosterBonusType,
   RoundBoosterPassBonusDiscriminator,

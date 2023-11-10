@@ -1,9 +1,5 @@
-import {
-  FactionFactory,
-  FactionType,
-  LocalObserver,
-  Observer,
-} from '../../../src';
+import { FactionType, LocalObserver, Observer } from '../../../src';
+import { FactionFactory } from '../../../src/factions/';
 import { Terrans } from '../../../src/factions/terrans';
 
 describe('Faction factory', () => {

@@ -1,5 +1,5 @@
 import { SerializedState } from '../core/serialization';
-import { EventType, Observer } from '../events';
+import { EventType, ObserverPublisher } from '../events';
 import {
   ChangeStateFunction,
   GameAction,
@@ -14,7 +14,7 @@ import { StateBase } from './state-base';
 export class ActionPhaseState extends StateBase {
   constructor(
     context: GameContext,
-    events: Observer,
+    events: ObserverPublisher,
     changeState: ChangeStateFunction,
     private readonly player: Player,
   ) {

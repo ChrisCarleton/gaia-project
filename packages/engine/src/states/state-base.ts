@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { SerializedState } from '../core/serialization';
 import { ErrorCode, GPError } from '../errors';
-import { Observer } from '../events';
+import { ObserverPublisher } from '../events';
 import {
   ChangeStateFunction,
   GameContext,
@@ -20,7 +20,7 @@ const ActionNotSupportedError = new GPError(
 export abstract class StateBase implements State {
   constructor(
     protected readonly context: GameContext,
-    protected readonly events: Observer,
+    protected readonly events: ObserverPublisher,
     protected readonly changeState: ChangeStateFunction,
   ) {}
 

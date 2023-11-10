@@ -4,7 +4,7 @@ import {
   GameAction,
   GameContext,
   GameState,
-  Observer,
+  ObserverPublisher,
   RoundBooster,
 } from '..';
 import { SerializedState } from '../core/serialization';
@@ -14,7 +14,7 @@ import { StateBase } from './state-base';
 export class ChooseFirstRoundBoostersState extends StateBase {
   constructor(
     context: GameContext,
-    events: Observer,
+    events: ObserverPublisher,
     changeState: ChangeStateFunction,
     private readonly player: number,
   ) {

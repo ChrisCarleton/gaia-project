@@ -1,6 +1,6 @@
 import { ResearchAreaNames } from '../../constants';
 import { ErrorCode, GPError } from '../../errors';
-import { EventType, Observer } from '../../events';
+import { EventType, ObserverPublisher } from '../../events';
 import {
   GameContext,
   Income,
@@ -117,7 +117,7 @@ export class ResearchAction {
   research(
     context: GameContext,
     player: Player,
-    events: Observer,
+    events: ObserverPublisher,
     area: ResearchArea,
   ) {
     const bonusResources: Income[] = [];

@@ -167,6 +167,12 @@ export type ScoringTrackPositions = {
   trackB: number;
 };
 
+export interface PlayerInfo {
+  id: string;
+  name: string;
+  faction: FactionType;
+}
+
 export interface Player {
   readonly id: string;
   readonly faction: Faction;
@@ -178,6 +184,7 @@ export interface Player {
   readonly roundBooster?: Readonly<RoundBooster>;
   readonly scoringTrackPositions: Readonly<ScoringTrackPositions>;
   readonly vp: number;
+  readonly passed: boolean;
 
   toJSON(): SerializedPlayer;
 }
@@ -242,10 +249,11 @@ export interface GameContext {
   readonly rounds: Readonly<Round[]>;
   readonly map: Map;
   readonly players: Readonly<Player[]>;
+  readonly passOrder: Readonly<Player[]>;
   readonly researchBoard: ResearchBoard;
-  currentPlayer: Player | undefined;
-  allowedActions: Readonly<GameAction[]>;
-  roundBoosters: RoundBooster[];
+  readonly currentPlayer: Player;
+  readonly allowedActions: Readonly<GameAction[]>;
+  readonly roundBoosters: RoundBooster[];
 }
 
 export enum GameState {

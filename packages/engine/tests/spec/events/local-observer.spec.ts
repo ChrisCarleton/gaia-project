@@ -5,7 +5,7 @@ import {
   EventArgs,
   EventType,
   LocalObserver,
-  Observer,
+  ObserverPublisher,
 } from '../../../src/events';
 
 function nextTick(): Promise<void> {
@@ -29,7 +29,7 @@ describe('Observer class', () => {
       message: 'Good job!',
     },
   ];
-  let observer: Observer;
+  let observer: ObserverPublisher;
 
   beforeEach(() => {
     observer = new LocalObserver();

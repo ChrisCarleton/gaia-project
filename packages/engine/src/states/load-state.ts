@@ -1,5 +1,5 @@
 import { SerializedState } from '../core/serialization';
-import { Observer } from '../events';
+import { ObserverPublisher } from '../events';
 import {
   ChangeStateFunction,
   GameContext,
@@ -18,7 +18,7 @@ import { IncomePhaseState } from './income-phase-state';
 export function loadState(
   data: SerializedState,
   context: GameContext,
-  events: Observer,
+  events: ObserverPublisher,
   changeState: ChangeStateFunction,
 ): State {
   switch (data.type) {

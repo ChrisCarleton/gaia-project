@@ -1,5 +1,5 @@
 import { SerializedState } from '../core/serialization';
-import { Observer } from '../events';
+import { ObserverPublisher } from '../events';
 import { ChangeStateFunction, GameContext, GameState } from '../interfaces';
 import { ActionPhaseState } from './action-phase-state';
 import { StateBase } from './state-base';
@@ -7,7 +7,7 @@ import { StateBase } from './state-base';
 export class GaiaPhaseState extends StateBase {
   constructor(
     context: GameContext,
-    events: Observer,
+    events: ObserverPublisher,
     changeState: ChangeStateFunction,
   ) {
     super(context, events, changeState);

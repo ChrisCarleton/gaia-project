@@ -4,7 +4,7 @@ import {
   GameContext,
   GameState,
   Income,
-  Observer,
+  ObserverPublisher,
   RoundBoosterBonusType,
   StructureType,
 } from '..';
@@ -16,7 +16,7 @@ import { StateBase } from './state-base';
 export class IncomePhaseState extends StateBase {
   constructor(
     context: GameContext,
-    events: Observer,
+    events: ObserverPublisher,
     changeState: ChangeStateFunction,
   ) {
     super(context, events, changeState);
