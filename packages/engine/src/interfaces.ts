@@ -296,7 +296,7 @@ export interface State {
   powerOrQicAction(): void;
   specialAction(): void;
   freeAction(): void;
-  chooseRoundBoosterAndPass(roundBooster: RoundBooster): void;
+  pass(roundBooster?: RoundBooster): void;
 
   toJSON(): SerializedState;
 }

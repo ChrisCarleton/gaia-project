@@ -5,6 +5,14 @@ import {
   StructureType,
 } from './interfaces';
 
+export const ColonizingStructures: Set<StructureType> = new Set([
+  StructureType.Academy,
+  StructureType.Mine,
+  StructureType.PlanetaryInstitute,
+  StructureType.ResearchLab,
+  StructureType.TradingStation,
+]);
+
 export const FactionTypeNames: Record<FactionType, string> = {
   [FactionType.Ambas]: 'Ambas',
   [FactionType.BalTaks]: "Bal T'Aks",

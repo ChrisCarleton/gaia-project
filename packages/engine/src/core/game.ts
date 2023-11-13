@@ -134,8 +134,8 @@ export class Game implements State {
     this._state.freeAction();
   }
 
-  chooseRoundBoosterAndPass(roundBooster: RoundBooster): void {
-    this._state.chooseRoundBoosterAndPass(roundBooster);
+  pass(roundBooster: RoundBooster): void {
+    this._state.pass(roundBooster);
   }
 
   serialize(): SerializedGameContext {

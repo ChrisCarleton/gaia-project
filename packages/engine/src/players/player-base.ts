@@ -72,8 +72,10 @@ export abstract class PlayerBase implements Player {
     this.vp = 10;
     this.hasPassed = false;
 
+    events.subscribe(EventType.BeginRound, this.onBeginRound.bind(this));
     events.subscribe(EventType.IncomeGained, this.onIncomeReceived.bind(this));
     events.subscribe(EventType.MineBuilt, this.onMineBuilt.bind(this));
+    events.subscribe(EventType.PlayerPassed, this.onPlayerPassed.bind(this));
     events.subscribe(
       EventType.ResearchCompleted,
       this.onResearchCompleted.bind(this),
@@ -136,6 +138,10 @@ export abstract class PlayerBase implements Player {
     };
   }
 
+  private onBeginRound(): void {
+    this.hasPassed = false;
+  }
+
   private onIncomeReceived(e: EventArgs): void {
     if (e.type === EventType.IncomeGained && e.player.id === this.id) {
       this.resources.credits += e.income.credits ?? 0;
@@ -185,6 +191,12 @@ export abstract class PlayerBase implements Player {
   private onRoundBoosterSelected(e: EventArgs): void {
     if (e.type === EventType.RoundBoosterSelected && e.player.id === this.id) {
       this.roundBooster = e.roundBooster;
+    }
+  }
+
+  private onPlayerPassed(e: EventArgs): void {
+    if (e.type === EventType.PlayerPassed && Object.is(e.player, this)) {
+      this.hasPassed = true;
     }
   }
 

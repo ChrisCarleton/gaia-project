@@ -18,12 +18,18 @@ export enum EventType {
   GameEnded = 'gameEnded',
   MineBuilt = 'mineBuilt',
   IncomeGained = 'incomeGained',
+  PlayerPassed = 'passed',
   ResearchCompleted = 'researchCompleted',
   ResourcesSpent = 'resourcesSpent',
   RoundBoosterSelected = 'roundBooster',
   StructureBuilt = 'structureBuilt',
   VPAwarded = 'vpAwarded',
 }
+
+type PlayerNotificationEventArgs = {
+  type: EventType.GaiaformerGained | EventType.PlayerPassed;
+  player: Player;
+};
 
 type AwaitingPlayerInputEventArgs = {
   type: EventType.AwaitingPlayerInput;
@@ -36,11 +42,6 @@ type AwaitingPlayerInputEventArgs = {
 type BeginRoundEventArgs = {
   type: EventType.BeginRound;
   round: number;
-};
-
-type GaiaformerGainedEventArgs = {
-  type: EventType.GaiaformerGained;
-  player: Player;
 };
 
 type GameEndedEventArgs = {
@@ -84,6 +85,7 @@ type RoundBoosterSelectedEventArgs = {
   type: EventType.RoundBoosterSelected;
   player: Player;
   roundBooster: RoundBooster;
+  previousRoundBooster?: RoundBooster;
 };
 
 type VPAwardedEventArgs = {
@@ -96,7 +98,7 @@ type VPAwardedEventArgs = {
 export type EventArgs =
   | AwaitingPlayerInputEventArgs
   | BeginRoundEventArgs
-  | GaiaformerGainedEventArgs
+  | PlayerNotificationEventArgs
   | GameEndedEventArgs
   | IncomeGainedEventArgs
   | MineBuiltEventArgs

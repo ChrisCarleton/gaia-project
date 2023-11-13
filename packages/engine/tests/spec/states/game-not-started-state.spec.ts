@@ -23,9 +23,7 @@ describe('Game Not Started State', () => {
         location: [0, 0],
       }),
     ).toThrowError(GPError);
-    expect(() =>
-      state.chooseRoundBoosterAndPass(RoundBoosters[0]),
-    ).toThrowError(GPError);
+    expect(() => state.pass(RoundBoosters[0])).toThrowError(GPError);
     expect(() => state.advanceResearch(ResearchArea.Gaia)).toThrowError(
       GPError,
     );

@@ -11,7 +11,9 @@ export enum ErrorCode {
 
   // Invalid action errors
   InvalidMinePlacement,
+  InvalidRoundBooster,
   ResearchTrackTierFiveOccupied,
+  RoundBoosterNotSelected,
 
   // Resource issues
   InsufficientKnowledge,

@@ -281,11 +281,10 @@ export class DefaultGameContext implements GameContext {
     }
   }
 
-  // Remove a round booster from the supply when a player selects one.
-  // If the game has started (round > 0) then this happens when players pass. Keep track of the pass order.
-  // That will be the turn order on the following round.
+  // Player has selected a round booster from the supply.
   private onRoundBoosterSelected(e: EventArgs) {
     if (e.type === EventType.RoundBoosterSelected) {
+      // Find the requested round booster and remove it from the supply.
       const index = this._roundBoosters.findIndex(
         (rb) => rb.id === e.roundBooster.id,
       );
@@ -293,6 +292,14 @@ export class DefaultGameContext implements GameContext {
         this._roundBoosters.splice(index, 1);
       }
 
+      // If the player is currently in possession of a round booster, return it to the supply.
+      if (e.previousRoundBooster) {
+        this._roundBoosters.push(e.previousRoundBooster);
+      }
+
+      // If the game is in progress - i.e. a player is passing at the end of a round rather than just
+      // choosing their first booster - then this action counts as a "pass".
+      // Place the player in the passOrder array to lock in their position in turn order for the next round.
       if (this._currentRound > 0) {
         this._passOrder.push(e.player);
       }

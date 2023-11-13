@@ -1,6 +1,8 @@
 import {
   ChangeStateFunction,
+  ErrorCode,
   EventType,
+  GPError,
   GameAction,
   GameContext,
   GameState,
@@ -35,7 +37,14 @@ export class ChooseFirstRoundBoostersState extends StateBase {
     });
   }
 
-  chooseRoundBoosterAndPass(roundBooster: RoundBooster): void {
+  pass(roundBooster?: RoundBooster): void {
+    if (!roundBooster) {
+      throw new GPError(
+        ErrorCode.RoundBoosterNotSelected,
+        'A round booster must be supplied',
+      );
+    }
+
     const player = this.context.players[this.player];
 
     const index = this.context.roundBoosters.findIndex(

@@ -1,4 +1,4 @@
-import { ResearchAreaNames } from '../../constants';
+import { ColonizingStructures, ResearchAreaNames } from '../../constants';
 import { ErrorCode, GPError } from '../../errors';
 import { EventType, ObserverPublisher } from '../../events';
 import {
@@ -8,7 +8,6 @@ import {
   PlanetType,
   Player,
   ResearchArea,
-  StructureType,
 } from '../../interfaces';
 import { reduceIncome } from '../../utils';
 
@@ -19,14 +18,6 @@ enum ResearchOneTimeBonusType {
   LostPlanet = 'lostPlanet',
   VictoryPointsForGaiaPlanets = 'vpForGaiaPlanets',
 }
-
-const ColonizingStructures: Set<StructureType> = new Set([
-  StructureType.Academy,
-  StructureType.Mine,
-  StructureType.PlanetaryInstitute,
-  StructureType.ResearchLab,
-  StructureType.TradingStation,
-]);
 
 type ResearchOneTimeBonus =
   | { type: ResearchOneTimeBonusType.Resources; resources: Income }
@@ -221,5 +212,7 @@ export class ResearchAction {
       player,
       area,
     });
+
+    // TODO: Advance state.
   }
 }
