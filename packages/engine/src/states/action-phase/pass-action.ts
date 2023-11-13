@@ -17,6 +17,7 @@ type PassBonusStrategy = (
   player: Player,
   context: GameContext,
 ) => number;
+
 export class PassAction {
   private static PassBonusStrategies: Record<
     RoundBoosterPassBonusDiscriminator,
@@ -97,20 +98,20 @@ export class PassAction {
     }
 
     // 2. Some round boosters have effects that are triggered when players pass. Resolve those effects.
-    // if (player.roundBooster) {
-    //   const vp =
-    //     this.resolvePassBonus(player.roundBooster.a, player, context) +
-    //     this.resolvePassBonus(player.roundBooster.b, player, context);
+    if (player.roundBooster) {
+      const vp =
+        this.resolvePassBonus(player.roundBooster.a, player, context) +
+        this.resolvePassBonus(player.roundBooster.b, player, context);
 
-    //   if (vp > 0) {
-    //     events.publish({
-    //       type: EventType.VPAwarded,
-    //       vp,
-    //       player,
-    //       message: 'Round booster bonus',
-    //     });
-    //   }
-    // }
+      if (vp > 0) {
+        events.publish({
+          type: EventType.VPAwarded,
+          vp,
+          player,
+          message: 'Round booster bonus',
+        });
+      }
+    }
 
     /*
       2. Player must return round booster to the supply.

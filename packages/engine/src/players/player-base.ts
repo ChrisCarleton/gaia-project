@@ -4,7 +4,6 @@ import {
   Faction,
   Observer,
   Player,
-  PlayerStructureData,
   PlayerStructures,
   PowerCycle,
   ResearchProgress,
@@ -15,7 +14,7 @@ import {
 } from '..';
 import { PowerCycleManager } from '../core/power-cycle-manager';
 import { SerializedPlayer } from '../core/serialization';
-import { PlayerStructureDataInstance } from './player-structure-data';
+import { PlayerStructureManager } from './player-structure-data';
 
 export abstract class PlayerBase implements Player {
   protected readonly events;
@@ -25,7 +24,7 @@ export abstract class PlayerBase implements Player {
   readonly powerCycleManager: PowerCycleManager;
   readonly research: ResearchProgress;
   readonly resources: Resources;
-  readonly structuresMap: Record<StructureType, PlayerStructureData>;
+  readonly structuresMap: Record<StructureType, PlayerStructureManager>;
 
   vp: number;
   roundBooster?: RoundBooster;
@@ -44,25 +43,20 @@ export abstract class PlayerBase implements Player {
     this.resources = faction.startingResources;
     const structureCounts = faction.startingStructures;
     this.structuresMap = {
-      [StructureType.Academy]: new PlayerStructureDataInstance(
+      [StructureType.Academy]: new PlayerStructureManager(
         structureCounts.academy,
       ),
-      [StructureType.Gaiaformer]: new PlayerStructureDataInstance(
+      [StructureType.Gaiaformer]: new PlayerStructureManager(
         structureCounts.gaiaformer,
       ),
-      [StructureType.Mine]: new PlayerStructureDataInstance(
-        structureCounts.mine,
-      ),
-      [StructureType.PlanetaryInstitute]: new PlayerStructureDataInstance(
+      [StructureType.Mine]: new PlayerStructureManager(structureCounts.mine),
+      [StructureType.PlanetaryInstitute]: new PlayerStructureManager(
         structureCounts.planetaryInstitute,
       ),
-      [StructureType.ResearchLab]: new PlayerStructureDataInstance(
+      [StructureType.ResearchLab]: new PlayerStructureManager(
         structureCounts.researchLab,
       ),
-      [StructureType.Satellite]: new PlayerStructureDataInstance(
-        structureCounts.satellite,
-      ),
-      [StructureType.TradingStation]: new PlayerStructureDataInstance(
+      [StructureType.TradingStation]: new PlayerStructureManager(
         structureCounts.tradingStation,
       ),
     };

@@ -65,7 +65,6 @@ export enum StructureType {
   Academy = 'academy',
   PlanetaryInstitute = 'planetaryInstitute',
   Gaiaformer = 'gaiaformer',
-  Satellite = 'satellite',
 }
 
 export enum ResearchArea {
@@ -148,18 +147,11 @@ export interface Faction {
 export interface PlayerStructureData {
   available: number;
   active: number;
-  locations: Readonly<AxialCoordinates[]>;
-
-  setMax(max: number): void;
-  place(location: AxialCoordinates): void;
-  remove(location: AxialCoordinates): void;
+  locations: AxialCoordinates[];
 }
 
 export type PlayerStructures = {
-  [key in StructureType]: Pick<
-    PlayerStructureData,
-    'active' | 'available' | 'locations'
-  >;
+  [key in StructureType]: PlayerStructureData;
 };
 
 export type ScoringTrackPositions = {

@@ -57,6 +57,5 @@ export const StructureTypeNamesPlural: Record<StructureType, string> = {
   [StructureType.Mine]: 'Mines',
   [StructureType.PlanetaryInstitute]: 'Planetary institute', // There is no pluralization for this... players only get one.
   [StructureType.ResearchLab]: 'Research labs',
-  [StructureType.Satellite]: 'Satellites',
   [StructureType.TradingStation]: 'Trading stations',
 };

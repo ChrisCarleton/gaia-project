@@ -1,9 +1,16 @@
 import {
+  BasicMapModel,
   EventType,
   FreeAction,
   GameContext,
+  Map,
+  PlanetType,
+  Player,
+  PlayerStructureData,
+  PlayerStructures,
   RoundBooster,
   RoundBoosterBonusType,
+  StructureType,
 } from '../../../../src';
 import { RoundBoosters } from '../../../../src/core/round-boosters';
 import { GPError } from '../../../../src/errors';
@@ -15,19 +22,71 @@ import {
 } from '../../../util';
 
 type ContextOptions = {
+  map: Map;
+  players: Player[];
   playerBooster: RoundBooster;
   roundBoosters: RoundBooster[];
   round: number;
 };
 
+function generateStructureData(map: Map): PlayerStructures {
+  const nonGaiaPlanets = Object.values(map).filter(
+    (hex) =>
+      hex.planet &&
+      hex.planet.type !== PlanetType.Transdim &&
+      hex.planet.type !== PlanetType.Gaia,
+  );
+  const gaiaPlanets = Object.values(map).filter(
+    (hex) => hex.planet && hex.planet.type === PlanetType.Gaia,
+  );
+
+  const DefaultStructureData: () => PlayerStructureData = () => ({
+    available: 0,
+    active: 0,
+    locations: [],
+  });
+  const structures: PlayerStructures = {
+    mine: { ...DefaultStructureData() },
+    academy: { ...DefaultStructureData() },
+    gaiaformer: { ...DefaultStructureData() },
+    planetaryInstitute: { ...DefaultStructureData() },
+    researchLab: { ...DefaultStructureData() },
+    tradingStation: { ...DefaultStructureData() },
+  };
+
+  Object.values(StructureType).forEach((structureType, i) => {
+    structures[structureType].active++;
+    structures[structureType].locations.push(gaiaPlanets[i].location);
+  });
+
+  for (let i = 0; i < 10; i++) {
+    if (i < 4) {
+      structures.mine.active++;
+      structures.mine.locations.push(nonGaiaPlanets[i].location);
+    } else if (i < 7) {
+      structures.tradingStation.active++;
+      structures.tradingStation.locations.push(nonGaiaPlanets[i].location);
+    } else if (i < 9) {
+      structures.researchLab.active++;
+      structures.researchLab.locations.push(nonGaiaPlanets[i].location);
+    } else {
+      structures.academy.active++;
+      structures.academy.locations.push(nonGaiaPlanets[i].location);
+    }
+  }
+
+  return structures;
+}
+
 function createContext(options?: Partial<ContextOptions>): GameContext {
-  const players = [
+  const players = options?.players ?? [
     createTestPlayer({ roundBooster: options?.playerBooster }),
     createTestPlayer(),
     createTestPlayer(),
   ];
 
   return createTestContext({
+    map: options?.map,
     currentRound: options?.round,
     roundBoosters: options?.roundBoosters,
     players,
@@ -106,5 +165,53 @@ describe('Pass Action', () => {
     });
   });
 
-  it.todo('will resolve any bonuses from round boosters triggered on pass');
+  const RoundBoosterTestCases: {
+    name: string;
+    booster: number;
+    expectedVP: number;
+  }[] = [
+    { name: 'mines', booster: 5, expectedVP: 5 },
+    { name: 'research labs', booster: 6, expectedVP: 9 },
+    { name: 'trading stations', booster: 7, expectedVP: 8 },
+    {
+      name: 'acadamies and planetary institute',
+      booster: 8,
+      expectedVP: 12,
+    },
+    {
+      name: 'colonized gaia planets',
+      booster: 9,
+      expectedVP: 5,
+    },
+  ];
+  RoundBoosterTestCases.forEach((test) => {
+    it(`will award round booster bonus for ${test.name}`, () => {
+      const [playerBooster, roundBoosters] = drawRoundBoosterForPlayer(
+        test.booster,
+      );
+      const map = new BasicMapModel().createMap(3);
+      const players = [
+        createTestPlayer({
+          structures: generateStructureData(map),
+          roundBooster: playerBooster,
+        }),
+        createTestPlayer(),
+        createTestPlayer(),
+      ];
+      const context = createContext({
+        map,
+        players,
+        roundBoosters,
+      });
+
+      action.pass(context, players[0], events, context.roundBoosters[2]);
+
+      expect(events.events).toContainEqual({
+        type: EventType.VPAwarded,
+        vp: test.expectedVP,
+        player: players[0],
+        message: 'Round booster bonus',
+      });
+    });
+  });
 });

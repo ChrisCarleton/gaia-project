@@ -5,6 +5,7 @@ import {
   FactionIncome,
   FactionType,
   Player,
+  PlayerStructureData,
   PlayerStructures,
   PowerCycle,
   ResearchProgress,
@@ -30,9 +31,32 @@ type TestPlayerOptions = {
   research: Partial<ResearchProgress>;
   resources: Partial<Resources>;
   structureIncome: Partial<FactionIncome>;
-  structures: Partial<Record<StructureType, number>>;
+  structures: Partial<Record<StructureType, PlayerStructureData | number>>;
   vp: number;
 };
+
+function generateStructureData(
+  data: PlayerStructureData | number | undefined,
+  defaultAvailable: number,
+): PlayerStructureData {
+  if (data === undefined) {
+    return {
+      active: 0,
+      available: defaultAvailable,
+      locations: [],
+    };
+  }
+
+  if (typeof data === 'number') {
+    return {
+      active: data,
+      available: defaultAvailable,
+      locations: [],
+    };
+  }
+
+  return data;
+}
 
 export function createTestPlayer(options?: Partial<TestPlayerOptions>): Player {
   const factionType = options?.faction ?? FactionType.Terrans;
@@ -61,41 +85,18 @@ export function createTestPlayer(options?: Partial<TestPlayerOptions>): Player {
   };
 
   const structures: PlayerStructures = {
-    academy: {
-      active: options?.structures?.academy ?? 0,
-      available: 2,
-      locations: [],
-    },
-    gaiaformer: {
-      active: options?.structures?.gaiaformer ?? 0,
-      available: 0,
-      locations: [],
-    },
-    mine: {
-      active: options?.structures?.mine ?? 0,
-      available: 8,
-      locations: [],
-    },
-    planetaryInstitute: {
-      active: options?.structures?.planetaryInstitute ?? 0,
-      available: 1,
-      locations: [],
-    },
-    researchLab: {
-      active: options?.structures?.researchLab ?? 0,
-      available: 3,
-      locations: [],
-    },
-    satellite: {
-      active: options?.structures?.satellite ?? 0,
-      available: 25,
-      locations: [],
-    },
-    tradingStation: {
-      active: options?.structures?.tradingStation ?? 0,
-      available: 4,
-      locations: [],
-    },
+    academy: generateStructureData(options?.structures?.academy, 2),
+    gaiaformer: generateStructureData(options?.structures?.gaiaformer, 0),
+    mine: generateStructureData(options?.structures?.mine, 8),
+    planetaryInstitute: generateStructureData(
+      options?.structures?.planetaryInstitute,
+      1,
+    ),
+    researchLab: generateStructureData(options?.structures?.researchLab, 3),
+    tradingStation: generateStructureData(
+      options?.structures?.tradingStation,
+      4,
+    ),
   };
   return {
     id: options?.id ?? uuid(),
