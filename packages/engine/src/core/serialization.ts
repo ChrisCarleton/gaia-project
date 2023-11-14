@@ -153,5 +153,7 @@ export const GameContextSchema = z.object({
   // }),
   map: MapHexSchema.array(),
   roundBoosters: RoundBoosterSchema.array(),
+
+  passOrder: z.number().int().array(),
 });
 export type SerializedGameContext = z.infer<typeof GameContextSchema>;

@@ -1,5 +1,6 @@
 import {
   GameAction,
+  GameContext,
   GameState,
   Income,
   MapHex,
@@ -12,10 +13,12 @@ import {
 
 export enum EventType {
   AwaitingPlayerInput = 'awaitingPlayerInput',
+  BeginRound = 'beginRound',
   GaiaformerGained = 'gaiaformerGained',
   GameEnded = 'gameEnded',
   MineBuilt = 'mineBuilt',
   IncomeGained = 'incomeGained',
+  PlayerPassed = 'passed',
   ResearchCompleted = 'researchCompleted',
   ResourcesSpent = 'resourcesSpent',
   RoundBoosterSelected = 'roundBooster',
@@ -23,16 +26,22 @@ export enum EventType {
   VPAwarded = 'vpAwarded',
 }
 
-type AwaitingPlayerInputEventArgs = {
-  type: EventType.AwaitingPlayerInput;
+type PlayerNotificationEventArgs = {
+  type: EventType.GaiaformerGained | EventType.PlayerPassed;
   player: Player;
-  gameState: GameState;
-  allowedActions: GameAction[];
 };
 
-type GaiaformerGainedEventArgs = {
-  type: EventType.GaiaformerGained;
+type AwaitingPlayerInputEventArgs = {
+  type: EventType.AwaitingPlayerInput;
+  allowedActions: Readonly<GameAction[]>;
   player: Player;
+  gameState: GameState;
+  gameContext: Readonly<GameContext>;
+};
+
+type BeginRoundEventArgs = {
+  type: EventType.BeginRound;
+  round: number;
 };
 
 type GameEndedEventArgs = {
@@ -76,6 +85,7 @@ type RoundBoosterSelectedEventArgs = {
   type: EventType.RoundBoosterSelected;
   player: Player;
   roundBooster: RoundBooster;
+  previousRoundBooster?: RoundBooster;
 };
 
 type VPAwardedEventArgs = {
@@ -87,7 +97,8 @@ type VPAwardedEventArgs = {
 
 export type EventArgs =
   | AwaitingPlayerInputEventArgs
-  | GaiaformerGainedEventArgs
+  | BeginRoundEventArgs
+  | PlayerNotificationEventArgs
   | GameEndedEventArgs
   | IncomeGainedEventArgs
   | MineBuiltEventArgs

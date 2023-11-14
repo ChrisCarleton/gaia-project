@@ -1,34 +1,41 @@
 <template>
-  <nav class="tile is-child panel">
-    <p class="panel-heading">Select Action</p>
-    <a
-      v-if="allowedActions.has(GameAction.BuildMine)"
-      class="panel-block"
-      @click="$emit('buildmine')"
-      >Build mine</a
-    >
+  <div class="tile is-child card">
+    <div class="card-header">
+      <p class="card-header-title">Select Action</p>
+    </div>
 
-    <a
-      v-if="allowedActions.has(GameAction.SelectRoundBooster)"
-      class="panel-block"
-      @click="$emit('pass')"
-      >Select Round Booster</a
-    >
+    <div class="card-content">
+      <nav class="panel">
+        <a
+          v-if="allowedActions.has(GameAction.BuildMine)"
+          class="panel-block"
+          @click="$emit('buildmine')"
+          >Build mine</a
+        >
 
-    <a
-      v-if="allowedActions.has(GameAction.Research)"
-      class="panel-block"
-      @click="$emit('research')"
-      >Research</a
-    >
+        <a
+          v-if="allowedActions.has(GameAction.SelectRoundBooster)"
+          class="panel-block"
+          @click="$emit('pass')"
+          >Select Round Booster</a
+        >
 
-    <a
-      v-if="allowedActions.has(GameAction.Pass)"
-      class="panel-block"
-      @click="$emit('pass')"
-      >Pass</a
-    >
-  </nav>
+        <a
+          v-if="allowedActions.has(GameAction.Research)"
+          class="panel-block"
+          @click="$emit('research')"
+          >Research</a
+        >
+
+        <a
+          v-if="allowedActions.has(GameAction.Pass)"
+          class="panel-block"
+          @click="$emit('pass')"
+          >Pass</a
+        >
+      </nav>
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>

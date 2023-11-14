@@ -1,9 +1,10 @@
 import { EventArgs, EventType } from './event-args';
-import { EventHandler, Observer } from './observer';
+import { EventHandler, ObserverPublisher } from './observer';
 
 type Subscriptions = Partial<Record<EventType, EventHandler[]>>;
 
-export class LocalObserver implements Observer {
+/** Local Event Observer to be used internally in the game engine. */
+export class LocalObserver implements ObserverPublisher {
   private subscriptions: Subscriptions;
 
   constructor() {
@@ -19,18 +20,17 @@ export class LocalObserver implements Observer {
   }
 
   unsubscribe(eventType: EventType, handler: EventHandler) {
-    const index = this.subscriptions[eventType]?.findIndex(
-      (h) => h === handler,
-    );
+    const index =
+      this.subscriptions[eventType]?.findIndex((h) => h === handler) ?? -1;
 
-    if (typeof index === 'number' && index > -1) {
+    if (index > -1) {
       this.subscriptions[eventType]?.splice(index, 1);
     }
   }
 
   publish(e: EventArgs) {
     this.subscriptions[e.type]?.forEach((subscriber) => {
-      setTimeout(() => subscriber(e), 0);
+      subscriber(e);
     });
   }
 

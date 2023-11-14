@@ -1,12 +1,12 @@
 import { SerializedState } from '../core/serialization';
-import { EventType, Observer } from '../events';
+import { EventType, ObserverPublisher } from '../events';
 import { ChangeStateFunction, GameContext, GameState } from '../interfaces';
 import { StateBase } from './state-base';
 
 export class GameCompletedState extends StateBase {
   constructor(
     context: GameContext,
-    events: Observer,
+    events: ObserverPublisher,
     changeState: ChangeStateFunction,
   ) {
     super(context, events, changeState);

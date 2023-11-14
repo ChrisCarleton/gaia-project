@@ -25,6 +25,7 @@ const map = new BasicMapModel().createMap(2);
 
 type PlayerOptions = {
   research: Partial<Record<ResearchArea, number>>;
+  round: number;
   roundBooster: RoundBooster;
   structures: Partial<Record<StructureType, number>>;
   structureIncome: Partial<FactionIncome>;
@@ -52,19 +53,36 @@ describe('Income Phase State', () => {
 
     return {
       allowedActions: [],
-      currentRound: 1,
+      currentRound: options?.round ?? 1,
       currentPlayer: players[0],
       map,
       players,
       researchBoard: mockDeep<ResearchBoard>(),
       roundBoosters: [],
       rounds: [],
+      passOrder: [],
     };
   }
 
   afterEach(() => {
     events.reset();
   });
+
+  for (let round = 0; round < 6; round++) {
+    it(`will kick off round #${round + 1}`, () => {
+      const context = createContext({ round });
+      const state = new IncomePhaseState(context, events, jest.fn());
+
+      state.init();
+
+      expect(events.events).toHaveLength(2);
+      const [args] = events.events;
+      expect(args.type).toBe(EventType.BeginRound);
+      if (args.type === EventType.BeginRound) {
+        expect(args.round).toBe(round + 1);
+      }
+    });
+  }
 
   it('will return the correct current state', () => {
     const state = new IncomePhaseState(createContext(), events, jest.fn());
@@ -85,8 +103,8 @@ describe('Income Phase State', () => {
 
     state.init();
 
-    expect(events.events).toHaveLength(1);
-    const [args] = events.events;
+    expect(events.events).toHaveLength(2);
+    const [, args] = events.events;
     expect(args.type).toBe(EventType.IncomeGained);
     if (args.type === EventType.IncomeGained) {
       expect(args.player).toBe(context.players[0]);
@@ -154,8 +172,8 @@ describe('Income Phase State', () => {
 
       state.init();
 
-      expect(events.events).toHaveLength(1);
-      const [args] = events.events;
+      expect(events.events).toHaveLength(2);
+      const [, args] = events.events;
       expect(args.type).toBe(EventType.IncomeGained);
       if (args.type === EventType.IncomeGained) {
         expect(args.player).toBe(context.players[0]);
@@ -188,8 +206,8 @@ describe('Income Phase State', () => {
 
       state.init();
 
-      expect(events.events).toHaveLength(1);
-      const [args] = events.events;
+      expect(events.events).toHaveLength(2);
+      const [, args] = events.events;
       expect(args.type).toBe(EventType.IncomeGained);
       if (args.type === EventType.IncomeGained) {
         expect(args.player).toBe(context.players[0]);

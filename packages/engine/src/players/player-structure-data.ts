@@ -2,7 +2,7 @@ import { AxialCoordinates, PlayerStructureData } from '../interfaces';
 
 const InvalidMaximumError = new Error('Maximum cannot be less than zero.');
 
-export class PlayerStructureDataInstance implements PlayerStructureData {
+export class PlayerStructureManager implements PlayerStructureData {
   private max: number;
   private _locations: AxialCoordinates[];
 
@@ -23,8 +23,8 @@ export class PlayerStructureDataInstance implements PlayerStructureData {
     return this.locations.length;
   }
 
-  get locations(): Readonly<AxialCoordinates[]> {
-    return this._locations;
+  get locations(): AxialCoordinates[] {
+    return [...this._locations];
   }
 
   setMax(max: number): void {

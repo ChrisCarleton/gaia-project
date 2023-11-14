@@ -1,16 +1,12 @@
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 
-import { MapHex, Player } from '../../../src';
+import { Player } from '../../../src';
 import {
   EventArgs,
   EventType,
   LocalObserver,
-  Observer,
+  ObserverPublisher,
 } from '../../../src/events';
-
-function nextTick(): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, 0));
-}
 
 describe('Observer class', () => {
   const player: DeepMockProxy<Player> = mockDeep<Player>();
@@ -29,7 +25,7 @@ describe('Observer class', () => {
       message: 'Good job!',
     },
   ];
-  let observer: Observer;
+  let observer: ObserverPublisher;
 
   beforeEach(() => {
     observer = new LocalObserver();
@@ -39,23 +35,21 @@ describe('Observer class', () => {
     expect(() => observer.publish(TestEvents[1])).not.toThrowError();
   });
 
-  it('will will send events to a listener', async () => {
+  it('will will send events to a listener', () => {
     const listener = jest.fn();
     observer.subscribe(TestEvents[0].type, listener);
     observer.publish(TestEvents[0]);
-    await nextTick();
     expect(listener).toHaveBeenCalledTimes(1);
     expect(listener).toHaveBeenCalledWith(TestEvents[0]);
   });
 
-  it('will will broadcast events to multiple listeners', async () => {
+  it('will will broadcast events to multiple listeners', () => {
     const listeners = [jest.fn(), jest.fn(), jest.fn()];
     observer.subscribe(TestEvents[1].type, listeners[0]);
     observer.subscribe(TestEvents[1].type, listeners[1]);
     observer.subscribe(TestEvents[1].type, listeners[2]);
 
     observer.publish(TestEvents[1]);
-    await nextTick();
 
     listeners.forEach((listener) => {
       expect(listener).toHaveBeenCalledTimes(1);
@@ -63,7 +57,7 @@ describe('Observer class', () => {
     });
   });
 
-  it('will unsubscribe a listener', async () => {
+  it('will unsubscribe a listener', () => {
     const listeners = [jest.fn(), jest.fn(), jest.fn()];
     observer.subscribe(TestEvents[0].type, listeners[0]);
     observer.subscribe(TestEvents[0].type, listeners[1]);
@@ -71,7 +65,6 @@ describe('Observer class', () => {
     observer.unsubscribe(TestEvents[0].type, listeners[1]);
 
     observer.publish(TestEvents[0]);
-    await nextTick();
 
     expect(listeners[0]).toHaveBeenCalledTimes(1);
     expect(listeners[0]).toHaveBeenCalledWith(TestEvents[0]);
@@ -80,43 +73,20 @@ describe('Observer class', () => {
     expect(listeners[1]).not.toHaveBeenCalled();
   });
 
-  it('will not transmit events to listeners of the wrong type', async () => {
+  it('will not transmit events to listeners of the wrong type', () => {
     const listener = jest.fn();
     observer.subscribe(EventType.StructureBuilt, listener);
     observer.publish(TestEvents[1]);
-    await nextTick();
     expect(listener).not.toHaveBeenCalled();
   });
 
-  it('will do nothing if unsubscribe is called against a non-existent listener', async () => {
+  it('will do nothing if unsubscribe is called against a non-existent listener', () => {
     const otherListener = jest.fn();
     const listener = jest.fn();
     observer.subscribe(TestEvents[0].type, otherListener);
     observer.unsubscribe(TestEvents[0].type, listener);
     observer.publish(TestEvents[0]);
 
-    await nextTick();
-
     expect(otherListener).toHaveBeenCalledWith(TestEvents[0]);
-  });
-
-  it('will reset and remove all observers', async () => {
-    const listeners = [jest.fn(), jest.fn()];
-    observer.subscribe(EventType.MineBuilt, listeners[0]);
-    observer.subscribe(TestEvents[0].type, listeners[1]);
-
-    observer.reset();
-
-    observer.publish(TestEvents[0]);
-    observer.publish({
-      type: EventType.MineBuilt,
-      location: mockDeep<MapHex>(),
-      player,
-    });
-
-    await nextTick();
-
-    expect(listeners[0]).not.toHaveBeenCalled();
-    expect(listeners[1]).not.toHaveBeenCalled();
   });
 });

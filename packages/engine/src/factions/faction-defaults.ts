@@ -30,7 +30,6 @@ export const DefaultStructures: Record<StructureType, number> = {
   [StructureType.Mine]: 8,
   [StructureType.PlanetaryInstitute]: 1,
   [StructureType.ResearchLab]: 3,
-  [StructureType.Satellite]: 25,
   [StructureType.TradingStation]: 4,
 };
 

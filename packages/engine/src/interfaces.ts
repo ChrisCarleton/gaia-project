@@ -65,7 +65,6 @@ export enum StructureType {
   Academy = 'academy',
   PlanetaryInstitute = 'planetaryInstitute',
   Gaiaformer = 'gaiaformer',
-  Satellite = 'satellite',
 }
 
 export enum ResearchArea {
@@ -148,24 +147,23 @@ export interface Faction {
 export interface PlayerStructureData {
   available: number;
   active: number;
-  locations: Readonly<AxialCoordinates[]>;
-
-  setMax(max: number): void;
-  place(location: AxialCoordinates): void;
-  remove(location: AxialCoordinates): void;
+  locations: AxialCoordinates[];
 }
 
 export type PlayerStructures = {
-  [key in StructureType]: Pick<
-    PlayerStructureData,
-    'active' | 'available' | 'locations'
-  >;
+  [key in StructureType]: PlayerStructureData;
 };
 
 export type ScoringTrackPositions = {
   trackA: number;
   trackB: number;
 };
+
+export interface PlayerInfo {
+  id: string;
+  name: string;
+  faction: FactionType;
+}
 
 export interface Player {
   readonly id: string;
@@ -178,6 +176,7 @@ export interface Player {
   readonly roundBooster?: Readonly<RoundBooster>;
   readonly scoringTrackPositions: Readonly<ScoringTrackPositions>;
   readonly vp: number;
+  readonly passed: boolean;
 
   toJSON(): SerializedPlayer;
 }
@@ -242,10 +241,11 @@ export interface GameContext {
   readonly rounds: Readonly<Round[]>;
   readonly map: Map;
   readonly players: Readonly<Player[]>;
+  readonly passOrder: Readonly<Player[]>;
   readonly researchBoard: ResearchBoard;
-  currentPlayer: Player | undefined;
-  allowedActions: Readonly<GameAction[]>;
-  roundBoosters: RoundBooster[];
+  readonly currentPlayer: Player;
+  readonly allowedActions: Readonly<GameAction[]>;
+  readonly roundBoosters: RoundBooster[];
 }
 
 export enum GameState {
@@ -288,7 +288,7 @@ export interface State {
   powerOrQicAction(): void;
   specialAction(): void;
   freeAction(): void;
-  chooseRoundBoosterAndPass(roundBooster: RoundBooster): void;
+  pass(roundBooster?: RoundBooster): void;
 
   toJSON(): SerializedState;
 }

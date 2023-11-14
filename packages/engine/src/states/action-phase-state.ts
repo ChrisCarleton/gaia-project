@@ -1,5 +1,5 @@
 import { SerializedState } from '../core/serialization';
-import { EventType, Observer } from '../events';
+import { EventType, ObserverPublisher } from '../events';
 import {
   ChangeStateFunction,
   GameAction,
@@ -8,13 +8,19 @@ import {
   MapHex,
   Player,
   ResearchArea,
+  RoundBooster,
+  State,
 } from '../interfaces';
+import { PassAction } from './action-phase/pass-action';
+import { ResearchAction } from './action-phase/research-action';
+import { CleanupPhaseState } from './cleanup-phase-state';
+import { GameCompletedState } from './game-completed-state';
 import { StateBase } from './state-base';
 
 export class ActionPhaseState extends StateBase {
   constructor(
     context: GameContext,
-    events: Observer,
+    events: ObserverPublisher,
     changeState: ChangeStateFunction,
     private readonly player: Player,
   ) {
@@ -23,6 +29,40 @@ export class ActionPhaseState extends StateBase {
 
   get currentState(): GameState {
     return GameState.ActionPhase;
+  }
+
+  private determineNextState(): State {
+    const {
+      context: { currentRound, players },
+      player,
+    } = this;
+
+    // Find the current player in turn order.
+    let index = players.findIndex((p) => Object.is(p, player));
+    if (index === -1) {
+      throw new Error(
+        'Unexpected error. Could not find player in game context.',
+      );
+    }
+
+    // Find the next player in turn order that has not already passed.
+    do {
+      index = (index + 1) % players.length;
+      if (!players[index].passed) {
+        return new ActionPhaseState(
+          this.context,
+          this.events,
+          this.changeState,
+          players[index],
+        );
+      }
+    } while (!Object.is(player, players[index]));
+
+    // If everyone has passed then we can clean up for the next round, or end the game if
+    // we are on the final round.
+    return currentRound < 6
+      ? new CleanupPhaseState(this.context, this.events, this.changeState)
+      : new GameCompletedState(this.context, this.events, this.changeState);
   }
 
   init(): void {
@@ -41,10 +81,17 @@ export class ActionPhaseState extends StateBase {
       ],
       gameState: this.currentState,
       player: this.player,
+      gameContext: this.context,
     });
   }
 
-  advanceResearch(area: ResearchArea): void {}
+  advanceResearch(area: ResearchArea): void {
+    const action = new ResearchAction();
+    action.research(this.context, this.player, this.events, area);
+
+    const nextState = this.determineNextState();
+    this.changeState(nextState);
+  }
 
   buildMine(location: MapHex): void {
     /*
@@ -88,6 +135,14 @@ export class ActionPhaseState extends StateBase {
       2. Any QICs used to extend range are used up.
       3. Gaiaformer is placed on the trandim planet.
     */
+  }
+
+  pass(roundBooster: RoundBooster): void {
+    const action = new PassAction();
+    action.pass(this.context, this.player, this.events, roundBooster);
+
+    const nextState = this.determineNextState();
+    this.changeState(nextState);
   }
 
   toJSON(): SerializedState {

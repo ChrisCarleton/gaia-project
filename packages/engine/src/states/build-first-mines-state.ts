@@ -1,7 +1,7 @@
 import { SerializedState } from '../core/serialization';
 import { ErrorCode, GPError } from '../errors';
 import { EventType } from '../events/event-args';
-import { Observer } from '../events/observer';
+import { ObserverPublisher } from '../events/observer';
 import {
   ChangeStateFunction,
   FactionType,
@@ -116,7 +116,7 @@ export const DetermineNextPlayer: Record<
 export class BuildFirstMinesState extends StateBase {
   constructor(
     context: GameContext,
-    events: Observer,
+    events: ObserverPublisher,
     changeState: ChangeStateFunction,
     private readonly options: BuildFirstMinesOptions,
   ) {
@@ -134,6 +134,7 @@ export class BuildFirstMinesState extends StateBase {
       player: this.context.players[this.options.turnIndex],
       gameState: this.currentState,
       allowedActions: [GameAction.BuildMine],
+      gameContext: this.context,
     });
   }
 

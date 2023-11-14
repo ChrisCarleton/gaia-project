@@ -1,10 +1,12 @@
 import {
   ChangeStateFunction,
+  ErrorCode,
   EventType,
+  GPError,
   GameAction,
   GameContext,
   GameState,
-  Observer,
+  ObserverPublisher,
   RoundBooster,
 } from '..';
 import { SerializedState } from '../core/serialization';
@@ -14,7 +16,7 @@ import { StateBase } from './state-base';
 export class ChooseFirstRoundBoostersState extends StateBase {
   constructor(
     context: GameContext,
-    events: Observer,
+    events: ObserverPublisher,
     changeState: ChangeStateFunction,
     private readonly player: number,
   ) {
@@ -31,10 +33,18 @@ export class ChooseFirstRoundBoostersState extends StateBase {
       gameState: GameState.ChooseFirstRoundBoosters,
       allowedActions: [GameAction.SelectRoundBooster],
       player: this.context.players[this.player],
+      gameContext: this.context,
     });
   }
 
-  chooseRoundBoosterAndPass(roundBooster: RoundBooster): void {
+  pass(roundBooster?: RoundBooster): void {
+    if (!roundBooster) {
+      throw new GPError(
+        ErrorCode.RoundBoosterNotSelected,
+        'A round booster must be supplied',
+      );
+    }
+
     const player = this.context.players[this.player];
 
     const index = this.context.roundBoosters.findIndex(

@@ -5,6 +5,14 @@ import {
   StructureType,
 } from './interfaces';
 
+export const ColonizingStructures: Set<StructureType> = new Set([
+  StructureType.Academy,
+  StructureType.Mine,
+  StructureType.PlanetaryInstitute,
+  StructureType.ResearchLab,
+  StructureType.TradingStation,
+]);
+
 export const FactionTypeNames: Record<FactionType, string> = {
   [FactionType.Ambas]: 'Ambas',
   [FactionType.BalTaks]: "Bal T'Aks",
@@ -49,6 +57,5 @@ export const StructureTypeNamesPlural: Record<StructureType, string> = {
   [StructureType.Mine]: 'Mines',
   [StructureType.PlanetaryInstitute]: 'Planetary institute', // There is no pluralization for this... players only get one.
   [StructureType.ResearchLab]: 'Research labs',
-  [StructureType.Satellite]: 'Satellites',
   [StructureType.TradingStation]: 'Trading stations',
 };
