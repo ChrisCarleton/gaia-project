@@ -53,7 +53,7 @@ defineEmits<{
   position: fixed;
   top: 0;
   right: 0;
-  left: 50%;
+  left: 0;
   bottom: 0;
   z-index: 1000;
   width: 50%;
@@ -72,7 +72,7 @@ defineEmits<{
 
 .slide-enter-from,
 .slide-leave-to {
-  left: 100%;
+  left: -50%;
   opacity: 0;
 }
 </style>
