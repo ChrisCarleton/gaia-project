@@ -2,12 +2,12 @@ import { z } from 'zod';
 
 import {
   FactionType,
-  FreeAction,
   GameState,
   PlanetType,
   RoundBoosterBonusType,
   RoundBoosterPassBonusDiscriminator,
   RoundScoringBonus,
+  SpecialAction,
   StructureType,
 } from '../interfaces';
 import { BuildFirstMinesPass } from '../states/build-first-mines-turn-order';
@@ -17,7 +17,7 @@ const ResearchProgressSchema = z.number().int().min(0).max(5);
 
 const RoundBoosterActionBonusSchema = z.object({
   type: z.literal(RoundBoosterBonusType.Action),
-  action: z.nativeEnum(FreeAction),
+  action: z.nativeEnum(SpecialAction),
 });
 const RoundBoosterIncomeBonusSchema = z.object({
   type: z.literal(RoundBoosterBonusType.Income),

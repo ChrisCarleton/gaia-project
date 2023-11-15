@@ -1,7 +1,6 @@
 import {
   BasicMapModel,
   EventType,
-  FreeAction,
   GameContext,
   Map,
   PlanetType,
@@ -10,6 +9,7 @@ import {
   PlayerStructures,
   RoundBooster,
   RoundBoosterBonusType,
+  SpecialAction,
   StructureType,
 } from '../../../../src';
 import { RoundBoosters } from '../../../../src/core/round-boosters';
@@ -139,11 +139,11 @@ describe('Pass Action', () => {
       id: 20,
       a: {
         type: RoundBoosterBonusType.Action,
-        action: FreeAction.BuildMineOrStartGaiaWithRangeBoost,
+        action: SpecialAction.BuildMineOrStartGaiaWithRangeBoost,
       },
       b: {
         type: RoundBoosterBonusType.Action,
-        action: FreeAction.GenerateQIC,
+        action: SpecialAction.GenerateQIC,
       },
     };
     expect(() =>

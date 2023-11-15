@@ -4,7 +4,6 @@ import {
   BasicMapModel,
   EventType,
   FactionIncome,
-  FreeAction,
   GameContext,
   GameState,
   Income,
@@ -14,6 +13,7 @@ import {
   RoundBooster,
   RoundBoosterBonusType,
   RoundBoosterPassBonusDiscriminator,
+  SpecialAction,
   StructureType,
 } from '../../../src';
 import { GaiaPhaseState } from '../../../src/states/gaia-phase-state';
@@ -113,7 +113,7 @@ describe('Income Phase State', () => {
       },
       b: {
         type: RoundBoosterBonusType.Action,
-        action: FreeAction.BuildMineOrStartGaiaWithRangeBoost,
+        action: SpecialAction.BuildMineOrStartGaiaWithRangeBoost,
       },
     },
     'single income': {

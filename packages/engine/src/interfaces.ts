@@ -109,6 +109,32 @@ export type FactionIncome = {
 };
 
 export enum FreeAction {
+  // Spend 4 power to generate 1 QIC.
+  GenerateQIC = 'generateQIC',
+
+  // Spend 3 power to generate 1 ore.
+  GenerateOre = 'generateOre',
+
+  // Spend 4 power to generate 1 knowledge.
+  GenerateKnowledge = 'generateKnowledge',
+
+  // Spend 1 power to generate 1 credit.
+  GenerateCredit = 'generateCredit',
+
+  // Exchange 1 ore for 1 credit.
+  TradeOreForCredit = 'tradeOreForCredit',
+
+  // Exchange 1 ore for 1 power node.
+  TradeOreForPowerNode = 'tradeOreForPowerNode',
+
+  // Exchange 1 QIC for 1 ore.
+  TradeQICForOre = 'tradeQICForOre',
+
+  // Exchange 1 knowledge for 1 credit.
+  TradeKnowledgeForCredit = 'tradeKnowledgeForCredit',
+}
+
+export enum SpecialAction {
   // Take a "build a mine" or "start gaia project" action with normal range extended by 3.
   BuildMineOrStartGaiaWithRangeBoost = 'buildMineOrGaiaWithRangeBoost',
 
@@ -117,6 +143,9 @@ export enum FreeAction {
 
   // Earn a free QIC.
   GenerateQIC = 'generateQIC',
+
+  // Player receives a one-time bonus of four credits.
+  Receive4Credits = 'receive4Credits',
 }
 
 export enum AcadamyBonusType {
@@ -130,7 +159,7 @@ export type AcadamyBonus =
     }
   | {
       type: AcadamyBonusType.Action;
-      action: FreeAction;
+      action: SpecialAction;
     };
 
 export interface Faction {
@@ -205,7 +234,7 @@ export enum RoundBoosterPassBonusDiscriminator {
 }
 type RoundBoosterActionBonus = {
   type: RoundBoosterBonusType.Action;
-  action: FreeAction;
+  action: SpecialAction;
 };
 type RoundBoosterIncomeBonus = {
   type: RoundBoosterBonusType.Income;

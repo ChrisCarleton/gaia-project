@@ -1,9 +1,9 @@
 import {
-  FreeAction,
   Income,
   RoundBoosterBonus,
   RoundBoosterBonusType,
   RoundBoosterPassBonusDiscriminator,
+  SpecialAction,
 } from '@gaia-project/engine';
 
 const DiscriminatorStrings: Record<RoundBoosterPassBonusDiscriminator, string> =
@@ -16,16 +16,16 @@ const DiscriminatorStrings: Record<RoundBoosterPassBonusDiscriminator, string> =
     [RoundBoosterPassBonusDiscriminator.TradingStations]: 'trading station',
   } as const;
 
-function getActionString(action: FreeAction): string {
+function getActionString(action: SpecialAction): string {
   switch (action) {
-    case FreeAction.BuildMineOrStartGaiaWithRangeBoost:
+    case SpecialAction.BuildMineOrStartGaiaWithRangeBoost:
       return `As a special
 action, you may take a “Build a Mine” action with one
 free terraforming step. You can pay ore for additional
 terraforming steps, but you cannot combine this action with
 another action.`;
 
-    case FreeAction.BuildMineWithTerraforming:
+    case SpecialAction.BuildMineWithTerraforming:
       return `As a special
 action, you can take a “Build a Mine” action or “Start a
 Gaia Project” with your basic range increased by three. The

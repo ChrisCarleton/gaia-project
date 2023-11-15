@@ -2,14 +2,14 @@ import {
   AcadamyBonusType,
   Faction,
   FactionIncome,
-  FreeAction,
   ResearchProgress,
+  SpecialAction,
   StructureType,
 } from '../interfaces';
 
 export const DefaultAcadamyBonuses = {
   a: { type: AcadamyBonusType.Income, income: { knowledge: 2 } },
-  b: { type: AcadamyBonusType.Action, action: FreeAction.GenerateQIC },
+  b: { type: AcadamyBonusType.Action, action: SpecialAction.GenerateQIC },
 } as const;
 
 export const DefaultStartingResearch: ResearchProgress = {

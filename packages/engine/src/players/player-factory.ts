@@ -5,16 +5,15 @@ import { FactionType, Player } from '../interfaces';
 import { AIPlayer } from './ai-player';
 import { HumanPlayer } from './human-player';
 
-// TODO: Remove the bang operators when referencing the Factions collection once it's done.
 export class PlayerFactory {
   constructor(private readonly events: Observer) {}
 
   createPlayer(id: string, faction: FactionType, name: string): Player {
-    return new HumanPlayer(id, name, Factions[faction]!, this.events);
+    return new HumanPlayer(id, name, Factions[faction], this.events);
   }
 
   createAIOpponent(id: string, faction: FactionType): Player {
-    return new AIPlayer(id, Factions[faction]!, this.events);
+    return new AIPlayer(id, Factions[faction], this.events);
   }
 
   deserializePlayer(
@@ -24,7 +23,7 @@ export class PlayerFactory {
     const player = new HumanPlayer(
       playerData.id,
       playerData.name,
-      Factions[playerData.faction]!,
+      Factions[playerData.faction],
       this.events,
     );
 
