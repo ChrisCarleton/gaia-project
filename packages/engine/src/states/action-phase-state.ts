@@ -132,7 +132,7 @@ export class ActionPhaseState extends StateBase {
     */
   }
 
-  pass(roundBooster: RoundBooster): void {
+  pass(roundBooster?: RoundBooster): void {
     const action = new PassAction();
     action.pass(this.context, this.player, this.events, roundBooster);
     this.advanceGameState();

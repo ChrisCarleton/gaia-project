@@ -189,7 +189,7 @@ export abstract class PlayerBase implements Player {
   }
 
   private onPlayerPassed(e: EventArgs): void {
-    if (e.type === EventType.PlayerPassed && Object.is(e.player, this)) {
+    if (e.type === EventType.PlayerPassed && e.player.id === this.id) {
       this.hasPassed = true;
     }
   }
