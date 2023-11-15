@@ -19,7 +19,7 @@
     <div class="tile is-ancestor">
       <div class="tile is-parent">
         <PlayerInfoTile
-          v-for="player in game.context.players"
+          v-for="player in gameState.players"
           :key="player.name"
           :player="player"
           :is-active="player.id === gameState.currentPlayer?.id"
@@ -137,6 +137,7 @@ interface GameState {
   roundBoosters: Readonly<RoundBooster[]>;
   selectingRoundBooster: boolean;
   showResearch: boolean;
+  players: Readonly<Player[]>;
 }
 
 const props = defineProps<GameDashboardProps>();
@@ -151,6 +152,7 @@ const gameState = reactive<GameState>({
   roundBoosters: [],
   selectingRoundBooster: false,
   showResearch: false,
+  players: [],
 });
 
 const renderWindow = ref<InstanceType<typeof RenderWindow> | null>();
@@ -277,6 +279,8 @@ function initGame(): void {
 
     game.value.beginGame(players, new BasicMapModel());
   }
+
+  gameState.players = game.value?.context.players ?? [];
 }
 
 onMounted(initGame);

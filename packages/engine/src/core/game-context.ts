@@ -1,6 +1,5 @@
 import { ErrorCode, GPError } from '../errors';
 import { EventArgs, EventType, Observer } from '../events';
-import { FactionFactory } from '../factions';
 import {
   AxialCoordinates,
   FactionType,
@@ -55,10 +54,7 @@ export class DefaultGameContext implements GameContext {
   private _roundScoringBonuses: RoundScoringBonus[];
 
   constructor(options: GameContextOptions) {
-    const playerFactory = new PlayerFactory(
-      options.events,
-      new FactionFactory(),
-    );
+    const playerFactory = new PlayerFactory(options.events);
     this._events = options.events;
     this._allowedActions = [];
 

@@ -1,19 +1,16 @@
 import {
-  AcadamyBonus,
   AcadamyBonusType,
+  Faction,
   FactionIncome,
   FreeAction,
   ResearchProgress,
   StructureType,
 } from '../interfaces';
 
-export const DefaultAcadamyBonuses: [
-  Readonly<AcadamyBonus>,
-  Readonly<AcadamyBonus>,
-] = [
-  { type: AcadamyBonusType.Income, income: { knowledge: 2 } },
-  { type: AcadamyBonusType.Action, action: FreeAction.GenerateQIC },
-];
+export const DefaultAcadamyBonuses = {
+  a: { type: AcadamyBonusType.Income, income: { knowledge: 2 } },
+  b: { type: AcadamyBonusType.Action, action: FreeAction.GenerateQIC },
+} as const;
 
 export const DefaultStartingResearch: ResearchProgress = {
   ai: 0,
@@ -66,3 +63,13 @@ export const DefaultStructureIncome: Readonly<FactionIncome> = {
     },
   ],
 };
+
+export const DefaultFactionConfig: Pick<
+  Faction,
+  'acadamyBonuses' | 'income' | 'startingResearch' | 'startingStructures'
+> = {
+  acadamyBonuses: { ...DefaultAcadamyBonuses },
+  income: { ...DefaultStructureIncome },
+  startingResearch: { ...DefaultStartingResearch },
+  startingStructures: { ...DefaultStructures },
+} as const;

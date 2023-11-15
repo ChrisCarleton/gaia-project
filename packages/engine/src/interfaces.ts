@@ -140,7 +140,7 @@ export interface Faction {
   readonly startingResources: Readonly<Resources>;
   readonly startingResearch: Readonly<ResearchProgress>;
   readonly startingStructures: Readonly<Record<StructureType, number>>;
-  readonly acadamyBonuses: [Readonly<AcadamyBonus>, Readonly<AcadamyBonus>];
+  readonly acadamyBonuses: Readonly<{ a: AcadamyBonus; b: AcadamyBonus }>;
   readonly income: Readonly<FactionIncome>;
 }
 
