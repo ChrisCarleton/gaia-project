@@ -15,10 +15,8 @@ import {
   RoundBooster,
   State,
 } from '../interfaces';
-import {
-  BuildFirstMinesPass,
-  BuildFirstMinesState,
-} from '../states/build-first-mines-state';
+import { BuildFirstMinesState } from '../states/build-first-mines-state';
+import { BuildFirstMinesPass } from '../states/build-first-mines-turn-order';
 import { GameNotStartedState } from '../states/game-not-started-state';
 import { loadState } from '../states/load-state';
 import { DefaultGameContext } from './game-context';
@@ -70,7 +68,7 @@ export class Game implements State {
       this._events,
       this.changeState.bind(this),
       {
-        turnIndex: 0,
+        playerIndex: 0,
         pass: BuildFirstMinesPass.First,
       },
     );
@@ -183,6 +181,7 @@ export class Game implements State {
         vp: player.vp,
       })),
       roundBoosters: [...this.context.roundBoosters],
+      roundScoringBonuses: [...this.context.roundScoringBonuses],
       passOrder: this.context.passOrder.map((p) => playerIndexes[p.id]),
     };
   }

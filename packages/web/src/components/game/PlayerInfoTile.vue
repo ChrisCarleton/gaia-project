@@ -9,8 +9,9 @@
       <!-- Header -->
       <div class="card-header">
         <p class="card-header-title">{{ player.name }}</p>
-        <div v-if="isActive" class="card-header-icon">
-          <span class="tag is-success">Active Player</span>
+        <div class="card-header-icon">
+          <span v-if="player.passed" class="tag is-info">Passed</span>
+          <span v-if="isActive" class="tag is-success">Active Player</span>
         </div>
       </div>
 

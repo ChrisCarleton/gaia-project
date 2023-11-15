@@ -192,7 +192,7 @@ function onPass() {
 
 function onSelectRoundBooster(roundBooster: RoundBooster) {
   gameState.selectingRoundBooster = false;
-  game.value?.chooseRoundBoosterAndPass(roundBooster);
+  game.value?.pass(roundBooster);
 }
 
 function onResearch(): void {
@@ -200,7 +200,9 @@ function onResearch(): void {
 }
 
 function serializeGame(): void {
-  navigator.clipboard.writeText(JSON.stringify(game, null, 2));
+  navigator.clipboard.writeText(
+    JSON.stringify(game.value?.serialize(), null, 2),
+  );
   showCopied.value = true;
   setTimeout(() => (showCopied.value = false), 2500);
 }
@@ -213,13 +215,21 @@ function initGame(): void {
     if (e.type === EventType.AwaitingPlayerInput) {
       gameState.currentPlayer = e.player;
       gameState.allowedActions = new Set<GameAction>(e.allowedActions);
-      gameState.menuPanelState = MenuPanelState.Players;
+
+      if (
+        gameState.allowedActions.size === 1 &&
+        gameState.allowedActions.has(GameAction.BuildMine)
+      ) {
+        gameState.menuPanelState = MenuPanelState.BuildFirstMine;
+      } else {
+        gameState.menuPanelState = MenuPanelState.Players;
+      }
 
       store.commit(Mutation.GameSnapshot, game.value?.serialize());
     }
   });
 
-  events.subscribe(EventType.BeginRound, (e) => {
+  events.subscribe(EventType.BeginRound, async (e): Promise<void> => {
     if (e.type === EventType.BeginRound) {
       gameState.round = e.round;
     }

@@ -12,8 +12,8 @@ import {
   Player,
   PlayerInfo,
   ResearchBoard,
-  Round,
   RoundBooster,
+  RoundScoringBonus,
   StructureType,
 } from '../interfaces';
 import { PlayerFactory } from '../players';
@@ -50,9 +50,9 @@ export class DefaultGameContext implements GameContext {
   private _map: Map;
   private _passOrder: Player[];
   private _players: Player[];
-  private _rounds: Round[];
   private _researchBoard: ResearchBoard;
   private _roundBoosters: RoundBooster[];
+  private _roundScoringBonuses: RoundScoringBonus[];
 
   constructor(options: GameContextOptions) {
     const playerFactory = new PlayerFactory(
@@ -84,6 +84,11 @@ export class DefaultGameContext implements GameContext {
       this._roundBoosters = [...RoundBoosters]
         .sort(() => Math.random() - 0.5)
         .slice(0, players.length + 3);
+
+      // And we need randomized round scoring bonuses for each of the six rounds.
+      this._roundScoringBonuses = Object.values(RoundScoringBonus)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 6);
     } else {
       // Initialized the context with the deserialized properties.
 
@@ -115,6 +120,7 @@ export class DefaultGameContext implements GameContext {
       this._currentPlayer = this._players[options.context.currentPlayer];
       this._currentRound = options.context.currentRound;
       this._roundBoosters = [...options.context.roundBoosters];
+      this._roundScoringBonuses = options.context.roundScoringBonuses;
     }
 
     // TODO: Refactor this stuff once it's built out... also it should really be called something like "TechTiles" rather than "ResearchBoard"
@@ -133,7 +139,6 @@ export class DefaultGameContext implements GameContext {
         terraforming: { ...researchTrack },
       },
     };
-    this._rounds = [];
 
     // Subscribe to relevant events.
     this._events.subscribe(
@@ -182,8 +187,8 @@ export class DefaultGameContext implements GameContext {
     this._roundBoosters = val;
   }
 
-  get rounds(): Readonly<Round[]> {
-    return this._rounds;
+  get roundScoringBonuses(): Readonly<RoundScoringBonus[]> {
+    return this._roundScoringBonuses;
   }
 
   get researchBoard(): Readonly<ResearchBoard> {
@@ -254,6 +259,7 @@ export class DefaultGameContext implements GameContext {
 
   // Advance the round number when a new round begins.
   // Also, turn order changes based on the pass order of the previous round!
+  // TODO: Does any cleanup need to happen?
   private onBeginRound(e: EventArgs) {
     if (e.type === EventType.BeginRound) {
       this._currentRound = e.round;

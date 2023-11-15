@@ -1,4 +1,4 @@
-import { GameContext } from '../../src';
+import { GameContext, RoundScoringBonus } from '../../src';
 import { BasicMapModel } from '../../src/core/maps';
 import { createTestPlayer } from './create-test-player';
 
@@ -27,7 +27,8 @@ export function createTestContext(data?: Partial<GameContext>): GameContext {
         terraforming: { ...researchTrack },
       },
     },
-    rounds: data?.rounds ?? [],
+    roundScoringBonuses:
+      data?.roundScoringBonuses ?? Object.values(RoundScoringBonus).slice(0, 6),
     allowedActions: [],
     currentPlayer: data?.currentPlayer ?? players[0],
     passOrder: [],

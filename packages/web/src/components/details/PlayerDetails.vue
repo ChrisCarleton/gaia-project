@@ -45,18 +45,11 @@
     <div v-if="player.roundBooster" class="content block box">
       <p class="title is-size-5">Round Booster</p>
 
-      <div class="level">
-        <div class="level-left">
-          <div class="level-item">
-            {{ getRoundBoosterText(player.roundBooster!.a) }}
-          </div>
-        </div>
-
-        <div class="level-right">
-          <div class="level-item">
-            {{ getRoundBoosterText(player.roundBooster!.b) }}
-          </div>
-        </div>
+      <div class="content block">
+        <ul>
+          <li>{{ getRoundBoosterText(player.roundBooster!.a) }}</li>
+          <li>{{ getRoundBoosterText(player.roundBooster!.b) }}</li>
+        </ul>
       </div>
     </div>
 

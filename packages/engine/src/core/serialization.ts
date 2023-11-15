@@ -7,9 +7,10 @@ import {
   PlanetType,
   RoundBoosterBonusType,
   RoundBoosterPassBonusDiscriminator,
+  RoundScoringBonus,
   StructureType,
 } from '../interfaces';
-import { BuildFirstMinesPass } from '../states/build-first-mines-state';
+import { BuildFirstMinesPass } from '../states/build-first-mines-turn-order';
 
 const ResourceSchema = z.number().int().min(0);
 const ResearchProgressSchema = z.number().int().min(0).max(5);
@@ -64,9 +65,6 @@ const ChooseFirstRoundBoostersStateSchema = z.object({
 });
 
 // No variablity... just the state type.
-const CleanupPhaseStateSchema = z.object({
-  type: z.literal(GameState.CleanupPhase),
-});
 const GaiaPhaseStateSchema = z.object({
   type: z.literal(GameState.GaiaPhase),
 });
@@ -83,7 +81,6 @@ const IncomePhaseStateSchema = z.object({
 const StateSchema = z.discriminatedUnion('type', [
   ActionPhaseStateSchema,
   BuildFirstMinesStateSchema,
-  CleanupPhaseStateSchema,
   ChooseFirstRoundBoostersStateSchema,
   GaiaPhaseStateSchema,
   GameEndedStateSchema,
@@ -153,6 +150,7 @@ export const GameContextSchema = z.object({
   // }),
   map: MapHexSchema.array(),
   roundBoosters: RoundBoosterSchema.array(),
+  roundScoringBonuses: z.nativeEnum(RoundScoringBonus).array().length(6),
 
   passOrder: z.number().int().array(),
 });

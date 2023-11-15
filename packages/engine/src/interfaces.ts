@@ -226,19 +226,25 @@ export interface RoundBooster {
   b: RoundBoosterBonus;
 }
 
-export interface RoundScoringTile {}
+export enum RoundScoringBonus {
+  AcadamyOrPlanetaryInstitute5VP = 'acadamyOrPlanetaryInstitute5VP',
+  FederationToken5VP = 'federationToken5VP',
+  GaiaPlanet3VP = 'gaiaPlanet3VP',
+  GaiaPlanet4VP = 'gaiaPlanet4VP',
+  Mines2VP = 'mines2VP',
+  Research2VP = 'research2VP',
+  Terraforming2VP = 'terraforming2VP',
+  TradingStations3VP = 'tradingStations3VP',
+  TradingStations4VP = 'tradingStations4VP',
+}
 
 export interface FinalScoringTile {
   neutralPlayerRank: number;
 }
 
-export interface Round {
-  scoringTile: RoundScoringTile;
-}
-
 export interface GameContext {
   readonly currentRound: number;
-  readonly rounds: Readonly<Round[]>;
+  readonly roundScoringBonuses: Readonly<RoundScoringBonus[]>;
   readonly map: Map;
   readonly players: Readonly<Player[]>;
   readonly passOrder: Readonly<Player[]>;
@@ -251,7 +257,6 @@ export interface GameContext {
 export enum GameState {
   ActionPhase,
   ChooseFirstRoundBoosters = 'chooseFirstRoundBoosters',
-  CleanupPhase = 'cleanupPhase',
   GaiaPhase = 'gaiaPhase',
   GameEnded = 'gameEnded',
   GameNotStarted = 'gameNotStarted',

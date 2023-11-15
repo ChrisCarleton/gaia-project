@@ -9,7 +9,6 @@ import {
 import { ActionPhaseState } from './action-phase-state';
 import { BuildFirstMinesState } from './build-first-mines-state';
 import { ChooseFirstRoundBoostersState } from './choose-first-round-boosters-state';
-import { CleanupPhaseState } from './cleanup-phase-state';
 import { GaiaPhaseState } from './gaia-phase-state';
 import { GameCompletedState } from './game-completed-state';
 import { GameNotStartedState } from './game-not-started-state';
@@ -30,13 +29,10 @@ export function loadState(
         context.players[data.player],
       );
 
-    case GameState.CleanupPhase:
-      return new CleanupPhaseState(context, events, changeState);
-
     case GameState.BuildFirstMines:
       return new BuildFirstMinesState(context, events, changeState, {
         pass: data.pass,
-        turnIndex: data.player,
+        playerIndex: data.player,
       });
 
     case GameState.ChooseFirstRoundBoosters:
