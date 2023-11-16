@@ -85,8 +85,8 @@ export class PassAction {
       }
 
       // b. Selected round booster must be available in the supply.
-      const boosterIndex = context.roundBoosters.findIndex((rb) =>
-        Object.is(roundBooster, rb),
+      const boosterIndex = context.roundBoosters.findIndex(
+        (rb) => rb.id === roundBooster.id,
       );
 
       if (boosterIndex === -1) {

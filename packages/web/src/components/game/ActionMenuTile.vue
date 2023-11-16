@@ -39,11 +39,12 @@
 </template>
 
 <script lang="ts" setup>
-import { GameAction, Player } from '@gaia-project/engine';
+import { PlayerState } from '@/store';
+import { GameAction } from '@gaia-project/engine';
 
 interface ActionMenuTileProps {
   allowedActions: Set<GameAction>;
-  currentPlayer?: Player;
+  currentPlayer?: PlayerState;
 }
 
 defineProps<ActionMenuTileProps>();

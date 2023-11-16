@@ -11,6 +11,7 @@ import { GaiaProjectState } from './state';
 
 const DefaultState: GaiaProjectState = {
   toasts: {},
+  players: [],
 };
 
 export const StoreInjectionKey: InjectionKey<Store<GaiaProjectState>> =

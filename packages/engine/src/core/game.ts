@@ -171,9 +171,9 @@ export class Game implements State {
         name: player.name,
         powerCycle: {
           gaia: player.powerCycle.gaia,
-          l1: player.powerCycle.level1,
-          l2: player.powerCycle.level2,
-          l3: player.powerCycle.level3,
+          level1: player.powerCycle.level1,
+          level2: player.powerCycle.level2,
+          level3: player.powerCycle.level3,
         },
         research: player.research,
         resources: player.resources,

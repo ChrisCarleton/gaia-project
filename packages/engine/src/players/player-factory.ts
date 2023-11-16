@@ -29,9 +29,9 @@ export class PlayerFactory {
 
     player.powerCycleManager.setValues({
       gaia: playerData.powerCycle.gaia,
-      level1: playerData.powerCycle.l1,
-      level2: playerData.powerCycle.l2,
-      level3: playerData.powerCycle.l3,
+      level1: playerData.powerCycle.level1,
+      level2: playerData.powerCycle.level2,
+      level3: playerData.powerCycle.level3,
     });
 
     player.research.ai = playerData.research.ai;

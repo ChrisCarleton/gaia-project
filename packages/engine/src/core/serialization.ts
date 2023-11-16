@@ -112,9 +112,9 @@ const PlayerSchema = z.object({
 
   powerCycle: z.object({
     gaia: ResourceSchema,
-    l1: ResourceSchema,
-    l2: ResourceSchema,
-    l3: ResourceSchema,
+    level1: ResourceSchema,
+    level2: ResourceSchema,
+    level3: ResourceSchema,
   }),
 
   resources: z.object({

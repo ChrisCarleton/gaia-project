@@ -3,19 +3,15 @@ import { SerializedGameContext } from '@gaia-project/engine/src/core/serializati
 import { MutationTree } from 'vuex';
 
 import { GaiaProjectState } from './state';
-import { Mutation, Toast } from './types';
+import { GameState, Mutation, PlayerState, Toast } from './types';
 
 export const mutations: MutationTree<GaiaProjectState> = {
-  [Mutation.GameSnapshot](state, payload: SerializedGameContext) {
-    state.currentGameSnapshot = payload;
-  },
-
   [Mutation.LoadGame](state, payload: SerializedGameContext) {
-    state.gameState = payload;
+    state.loadedGame = payload;
   },
 
   [Mutation.RestartGame](state) {
-    state.gameState = undefined;
+    state.loadedGame = undefined;
   },
 
   [Mutation.SignInUser](state, payload: User) {
@@ -33,5 +29,26 @@ export const mutations: MutationTree<GaiaProjectState> = {
   [Mutation.DismissToast](state, toastId: string) {
     clearTimeout(state.toasts[toastId].timer);
     delete state.toasts[toastId];
+  },
+
+  [Mutation.UpdatePlayer](
+    state,
+    payload: { index: number; playerState: PlayerState },
+  ) {
+    const { index, playerState } = payload;
+
+    if (index < 0 || index >= state.players.length) {
+      console.warn('Invalid player index:', index);
+    }
+
+    state.players.splice(index, 1, playerState);
+  },
+
+  [Mutation.UpdatePlayers](state, payload: PlayerState[]) {
+    state.players = payload;
+  },
+
+  [Mutation.UpdateGame](state, payload: GameState) {
+    state.gameState = payload;
   },
 };

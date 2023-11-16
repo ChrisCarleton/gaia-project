@@ -22,7 +22,7 @@
           <div>
             <p class="heading">Homeworld</p>
             <p class="is-family-code">
-              {{ PlanetTypeNames[player.faction.homeWorld] }}
+              {{ homeWorld }}
             </p>
           </div>
         </div>
@@ -32,13 +32,18 @@
 </template>
 
 <script lang="ts" setup>
-import { PlanetTypeNames, Player } from '@gaia-project/engine';
+import { PlayerState } from '@/store';
+import { FactionHomeWorlds, PlanetTypeNames } from '@gaia-project/engine';
+import { computed } from 'vue';
 
 interface BuildFirstMineTileProps {
-  player: Player;
+  player: PlayerState;
 }
 
-defineProps<BuildFirstMineTileProps>();
+const props = defineProps<BuildFirstMineTileProps>();
+const homeWorld = computed(
+  () => PlanetTypeNames[FactionHomeWorlds[props.player.faction]],
+);
 
 defineEmits<{
   (e: 'cancel'): void;
