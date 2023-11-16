@@ -1,5 +1,5 @@
 import { GameContext, RoundScoringBonus } from '../../src';
-import { BasicMapModel } from '../../src/core/maps';
+import { BasicMapModel } from '../../src/maps';
 import { createTestPlayer } from './create-test-player';
 
 export function createTestContext(data?: Partial<GameContext>): GameContext {
