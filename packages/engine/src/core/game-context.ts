@@ -17,6 +17,7 @@ import {
 } from '../interfaces';
 import { PlayerFactory } from '../players';
 import { axialToString, mapFromHexes } from '../utils';
+import { GameConfig } from './config';
 import { RoundBoosters } from './round-boosters';
 import { SerializedGameContext } from './serialization';
 
@@ -29,7 +30,7 @@ type ReloadGameOptions = {
   context: SerializedGameContext;
 };
 
-export type GameContextOptions = { events: Observer } & (
+export type GameContextOptions = { events: Observer; config?: GameConfig } & (
   | NewGameOptions
   | ReloadGameOptions
 );
@@ -54,7 +55,7 @@ export class DefaultGameContext implements GameContext {
   private _roundScoringBonuses: RoundScoringBonus[];
 
   constructor(options: GameContextOptions) {
-    const playerFactory = new PlayerFactory(options.events);
+    const playerFactory = new PlayerFactory(options.events, options.config);
     this._events = options.events;
     this._allowedActions = [];
 

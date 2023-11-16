@@ -1,3 +1,4 @@
+import { GameConfig } from '../core/config';
 import { SerializedGameContext, SerializedPlayer } from '../core/serialization';
 import { Observer } from '../events';
 import { Factions } from '../factions';
@@ -6,14 +7,31 @@ import { AIPlayer } from './ai-player';
 import { HumanPlayer } from './human-player';
 
 export class PlayerFactory {
-  constructor(private readonly events: Observer) {}
+  constructor(
+    private readonly events: Observer,
+    private readonly config?: GameConfig,
+  ) {}
 
   createPlayer(id: string, faction: FactionType, name: string): Player {
-    return new HumanPlayer(id, name, Factions[faction], this.events);
+    const player = new HumanPlayer(id, name, Factions[faction], this.events);
+    if (this.config?.cheats.resources) {
+      player.resources.credits = 999;
+      player.resources.knowledge = 999;
+      player.resources.ore = 999;
+      player.resources.qic = 999;
+    }
+    return player;
   }
 
   createAIOpponent(id: string, faction: FactionType): Player {
-    return new AIPlayer(id, Factions[faction], this.events);
+    const player = new AIPlayer(id, Factions[faction], this.events);
+    if (this.config?.cheats.resources) {
+      player.resources.credits = 999;
+      player.resources.knowledge = 999;
+      player.resources.ore = 999;
+      player.resources.qic = 999;
+    }
+    return player;
   }
 
   deserializePlayer(

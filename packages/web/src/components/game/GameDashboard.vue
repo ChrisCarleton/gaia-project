@@ -102,8 +102,9 @@ import ActionMenuTile from '@/components/game/ActionMenuTile.vue';
 import BuildFirstMineTile from '@/components/game/BuildFirstMineTile.vue';
 import PlayerInfoTile from '@/components/game/PlayerInfoTile.vue';
 import RenderWindow from '@/components/game/RenderWindow.vue';
+import Config from '@/config';
 import { HexHighlightStatus } from '@/graphics/map';
-import { Action, Mutation, useStore } from '@/store';
+import { Action, useStore } from '@/store';
 import {
   ClickStrategies,
   HighlightStrategies,
@@ -117,6 +118,7 @@ import {
   StructureType,
 } from '@gaia-project/engine';
 import { BasicMapModel, FactionType, Game, MapHex } from '@gaia-project/engine';
+import { GameConfig } from '@gaia-project/engine/src/core/config';
 import { SerializedGameContext } from '@gaia-project/engine/src/core/serialization';
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
 
@@ -212,7 +214,12 @@ function serializeGame(): void {
 }
 
 function initGame(): void {
-  game = new Game();
+  const gameConfig: GameConfig = {
+    cheats: {
+      resources: Config.unlimitedResources,
+    },
+  };
+  game = new Game(gameConfig);
   const { events } = game;
 
   Object.values(EventType).forEach((type) => {

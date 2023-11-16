@@ -19,6 +19,7 @@ import { BuildFirstMinesState } from '../states/build-first-mines-state';
 import { BuildFirstMinesPass } from '../states/build-first-mines-turn-order';
 import { GameNotStartedState } from '../states/game-not-started-state';
 import { loadState } from '../states/load-state';
+import { GameConfig } from './config';
 import { DefaultGameContext } from './game-context';
 import {
   GameContextSchema,
@@ -29,19 +30,22 @@ import {
 export class Game implements State {
   private readonly _events: ObserverPublisher;
   private readonly _delayedEvents: Observer;
+  private readonly _config: GameConfig | undefined;
   private _context: GameContext | undefined;
   private _state: State;
 
-  constructor() {
+  constructor(config?: GameConfig) {
     this._events = new LocalObserver();
     this._delayedEvents = new DelayedObserver(this._events);
     this._state = new GameNotStartedState();
+    this._config = config;
   }
 
   reloadGame(context: unknown): void {
     const gameData = GameContextSchema.parse(context);
     this._context = new DefaultGameContext({
       events: this._events,
+      config: this._config,
       context: gameData,
     });
 
@@ -57,6 +61,7 @@ export class Game implements State {
   beginGame(players: PlayerInfo[], mapModel: MapModel) {
     // Create the game context based on the player list and selected map model.
     this._context = new DefaultGameContext({
+      config: this._config,
       events: this._events,
       players,
       mapModel,

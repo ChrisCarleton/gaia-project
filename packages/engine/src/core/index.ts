@@ -1,4 +1,5 @@
 export * from './terraforming-costs';
+export * from './config';
 export * from './game-context';
 export * from './game';
 
