@@ -1,48 +1,48 @@
 <template>
   <GameEndedDialog
-    :player-rankings="gameState.playerRankings"
-    :visible="gameState.gameOver"
+    :player-rankings="dashboardState.playerRankings"
+    :visible="dashboardState.gameOver"
   />
   <ResearchDetails
-    :visible="gameState.showResearch"
-    :player="gameState.currentPlayer"
-    @close="gameState.showResearch = false"
+    :visible="dashboardState.showResearch"
+    :player="currentPlayer"
+    @close="dashboardState.showResearch = false"
   />
   <RoundBoosterDetails
-    :boosters="gameState.roundBoosters"
-    :visible="gameState.selectingRoundBooster"
-    @cancel="gameState.selectingRoundBooster = false"
+    :boosters="dashboardState.roundBoosters"
+    :visible="dashboardState.selectingRoundBooster"
+    @cancel="dashboardState.selectingRoundBooster = false"
     @confirm="onSelectRoundBooster"
   />
 
-  <section v-if="game" class="section">
+  <section v-if="gameContext && game && currentPlayer" class="section">
     <div class="tile is-ancestor">
       <div class="tile is-parent">
         <PlayerInfoTile
-          v-for="player in game.context.players"
+          v-for="player in players"
           :key="player.name"
           :player="player"
-          :is-active="player.id === gameState.currentPlayer?.id"
+          :is-active="player.id === currentPlayer.id"
         />
       </div>
     </div>
     <div class="tile is-ancestor">
       <div
-        v-if="gameState.menuPanelState === MenuPanelState.Players"
+        v-if="dashboardState.menuPanelState === MenuPanelState.Players"
         class="tile is-parent is-vertical is-4"
       >
         <div class="tile is-parent">
           <GameStatusTile
-            :current-player="gameState.currentPlayer"
-            :round="gameState.round"
+            :current-player="currentPlayer"
+            :round="gameContext.currentRound"
           />
         </div>
         <div class="tile is-parent">
           <ActionMenuTile
-            :current-player="gameState.currentPlayer"
-            :allowed-actions="gameState.allowedActions"
+            :current-player="currentPlayer"
+            :allowed-actions="dashboardState.allowedActions"
             @buildmine="
-              gameState.menuPanelState = MenuPanelState.BuildFirstMine
+              dashboardState.menuPanelState = MenuPanelState.BuildFirstMine
             "
             @pass="onPass"
             @research="onResearch"
@@ -66,12 +66,14 @@
       </div>
 
       <div
-        v-else-if="gameState.menuPanelState === MenuPanelState.BuildFirstMine"
+        v-else-if="
+          dashboardState.menuPanelState === MenuPanelState.BuildFirstMine
+        "
         class="tile is-parent is-4"
       >
         <BuildFirstMineTile
-          :player="gameState.currentPlayer!"
-          @cancel="gameState.menuPanelState = MenuPanelState.Players"
+          :player="currentPlayer"
+          @cancel="dashboardState.menuPanelState = MenuPanelState.Players"
         />
       </div>
 
@@ -80,7 +82,7 @@
           ref="renderWindow"
           class="tile is-child box"
           :game="game"
-          :highlight-status="gameState.highlightStatus"
+          :highlight-status="dashboardState.highlightStatus"
           @hexhighlight="onHexHighlight"
           @hexclick="onHexClick"
         />
@@ -100,8 +102,9 @@ import ActionMenuTile from '@/components/game/ActionMenuTile.vue';
 import BuildFirstMineTile from '@/components/game/BuildFirstMineTile.vue';
 import PlayerInfoTile from '@/components/game/PlayerInfoTile.vue';
 import RenderWindow from '@/components/game/RenderWindow.vue';
+import Config from '@/config';
 import { HexHighlightStatus } from '@/graphics/map';
-import { Action, Mutation, useStore } from '@/store';
+import { Action, useStore } from '@/store';
 import {
   ClickStrategies,
   HighlightStrategies,
@@ -115,8 +118,9 @@ import {
   StructureType,
 } from '@gaia-project/engine';
 import { BasicMapModel, FactionType, Game, MapHex } from '@gaia-project/engine';
+import { GameConfig } from '@gaia-project/engine/src/core/config';
 import { SerializedGameContext } from '@gaia-project/engine/src/core/serialization';
-import { nextTick, onMounted, reactive, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
 
 import RoundBoosterDetails from '../details/RoundBoosterDetails.vue';
 import GameStatusTile from './GameStatusTile.vue';
@@ -125,15 +129,13 @@ interface GameDashboardProps {
   context: SerializedGameContext | undefined;
 }
 
-interface GameState {
+interface DashboardState {
   allowedActions: Set<GameAction>;
   currentHex?: MapHex;
-  currentPlayer?: Player;
   gameOver: boolean;
   highlightStatus: HexHighlightStatus;
   menuPanelState: MenuPanelState;
   playerRankings?: Readonly<Player[]>;
-  round: number;
   roundBoosters: Readonly<RoundBooster[]>;
   selectingRoundBooster: boolean;
   showResearch: boolean;
@@ -142,42 +144,48 @@ interface GameState {
 const props = defineProps<GameDashboardProps>();
 
 const store = useStore();
-const gameState = reactive<GameState>({
+const dashboardState = reactive<DashboardState>({
   allowedActions: new Set<GameAction>([]),
   gameOver: false,
   highlightStatus: HexHighlightStatus.Neutral,
   menuPanelState: MenuPanelState.Players,
-  round: 0,
   roundBoosters: [],
   selectingRoundBooster: false,
   showResearch: false,
 });
+const gameContext = computed(() => store.state.gameState);
+const players = computed(() => store.state.players);
+const currentPlayer = computed(() =>
+  typeof store.state.gameState?.currentPlayer === 'number'
+    ? store.state.players[store.state.gameState.currentPlayer]
+    : undefined,
+);
 
 const renderWindow = ref<InstanceType<typeof RenderWindow> | null>();
 const showCopied = ref(false);
-const game = ref<Game | undefined>();
+let game: Game | undefined;
 
 function onHexHighlight(mapHex: MapHex) {
-  if (!game.value) return;
+  if (!game) return;
 
-  gameState.currentHex = mapHex;
+  dashboardState.currentHex = mapHex;
   const status = HighlightStrategies[
-    gameState.menuPanelState
+    dashboardState.menuPanelState
   ].determineHighlight(
-    gameState.currentPlayer ?? game.value.context.players[0],
+    game.context.currentPlayer ?? game.context.players[0],
     mapHex,
   );
   renderWindow.value?.setHighlightStatus(status);
 }
 
 async function onHexClick(mapHex: MapHex): Promise<void> {
-  if (!game.value) return;
+  if (!game) return;
 
-  gameState.currentHex = mapHex;
+  dashboardState.currentHex = mapHex;
   try {
-    await ClickStrategies[gameState.menuPanelState].handleClick(
-      game.value,
-      gameState.currentPlayer ?? game.value.context.players[0],
+    await ClickStrategies[dashboardState.menuPanelState].handleClick(
+      game,
+      game.context.currentPlayer ?? game.context.players[0],
       mapHex,
     );
   } catch (error) {
@@ -186,42 +194,52 @@ async function onHexClick(mapHex: MapHex): Promise<void> {
 }
 
 function onPass() {
-  gameState.roundBoosters = game.value?.context.roundBoosters ?? [];
-  gameState.selectingRoundBooster = true;
+  dashboardState.roundBoosters = game?.context.roundBoosters ?? [];
+  dashboardState.selectingRoundBooster = true;
 }
 
 function onSelectRoundBooster(roundBooster: RoundBooster) {
-  gameState.selectingRoundBooster = false;
-  game.value?.chooseRoundBoosterAndPass(roundBooster);
+  dashboardState.selectingRoundBooster = false;
+  game?.pass(roundBooster);
 }
 
 function onResearch(): void {
-  gameState.showResearch = true;
+  dashboardState.showResearch = true;
 }
 
 function serializeGame(): void {
-  navigator.clipboard.writeText(JSON.stringify(game, null, 2));
+  navigator.clipboard.writeText(JSON.stringify(game?.serialize(), null, 2));
   showCopied.value = true;
   setTimeout(() => (showCopied.value = false), 2500);
 }
 
 function initGame(): void {
-  game.value = new Game();
-  const { events } = game.value;
+  const gameConfig: GameConfig = {
+    cheats: {
+      resources: Config.unlimitedResources,
+    },
+  };
+  game = new Game(gameConfig);
+  const { events } = game;
+
+  Object.values(EventType).forEach((type) => {
+    events.subscribe(type, (e) =>
+      store.dispatch(Action.HandleGameEvent, { e, game }),
+    );
+  });
 
   events.subscribe(EventType.AwaitingPlayerInput, (e) => {
     if (e.type === EventType.AwaitingPlayerInput) {
-      gameState.currentPlayer = e.player;
-      gameState.allowedActions = new Set<GameAction>(e.allowedActions);
-      gameState.menuPanelState = MenuPanelState.Players;
+      dashboardState.allowedActions = new Set<GameAction>(e.allowedActions);
 
-      store.commit(Mutation.GameSnapshot, game.value?.serialize());
-    }
-  });
-
-  events.subscribe(EventType.BeginRound, (e) => {
-    if (e.type === EventType.BeginRound) {
-      gameState.round = e.round;
+      if (
+        dashboardState.allowedActions.size === 1 &&
+        dashboardState.allowedActions.has(GameAction.BuildMine)
+      ) {
+        dashboardState.menuPanelState = MenuPanelState.BuildFirstMine;
+      } else {
+        dashboardState.menuPanelState = MenuPanelState.Players;
+      }
     }
   });
 
@@ -250,14 +268,14 @@ function initGame(): void {
 
   events.subscribe(EventType.GameEnded, (e) => {
     if (e.type === EventType.GameEnded) {
-      gameState.playerRankings = e.playerRanking;
-      gameState.gameOver = true;
-      gameState.menuPanelState = MenuPanelState.Players;
+      dashboardState.playerRankings = e.playerRanking;
+      dashboardState.gameOver = true;
+      dashboardState.menuPanelState = MenuPanelState.Players;
     }
   });
 
   if (props.context) {
-    game.value.reloadGame(props.context);
+    game?.reloadGame(props.context);
   } else {
     const players = [
       { id: '0', faction: FactionType.Terrans, name: 'Julian' },
@@ -265,13 +283,15 @@ function initGame(): void {
       { id: '2', faction: FactionType.BalTaks, name: 'Ricky' },
     ];
 
-    game.value.beginGame(players, new BasicMapModel());
+    game?.beginGame(players, new BasicMapModel());
   }
+
+  store.dispatch(Action.InitGame, game);
 }
 
 onMounted(initGame);
 watch(props, () => {
-  game.value = undefined;
+  game = undefined;
   nextTick(initGame);
 });
 </script>

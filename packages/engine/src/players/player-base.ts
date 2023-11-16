@@ -110,9 +110,9 @@ export abstract class PlayerBase implements Player {
       name: this.name,
       powerCycle: {
         gaia: this.powerCycle.gaia,
-        l1: this.powerCycle.level1,
-        l2: this.powerCycle.level2,
-        l3: this.powerCycle.level3,
+        level1: this.powerCycle.level1,
+        level2: this.powerCycle.level2,
+        level3: this.powerCycle.level3,
       },
       research: {
         ai: this.research.ai,
@@ -189,7 +189,7 @@ export abstract class PlayerBase implements Player {
   }
 
   private onPlayerPassed(e: EventArgs): void {
-    if (e.type === EventType.PlayerPassed && Object.is(e.player, this)) {
+    if (e.type === EventType.PlayerPassed && e.player.id === this.id) {
       this.hasPassed = true;
     }
   }

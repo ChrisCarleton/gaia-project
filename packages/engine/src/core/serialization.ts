@@ -2,21 +2,22 @@ import { z } from 'zod';
 
 import {
   FactionType,
-  FreeAction,
   GameState,
   PlanetType,
   RoundBoosterBonusType,
   RoundBoosterPassBonusDiscriminator,
+  RoundScoringBonus,
+  SpecialAction,
   StructureType,
 } from '../interfaces';
-import { BuildFirstMinesPass } from '../states/build-first-mines-state';
+import { BuildFirstMinesPass } from '../states/build-first-mines-turn-order';
 
 const ResourceSchema = z.number().int().min(0);
 const ResearchProgressSchema = z.number().int().min(0).max(5);
 
 const RoundBoosterActionBonusSchema = z.object({
   type: z.literal(RoundBoosterBonusType.Action),
-  action: z.nativeEnum(FreeAction),
+  action: z.nativeEnum(SpecialAction),
 });
 const RoundBoosterIncomeBonusSchema = z.object({
   type: z.literal(RoundBoosterBonusType.Income),
@@ -64,9 +65,6 @@ const ChooseFirstRoundBoostersStateSchema = z.object({
 });
 
 // No variablity... just the state type.
-const CleanupPhaseStateSchema = z.object({
-  type: z.literal(GameState.CleanupPhase),
-});
 const GaiaPhaseStateSchema = z.object({
   type: z.literal(GameState.GaiaPhase),
 });
@@ -83,7 +81,6 @@ const IncomePhaseStateSchema = z.object({
 const StateSchema = z.discriminatedUnion('type', [
   ActionPhaseStateSchema,
   BuildFirstMinesStateSchema,
-  CleanupPhaseStateSchema,
   ChooseFirstRoundBoostersStateSchema,
   GaiaPhaseStateSchema,
   GameEndedStateSchema,
@@ -115,9 +112,9 @@ const PlayerSchema = z.object({
 
   powerCycle: z.object({
     gaia: ResourceSchema,
-    l1: ResourceSchema,
-    l2: ResourceSchema,
-    l3: ResourceSchema,
+    level1: ResourceSchema,
+    level2: ResourceSchema,
+    level3: ResourceSchema,
   }),
 
   resources: z.object({
@@ -153,6 +150,7 @@ export const GameContextSchema = z.object({
   // }),
   map: MapHexSchema.array(),
   roundBoosters: RoundBoosterSchema.array(),
+  roundScoringBonuses: z.nativeEnum(RoundScoringBonus).array().length(6),
 
   passOrder: z.number().int().array(),
 });

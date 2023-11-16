@@ -1,4 +1,4 @@
-import { AxialCoordinates, MapHex } from '../../interfaces';
+import { AxialCoordinates, MapHex } from '../interfaces';
 import { MapTileData } from './map-tile-data';
 
 function parseStringCoordinates(val: string): AxialCoordinates {

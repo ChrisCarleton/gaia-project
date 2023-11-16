@@ -45,18 +45,11 @@
     <div v-if="player.roundBooster" class="content block box">
       <p class="title is-size-5">Round Booster</p>
 
-      <div class="level">
-        <div class="level-left">
-          <div class="level-item">
-            {{ getRoundBoosterText(player.roundBooster!.a) }}
-          </div>
-        </div>
-
-        <div class="level-right">
-          <div class="level-item">
-            {{ getRoundBoosterText(player.roundBooster!.b) }}
-          </div>
-        </div>
+      <div class="content block">
+        <ul>
+          <li>{{ getRoundBoosterText(player.roundBooster!.a) }}</li>
+          <li>{{ getRoundBoosterText(player.roundBooster!.b) }}</li>
+        </ul>
       </div>
     </div>
 
@@ -95,21 +88,24 @@
 <script lang="ts" setup>
 import StatWithHeading from '@/components/StatWithHeading.vue';
 import DetailsViewBase from '@/components/details/DetailsViewBase.vue';
+import { PlayerState } from '@/store';
 import { getRoundBoosterText } from '@/utils/round-booster-text';
 import {
-  Player,
+  Factions,
   StructureType,
   StructureTypeNamesPlural,
 } from '@gaia-project/engine';
+import { computed } from 'vue';
 
 interface PlayerInfoDialogProps {
-  player: Player;
+  player: PlayerState;
   visible: boolean;
 }
 
 const props = withDefaults(defineProps<PlayerInfoDialogProps>(), {
   visible: false,
 });
+const faction = computed(() => Factions[props.player.faction]);
 
 defineEmits<{
   (e: 'close'): void;
@@ -121,15 +117,13 @@ function getIncomeForStructure(type: StructureType): string {
 
   switch (type) {
     case StructureType.Mine:
-      return `${player.faction.income[type][deployed].ore ?? 0} ore`;
+      return `${faction.value.income[type][deployed].ore ?? 0} ore`;
 
     case StructureType.TradingStation:
-      return `${player.faction.income[type][deployed].credits ?? 0} credits`;
+      return `${faction.value.income[type][deployed].credits ?? 0} credits`;
 
     case StructureType.ResearchLab:
-      return `${
-        player.faction.income[type][deployed].knowledge ?? 0
-      } knowledge`;
+      return `${faction.value.income[type][deployed].knowledge ?? 0} knowledge`;
 
     case StructureType.Academy:
       // TODO: This one is dynamic. Figure it out.
@@ -138,7 +132,7 @@ function getIncomeForStructure(type: StructureType): string {
     case StructureType.PlanetaryInstitute:
       if (deployed) {
         const { powerNodes, chargePower } =
-          player.faction.income[type][deployed];
+          faction.value.income[type][deployed];
         return `Gain ${powerNodes} power nodes & charge ${chargePower} power nodes.`;
       }
 

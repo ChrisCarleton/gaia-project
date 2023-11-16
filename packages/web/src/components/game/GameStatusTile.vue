@@ -6,23 +6,28 @@
 
     <div class="card-content">
       <div class="level">
-        <StatWithHeading heading="Round #" :stat="round" />
-        <StatWithHeading
-          heading="Current Player"
-          :stat="currentPlayer?.name ?? ''"
-        />
+        <div class="level-left">
+          <StatWithHeading v-if="round" heading="Round #" :stat="round" />
+          <StatWithHeading
+            heading="Current Player"
+            :stat="currentPlayer?.name ?? ''"
+          />
+        </div>
+        <div class="level-right">
+          <button class="button is-ghost">Research Board</button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { Player } from '@gaia-project/engine';
+import { PlayerState } from '@/store';
 
 import StatWithHeading from '../StatWithHeading.vue';
 
 interface GameStatusTileProps {
-  currentPlayer?: Player;
+  currentPlayer?: PlayerState;
   round: number;
 }
 

@@ -1,5 +1,3 @@
-import { mockDeep } from 'jest-mock-extended';
-
 import {
   BasicMapModel,
   ChangeStateFunction,
@@ -8,16 +6,15 @@ import {
   GameAction,
   GameContext,
   GameState,
-  ResearchBoard,
   State,
   StructureType,
 } from '../../../src';
+import { BuildFirstMinesState } from '../../../src/states/build-first-mines-state';
 import {
   BuildFirstMinesOptions,
   BuildFirstMinesPass,
-  BuildFirstMinesState,
-} from '../../../src/states/build-first-mines-state';
-import { TestObserver, createTestPlayer } from '../../util';
+} from '../../../src/states/build-first-mines-turn-order';
+import { TestObserver, createTestContext, createTestPlayer } from '../../util';
 
 const events = new TestObserver();
 const players = [
@@ -45,17 +42,7 @@ describe('Build First Mines State', () => {
   }
 
   beforeEach(() => {
-    context = {
-      allowedActions: [GameAction.BuildMine],
-      currentRound: 1,
-      currentPlayer: players[0],
-      map,
-      players,
-      researchBoard: mockDeep<ResearchBoard>(),
-      roundBoosters: [],
-      rounds: [],
-      passOrder: [],
-    };
+    context = createTestContext({ map, players });
   });
 
   afterEach(() => {
@@ -65,7 +52,7 @@ describe('Build First Mines State', () => {
   it('Will await player input upon initialization', () => {
     const state = createState({
       pass: BuildFirstMinesPass.First,
-      turnIndex: 0,
+      playerIndex: 0,
     });
 
     state.init();
@@ -84,7 +71,7 @@ describe('Build First Mines State', () => {
   it('will not allow a mine to be built out in space', () => {
     const state = createState({
       pass: BuildFirstMinesPass.First,
-      turnIndex: 0,
+      playerIndex: 0,
     });
     const emptyHex = mapHexes.find((hex) => !hex.planet)!;
     expect(() => state.buildMine(emptyHex)).toThrowErrorMatchingSnapshot();
@@ -93,7 +80,7 @@ describe('Build First Mines State', () => {
   it("will not allow a mine to be built on a planet that does not match the player's homeworld", () => {
     const state = createState({
       pass: BuildFirstMinesPass.First,
-      turnIndex: 0,
+      playerIndex: 0,
     });
     const nonHomeworldPlanet = mapHexes.find(
       (hex) => hex.planet && hex.planet.type !== players[0].faction.homeWorld,
@@ -106,7 +93,7 @@ describe('Build First Mines State', () => {
   it('will not allow a mine to be built on a planet that already has a structure on it', () => {
     const state = createState({
       pass: BuildFirstMinesPass.First,
-      turnIndex: 0,
+      playerIndex: 0,
     });
     const mapHex = mapHexes.find(
       (hex) => hex.planet?.type === players[0].faction.homeWorld,
@@ -118,7 +105,7 @@ describe('Build First Mines State', () => {
   it("will place a mine on an unoccupied planet that matches the current player's homeworld", () => {
     const state = createState({
       pass: BuildFirstMinesPass.First,
-      turnIndex: 1,
+      playerIndex: 1,
     });
     const mapHex = mapHexes.find(
       (hex) => hex.planet?.type === players[1].faction.homeWorld,
@@ -129,10 +116,4 @@ describe('Build First Mines State', () => {
     expect(planet.player).toBe(players[1]);
     expect(planet.structure).toBe(StructureType.Mine);
   });
-});
-
-describe('Build First Mines turn order logic', () => {
-  it.todo(
-    'There is some complicated logic governing flow when it comes to laying down first mines. Test iiiiiiit!',
-  );
 });

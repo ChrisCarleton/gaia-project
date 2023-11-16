@@ -15,12 +15,11 @@ import {
   RoundBooster,
   State,
 } from '../interfaces';
-import {
-  BuildFirstMinesPass,
-  BuildFirstMinesState,
-} from '../states/build-first-mines-state';
+import { BuildFirstMinesState } from '../states/build-first-mines-state';
+import { BuildFirstMinesPass } from '../states/build-first-mines-turn-order';
 import { GameNotStartedState } from '../states/game-not-started-state';
 import { loadState } from '../states/load-state';
+import { GameConfig } from './config';
 import { DefaultGameContext } from './game-context';
 import {
   GameContextSchema,
@@ -31,19 +30,22 @@ import {
 export class Game implements State {
   private readonly _events: ObserverPublisher;
   private readonly _delayedEvents: Observer;
+  private readonly _config: GameConfig | undefined;
   private _context: GameContext | undefined;
   private _state: State;
 
-  constructor() {
+  constructor(config?: GameConfig) {
     this._events = new LocalObserver();
     this._delayedEvents = new DelayedObserver(this._events);
     this._state = new GameNotStartedState();
+    this._config = config;
   }
 
   reloadGame(context: unknown): void {
     const gameData = GameContextSchema.parse(context);
     this._context = new DefaultGameContext({
       events: this._events,
+      config: this._config,
       context: gameData,
     });
 
@@ -59,6 +61,7 @@ export class Game implements State {
   beginGame(players: PlayerInfo[], mapModel: MapModel) {
     // Create the game context based on the player list and selected map model.
     this._context = new DefaultGameContext({
+      config: this._config,
       events: this._events,
       players,
       mapModel,
@@ -70,7 +73,7 @@ export class Game implements State {
       this._events,
       this.changeState.bind(this),
       {
-        turnIndex: 0,
+        playerIndex: 0,
         pass: BuildFirstMinesPass.First,
       },
     );
@@ -173,9 +176,9 @@ export class Game implements State {
         name: player.name,
         powerCycle: {
           gaia: player.powerCycle.gaia,
-          l1: player.powerCycle.level1,
-          l2: player.powerCycle.level2,
-          l3: player.powerCycle.level3,
+          level1: player.powerCycle.level1,
+          level2: player.powerCycle.level2,
+          level3: player.powerCycle.level3,
         },
         research: player.research,
         resources: player.resources,
@@ -183,6 +186,7 @@ export class Game implements State {
         vp: player.vp,
       })),
       roundBoosters: [...this.context.roundBoosters],
+      roundScoringBonuses: [...this.context.roundScoringBonuses],
       passOrder: this.context.passOrder.map((p) => playerIndexes[p.id]),
     };
   }

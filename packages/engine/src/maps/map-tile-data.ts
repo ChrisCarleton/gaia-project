@@ -1,4 +1,4 @@
-import { PlanetType } from '../..';
+import { PlanetType } from '..';
 
 const EmptyTile: Record<string, PlanetType | null> = {
   '0,0': null,

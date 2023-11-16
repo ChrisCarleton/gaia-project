@@ -1,8 +1,16 @@
+import { EventArgs, Game } from '@gaia-project/engine';
 import { v4 as uuid } from 'uuid';
 import { ActionTree, Commit } from 'vuex';
 
 import { GaiaProjectState } from './state';
-import { Action, Mutation, Toast, ToastType } from './types';
+import {
+  Action,
+  GameState,
+  Mutation,
+  PlayerState,
+  Toast,
+  ToastType,
+} from './types';
 
 function setToast(commit: Commit, message: string, type: ToastType) {
   const id = uuid();
@@ -17,6 +25,11 @@ function setToast(commit: Commit, message: string, type: ToastType) {
   commit(Mutation.Toast, toast);
 }
 
+export type HandleGameEventArgs = {
+  e: EventArgs;
+  game: Game;
+};
+
 export const actions: ActionTree<GaiaProjectState, GaiaProjectState> = {
   [Action.ToastError]({ commit }, message: string) {
     setToast(commit, message, ToastType.Error);
@@ -24,5 +37,25 @@ export const actions: ActionTree<GaiaProjectState, GaiaProjectState> = {
 
   [Action.ToastSuccess]({ commit }, message: string) {
     setToast(commit, message, ToastType.Success);
+  },
+
+  [Action.InitGame]({ commit }, game: Game) {
+    const gameState: GameState = game.serialize();
+    const players: PlayerState[] = game.context.players.map((p) => ({
+      ...p.toJSON(),
+      passed: p.passed,
+      structures: { ...p.structures },
+    }));
+
+    commit(Mutation.UpdateGame, gameState);
+    commit(Mutation.UpdatePlayers, players);
+  },
+
+  async [Action.HandleGameEvent](
+    { dispatch },
+    { game }: HandleGameEventArgs,
+  ): Promise<void> {
+    // TODO: This is a brute force approach. Handle this more gracefully in the future.
+    await dispatch(Action.InitGame, game);
   },
 };

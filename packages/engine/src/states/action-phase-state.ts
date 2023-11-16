@@ -9,12 +9,12 @@ import {
   Player,
   ResearchArea,
   RoundBooster,
-  State,
 } from '../interfaces';
+import { NextStateDetermination } from './action-phase/determine-next-state';
 import { PassAction } from './action-phase/pass-action';
 import { ResearchAction } from './action-phase/research-action';
-import { CleanupPhaseState } from './cleanup-phase-state';
 import { GameCompletedState } from './game-completed-state';
+import { IncomePhaseState } from './income-phase-state';
 import { StateBase } from './state-base';
 
 export class ActionPhaseState extends StateBase {
@@ -27,42 +27,39 @@ export class ActionPhaseState extends StateBase {
     super(context, events, changeState);
   }
 
-  get currentState(): GameState {
-    return GameState.ActionPhase;
+  private advanceGameState(): void {
+    const options = NextStateDetermination.determineNextState(this.context);
+    switch (options.nextState) {
+      case GameState.ActionPhase:
+        this.changeState(
+          new ActionPhaseState(
+            this.context,
+            this.events,
+            this.changeState,
+            options.nextPlayer,
+          ),
+        );
+        break;
+
+      case GameState.IncomePhase:
+        this.changeState(
+          new IncomePhaseState(this.context, this.events, this.changeState),
+        );
+        break;
+
+      case GameState.GameEnded:
+        this.changeState(
+          new GameCompletedState(this.context, this.events, this.changeState),
+        );
+        break;
+
+      default:
+        throw new Error('Unexpected game state');
+    }
   }
 
-  private determineNextState(): State {
-    const {
-      context: { currentRound, players },
-      player,
-    } = this;
-
-    // Find the current player in turn order.
-    let index = players.findIndex((p) => Object.is(p, player));
-    if (index === -1) {
-      throw new Error(
-        'Unexpected error. Could not find player in game context.',
-      );
-    }
-
-    // Find the next player in turn order that has not already passed.
-    do {
-      index = (index + 1) % players.length;
-      if (!players[index].passed) {
-        return new ActionPhaseState(
-          this.context,
-          this.events,
-          this.changeState,
-          players[index],
-        );
-      }
-    } while (!Object.is(player, players[index]));
-
-    // If everyone has passed then we can clean up for the next round, or end the game if
-    // we are on the final round.
-    return currentRound < 6
-      ? new CleanupPhaseState(this.context, this.events, this.changeState)
-      : new GameCompletedState(this.context, this.events, this.changeState);
+  get currentState(): GameState {
+    return GameState.ActionPhase;
   }
 
   init(): void {
@@ -88,9 +85,7 @@ export class ActionPhaseState extends StateBase {
   advanceResearch(area: ResearchArea): void {
     const action = new ResearchAction();
     action.research(this.context, this.player, this.events, area);
-
-    const nextState = this.determineNextState();
-    this.changeState(nextState);
+    this.advanceGameState();
   }
 
   buildMine(location: MapHex): void {
@@ -137,12 +132,10 @@ export class ActionPhaseState extends StateBase {
     */
   }
 
-  pass(roundBooster: RoundBooster): void {
+  pass(roundBooster?: RoundBooster): void {
     const action = new PassAction();
     action.pass(this.context, this.player, this.events, roundBooster);
-
-    const nextState = this.determineNextState();
-    this.changeState(nextState);
+    this.advanceGameState();
   }
 
   toJSON(): SerializedState {

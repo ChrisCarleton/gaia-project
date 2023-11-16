@@ -9,8 +9,9 @@
       <!-- Header -->
       <div class="card-header">
         <p class="card-header-title">{{ player.name }}</p>
-        <div v-if="isActive" class="card-header-icon">
-          <span class="tag is-success">Active Player</span>
+        <div class="card-header-icon">
+          <span v-if="player.passed" class="tag is-info">Passed</span>
+          <span v-if="isActive" class="tag is-success">Active Player</span>
         </div>
       </div>
 
@@ -99,15 +100,16 @@
 
 <script lang="ts" setup>
 import PlayerDetails from '@/components/details/PlayerDetails.vue';
+import { PlayerState } from '@/store';
 import {
+  FactionHomeWorlds,
   FactionTypeNames,
   PlanetTypeNames,
-  Player,
 } from '@gaia-project/engine';
 import { computed, ref } from 'vue';
 
 interface PlayerInfoTileProps {
-  player: Player;
+  player: PlayerState;
   isActive: boolean;
 }
 
@@ -119,11 +121,9 @@ defineEmits<{
   (e: 'pass'): void;
 }>();
 
-const factionName = computed(
-  () => FactionTypeNames[props.player.faction.factionType],
-);
+const factionName = computed(() => FactionTypeNames[props.player.faction]);
 const homeworldType = computed(
-  () => PlanetTypeNames[props.player.faction.homeWorld],
+  () => PlanetTypeNames[FactionHomeWorlds[props.player.faction]],
 );
 
 function toggleDetailsVisible() {

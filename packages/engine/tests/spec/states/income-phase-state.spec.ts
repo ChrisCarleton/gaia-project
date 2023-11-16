@@ -4,7 +4,6 @@ import {
   BasicMapModel,
   EventType,
   FactionIncome,
-  FreeAction,
   GameContext,
   GameState,
   Income,
@@ -14,11 +13,12 @@ import {
   RoundBooster,
   RoundBoosterBonusType,
   RoundBoosterPassBonusDiscriminator,
+  SpecialAction,
   StructureType,
 } from '../../../src';
 import { GaiaPhaseState } from '../../../src/states/gaia-phase-state';
 import { IncomePhaseState } from '../../../src/states/income-phase-state';
-import { TestObserver, createTestPlayer } from '../../util';
+import { TestObserver, createTestContext, createTestPlayer } from '../../util';
 
 const events = new TestObserver();
 const map = new BasicMapModel().createMap(2);
@@ -51,17 +51,7 @@ describe('Income Phase State', () => {
       }),
     ];
 
-    return {
-      allowedActions: [],
-      currentRound: options?.round ?? 1,
-      currentPlayer: players[0],
-      map,
-      players,
-      researchBoard: mockDeep<ResearchBoard>(),
-      roundBoosters: [],
-      rounds: [],
-      passOrder: [],
-    };
+    return createTestContext({ currentRound: options?.round, players });
   }
 
   afterEach(() => {
@@ -123,7 +113,7 @@ describe('Income Phase State', () => {
       },
       b: {
         type: RoundBoosterBonusType.Action,
-        action: FreeAction.BuildMineOrStartGaiaWithRangeBoost,
+        action: SpecialAction.BuildMineOrStartGaiaWithRangeBoost,
       },
     },
     'single income': {

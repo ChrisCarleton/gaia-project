@@ -85,8 +85,8 @@ export class PassAction {
       }
 
       // b. Selected round booster must be available in the supply.
-      const boosterIndex = context.roundBoosters.findIndex((rb) =>
-        Object.is(roundBooster, rb),
+      const boosterIndex = context.roundBoosters.findIndex(
+        (rb) => rb.id === roundBooster.id,
       );
 
       if (boosterIndex === -1) {
@@ -114,9 +114,9 @@ export class PassAction {
     }
 
     /*
+      For rounds 1-5...
       2. Player must return round booster to the supply.
       3. Player selects a new round booster to take in the following round.
-        a. Exception: In the final round of the game, the player does not need to select another round booster.
     */
     if (context.currentRound < 6) {
       events.publish({
@@ -126,5 +126,13 @@ export class PassAction {
         previousRoundBooster: player.roundBooster,
       });
     }
+
+    /*
+      4. Finally, the player's turn ends and they pass.
+    */
+    events.publish({
+      type: EventType.PlayerPassed,
+      player,
+    });
   }
 }

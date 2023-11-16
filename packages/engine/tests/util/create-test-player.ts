@@ -26,6 +26,7 @@ type TestPlayerOptions = {
   faction: FactionType;
   id: string;
   name: string;
+  passed: boolean;
   powerCycle: Partial<PowerCycle>;
   roundBooster: RoundBooster;
   research: Partial<ResearchProgress>;
@@ -132,7 +133,7 @@ export function createTestPlayer(options?: Partial<TestPlayerOptions>): Player {
     },
     structures,
     vp: options?.vp ?? 0,
-    passed: false,
+    passed: options?.passed ?? false,
 
     toJSON(): SerializedPlayer {
       return {} as SerializedPlayer;

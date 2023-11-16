@@ -1,6 +1,7 @@
+import { GameConfig } from '../core/config';
 import { SerializedGameContext, SerializedPlayer } from '../core/serialization';
 import { Observer } from '../events';
-import { FactionFactory } from '../factions';
+import { Factions } from '../factions';
 import { FactionType, Player } from '../interfaces';
 import { AIPlayer } from './ai-player';
 import { HumanPlayer } from './human-player';
@@ -8,46 +9,47 @@ import { HumanPlayer } from './human-player';
 export class PlayerFactory {
   constructor(
     private readonly events: Observer,
-    private readonly factionFactory: FactionFactory,
+    private readonly config?: GameConfig,
   ) {}
 
   createPlayer(id: string, faction: FactionType, name: string): Player {
-    const factionEntity = this.factionFactory.createFaction(
-      faction,
-      this.events,
-    );
-    return new HumanPlayer(id, name, factionEntity, this.events);
+    const player = new HumanPlayer(id, name, Factions[faction], this.events);
+    if (this.config?.cheats.resources) {
+      player.resources.credits = 999;
+      player.resources.knowledge = 999;
+      player.resources.ore = 999;
+      player.resources.qic = 999;
+    }
+    return player;
   }
 
   createAIOpponent(id: string, faction: FactionType): Player {
-    const factionEntity = this.factionFactory.createFaction(
-      faction,
-      this.events,
-    );
-    return new AIPlayer(id, factionEntity, this.events);
+    const player = new AIPlayer(id, Factions[faction], this.events);
+    if (this.config?.cheats.resources) {
+      player.resources.credits = 999;
+      player.resources.knowledge = 999;
+      player.resources.ore = 999;
+      player.resources.qic = 999;
+    }
+    return player;
   }
 
   deserializePlayer(
     playerData: SerializedPlayer,
     gameData: SerializedGameContext,
   ): Player {
-    const faction = this.factionFactory.createFaction(
-      playerData.faction,
-      this.events,
-    );
-
     const player = new HumanPlayer(
       playerData.id,
       playerData.name,
-      faction,
+      Factions[playerData.faction],
       this.events,
     );
 
     player.powerCycleManager.setValues({
       gaia: playerData.powerCycle.gaia,
-      level1: playerData.powerCycle.l1,
-      level2: playerData.powerCycle.l2,
-      level3: playerData.powerCycle.l3,
+      level1: playerData.powerCycle.level1,
+      level2: playerData.powerCycle.level2,
+      level3: playerData.powerCycle.level3,
     });
 
     player.research.ai = playerData.research.ai;

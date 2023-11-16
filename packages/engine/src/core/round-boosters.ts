@@ -1,8 +1,8 @@
 import {
-  FreeAction,
   RoundBooster,
   RoundBoosterBonusType,
   RoundBoosterPassBonusDiscriminator,
+  SpecialAction,
 } from '../interfaces';
 
 export const RoundBoosters: Readonly<RoundBooster[]> = [
@@ -64,7 +64,7 @@ export const RoundBoosters: Readonly<RoundBooster[]> = [
     },
     b: {
       type: RoundBoosterBonusType.Action,
-      action: FreeAction.BuildMineWithTerraforming,
+      action: SpecialAction.BuildMineWithTerraforming,
     },
   },
 
@@ -78,7 +78,7 @@ export const RoundBoosters: Readonly<RoundBooster[]> = [
     },
     b: {
       type: RoundBoosterBonusType.Action,
-      action: FreeAction.BuildMineOrStartGaiaWithRangeBoost,
+      action: SpecialAction.BuildMineOrStartGaiaWithRangeBoost,
     },
   },
 

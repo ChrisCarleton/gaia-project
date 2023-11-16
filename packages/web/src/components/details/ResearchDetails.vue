@@ -123,13 +123,14 @@
 </template>
 
 <script lang="ts" setup>
-import { Player, ResearchArea, ResearchAreaNames } from '@gaia-project/engine';
+import { PlayerState } from '@/store';
+import { ResearchArea, ResearchAreaNames } from '@gaia-project/engine';
 import { computed, reactive } from 'vue';
 
 import DetailsViewBase from './DetailsViewBase.vue';
 
 interface ResearchDialogProps {
-  player: Player | undefined;
+  player: PlayerState | undefined;
   visible?: boolean;
 }
 

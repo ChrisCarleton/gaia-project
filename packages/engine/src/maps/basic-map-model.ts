@@ -1,5 +1,5 @@
-import { AxialCoordinates, Map, MapHex, MapModel } from '../../interfaces';
-import { mapFromHexes } from '../../utils';
+import { AxialCoordinates, Map, MapHex, MapModel } from '../interfaces';
+import { mapFromHexes } from '../utils';
 import { getMapTiles } from './map-tiles';
 
 const TileTranslations: AxialCoordinates[] = [

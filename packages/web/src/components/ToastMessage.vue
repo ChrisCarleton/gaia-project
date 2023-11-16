@@ -5,18 +5,12 @@
       <button class="delete" @click="$emit('dismiss')"></button>
     </div>
     <div class="message-body">
-      <article class="media">
-        <figure class="media-left">
-          <span class="icon is-large">
-            <i :class="icon"></i>
-          </span>
-        </figure>
-        <div class="media-content">
-          <p class="content">
-            {{ toast.message }}
-          </p>
-        </div>
-      </article>
+      <p class="content">
+        <span class="icon-text">
+          <span class="icon">{{ icon }}</span>
+          <span>{{ toast.message }}</span>
+        </span>
+      </p>
     </div>
   </article>
 </template>
@@ -36,12 +30,12 @@ const MessageStyle: Record<
   [ToastType.Error]: {
     title: 'Error',
     style: 'is-danger',
-    icon: 'far fa-times-circle fa-2x',
+    icon: '❌️',
   },
   [ToastType.Success]: {
     title: 'Success!',
     style: 'is-success',
-    icon: 'far fa-check-circle fa-2x',
+    icon: '✅',
   },
 } as const;
 
