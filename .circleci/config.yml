@@ -1,0 +1,19 @@
+version: 2.1
+# orbs
+
+# commands
+
+# jobs
+jobs:
+  build_and_validate:
+    docker:
+      - image: node
+    steps:
+      - checkout
+
+# workflows
+
+workflows:
+  build_only:
+    jobs:
+      - build_and_validate
