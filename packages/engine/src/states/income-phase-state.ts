@@ -50,14 +50,14 @@ export class IncomePhaseState extends StateBase {
       switch (economics) {
         case 1:
           income.push({
-            chargePower: 1,
+            powerCharge: 1,
             credits: 2,
           });
           break;
 
         case 2:
           income.push({
-            chargePower: 2,
+            powerCharge: 2,
             credits: 2,
             ore: 1,
           });
@@ -65,7 +65,7 @@ export class IncomePhaseState extends StateBase {
 
         case 3:
           income.push({
-            chargePower: 3,
+            powerCharge: 3,
             credits: 3,
             ore: 1,
           });
@@ -73,7 +73,7 @@ export class IncomePhaseState extends StateBase {
 
         case 4:
           income.push({
-            chargePower: 4,
+            powerCharge: 4,
             credits: 4,
             ore: 2,
           });

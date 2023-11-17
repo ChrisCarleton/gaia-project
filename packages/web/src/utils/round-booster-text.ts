@@ -38,7 +38,7 @@ combined with another action.`;
 }
 
 function getIncomeString(income: Income): string {
-  if (income.chargePower) return `charge ${income.chargePower} power tokens`;
+  if (income.powerCharge) return `charge ${income.powerCharge} power tokens`;
   if (income.credits) return `gain ${income.credits} credits`;
   if (income.knowledge) return `gain ${income.knowledge} knowledge`;
   if (income.ore) return `gain ${income.ore} ore`;

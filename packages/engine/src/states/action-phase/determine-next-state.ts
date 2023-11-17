@@ -1,8 +1,18 @@
-import { GameContext, GameState } from '../../interfaces';
-import { NextStateOptions } from '../common';
+import { ObserverPublisher } from '../../events';
+import {
+  ChangeStateFunction,
+  GameContext,
+  GameState,
+  State,
+} from '../../interfaces';
+import { loadState } from '../load-state';
 
 export class NextStateDetermination {
-  static determineNextState(context: GameContext): NextStateOptions {
+  static determineNextState(
+    context: GameContext,
+    events: ObserverPublisher,
+    changeState: ChangeStateFunction,
+  ): State {
     const { currentRound, currentPlayer: player, players } = context;
 
     // Find the current player in turn order.
@@ -17,17 +27,22 @@ export class NextStateDetermination {
     do {
       index = (index + 1) % players.length;
       if (!players[index].passed) {
-        return {
-          nextState: GameState.ActionPhase,
-          nextPlayer: players[index],
-        };
+        return loadState(
+          {
+            type: GameState.ActionPhase,
+            player: index,
+          },
+          context,
+          events,
+          changeState,
+        );
       }
     } while (!Object.is(player, players[index]));
 
     // If everyone has passed then we can clean up for the next round, or end the game if
     // we are on the final round.
     return currentRound < 6
-      ? { nextState: GameState.IncomePhase }
-      : { nextState: GameState.GameEnded };
+      ? loadState({ type: GameState.IncomePhase }, context, events, changeState)
+      : loadState({ type: GameState.GameEnded }, context, events, changeState);
   }
 }

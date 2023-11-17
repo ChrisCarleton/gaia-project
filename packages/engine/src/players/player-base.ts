@@ -5,7 +5,7 @@ import {
   Observer,
   Player,
   PlayerStructures,
-  PowerCycle,
+  PowerCycleStatus,
   ResearchProgress,
   Resources,
   RoundBooster,
@@ -84,7 +84,7 @@ export abstract class PlayerBase implements Player {
 
   abstract name: string;
 
-  get powerCycle(): Readonly<PowerCycle> {
+  get powerCycle(): Readonly<PowerCycleStatus> {
     return this.powerCycleManager;
   }
 
@@ -143,7 +143,7 @@ export abstract class PlayerBase implements Player {
       this.resources.ore += e.income.ore ?? 0;
       this.resources.qic += e.income.qic ?? 0;
 
-      this.handlePowerIncome(e.income.powerNodes, e.income.chargePower);
+      this.handlePowerIncome(e.income.powerNodes, e.income.powerCharge);
     }
   }
 

@@ -36,7 +36,7 @@ export const Factions: Record<FactionType, Faction> = {
       planetaryInstitute: [
         {},
         {
-          chargePower: 4,
+          powerCharge: 4,
           powerNodes: 2,
         },
       ],
@@ -118,7 +118,7 @@ export const Factions: Record<FactionType, Faction> = {
         { knowledge: 4 },
       ],
       researchLab: [{}, { credits: 3 }, { credits: 7 }, { credits: 12 }],
-      planetaryInstitute: [{}, { chargePower: 4, powerNodes: 2 }],
+      planetaryInstitute: [{}, { powerCharge: 4, powerNodes: 2 }],
     },
   },
 
@@ -180,7 +180,7 @@ export const Factions: Record<FactionType, Faction> = {
       planetaryInstitute: [
         {},
         {
-          chargePower: 4,
+          powerCharge: 4,
           ore: 1,
         },
       ],
@@ -259,7 +259,7 @@ export const Factions: Record<FactionType, Faction> = {
       ...DefaultStructureIncome,
       planetaryInstitute: [
         { powerNodes: 1 },
-        { chargePower: 4, powerNodes: 2 },
+        { powerCharge: 4, powerNodes: 2 },
       ],
     },
   },
@@ -284,7 +284,7 @@ export const Factions: Record<FactionType, Faction> = {
       ...DefaultStructureIncome,
       planetaryInstitute: [
         { qic: 1 },
-        { qic: 1, chargePower: 4, powerNodes: 1 },
+        { qic: 1, powerCharge: 4, powerNodes: 1 },
       ],
     },
   },
@@ -307,7 +307,7 @@ export const Factions: Record<FactionType, Faction> = {
     },
     income: {
       ...DefaultStructureIncome,
-      planetaryInstitute: [{}, { chargePower: 4 }],
+      planetaryInstitute: [{}, { powerCharge: 4 }],
     },
   },
 
@@ -331,9 +331,9 @@ export const Factions: Record<FactionType, Faction> = {
       ...DefaultStructureIncome,
       researchLab: [
         { knowledge: 1 },
-        { knowledge: 1, chargePower: 2 },
-        { knowledge: 1, chargePower: 4 },
-        { knowledge: 1, chargePower: 6 },
+        { knowledge: 1, powerCharge: 2 },
+        { knowledge: 1, powerCharge: 4 },
+        { knowledge: 1, powerCharge: 6 },
       ],
     },
     startingResearch: {
@@ -405,7 +405,7 @@ export const Factions: Record<FactionType, Faction> = {
     },
     income: {
       ...DefaultStructureIncome,
-      planetaryInstitute: [{}, { chargePower: 4, qic: 1 }],
+      planetaryInstitute: [{}, { powerCharge: 4, qic: 1 }],
     },
     startingResearch: {
       ...DefaultStartingResearch,

@@ -6,7 +6,6 @@ import {
   MapHex,
   Player,
   ResearchArea,
-  Resources,
   RoundBooster,
   StructureType,
 } from '../interfaces';
@@ -78,7 +77,7 @@ type ResearchCompletedEventArgs = {
 type ResourcesSpentEventArgs = {
   type: EventType.ResourcesSpent;
   player: Player;
-  resources: Partial<Resources>;
+  resources: Partial<Income>;
 };
 
 type RoundBoosterSelectedEventArgs = {

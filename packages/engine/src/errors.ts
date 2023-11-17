@@ -16,8 +16,11 @@ export enum ErrorCode {
   RoundBoosterNotSelected,
 
   // Resource issues
+  InsufficientCredits,
   InsufficientKnowledge,
+  InsufficientOre,
   InsufficientPower,
+  InsufficientQICs,
 }
 
 export class GPError extends Error {

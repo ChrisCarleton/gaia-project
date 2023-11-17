@@ -1,6 +1,6 @@
-import { ErrorCode, GPError, PowerCycle } from '..';
+import { ErrorCode, GPError, PowerCycle, PowerCycleStatus } from '..';
 
-export class PowerCycleManager implements Readonly<PowerCycle> {
+export class PowerCycleManager implements Readonly<PowerCycleStatus> {
   private readonly _powerCycle: PowerCycle;
 
   constructor(powerCycle?: PowerCycle) {

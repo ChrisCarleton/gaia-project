@@ -2,10 +2,10 @@
 
 exports[`Income Phase State will award income from established structures 1`] = `
 {
-  "chargePower": 4,
   "credits": 11,
   "knowledge": 3,
   "ore": 4,
+  "powerCharge": 4,
   "powerNodes": 1,
   "qic": undefined,
 }
@@ -13,10 +13,10 @@ exports[`Income Phase State will award income from established structures 1`] = 
 
 exports[`Income Phase State will award income from research progress: Economics 0, Science 0 1`] = `
 {
-  "chargePower": undefined,
   "credits": undefined,
   "knowledge": undefined,
   "ore": undefined,
+  "powerCharge": undefined,
   "powerNodes": undefined,
   "qic": undefined,
 }
@@ -24,10 +24,10 @@ exports[`Income Phase State will award income from research progress: Economics 
 
 exports[`Income Phase State will award income from research progress: Economics 0, Science 2 1`] = `
 {
-  "chargePower": undefined,
   "credits": undefined,
   "knowledge": 2,
   "ore": undefined,
+  "powerCharge": undefined,
   "powerNodes": undefined,
   "qic": undefined,
 }
@@ -35,10 +35,10 @@ exports[`Income Phase State will award income from research progress: Economics 
 
 exports[`Income Phase State will award income from research progress: Economics 0, Science 4 1`] = `
 {
-  "chargePower": undefined,
   "credits": undefined,
   "knowledge": 4,
   "ore": undefined,
+  "powerCharge": undefined,
   "powerNodes": undefined,
   "qic": undefined,
 }
@@ -46,10 +46,10 @@ exports[`Income Phase State will award income from research progress: Economics 
 
 exports[`Income Phase State will award income from research progress: Economics 0, Science 5 1`] = `
 {
-  "chargePower": undefined,
   "credits": undefined,
   "knowledge": undefined,
   "ore": undefined,
+  "powerCharge": undefined,
   "powerNodes": undefined,
   "qic": undefined,
 }
@@ -57,10 +57,10 @@ exports[`Income Phase State will award income from research progress: Economics 
 
 exports[`Income Phase State will award income from research progress: Economics 1, Science 0 1`] = `
 {
-  "chargePower": 1,
   "credits": 2,
   "knowledge": undefined,
   "ore": undefined,
+  "powerCharge": 1,
   "powerNodes": undefined,
   "qic": undefined,
 }
@@ -68,10 +68,10 @@ exports[`Income Phase State will award income from research progress: Economics 
 
 exports[`Income Phase State will award income from research progress: Economics 2, Science 3 1`] = `
 {
-  "chargePower": 2,
   "credits": 2,
   "knowledge": 3,
   "ore": 1,
+  "powerCharge": 2,
   "powerNodes": undefined,
   "qic": undefined,
 }
@@ -79,10 +79,10 @@ exports[`Income Phase State will award income from research progress: Economics 
 
 exports[`Income Phase State will award income from research progress: Economics 3, Science 0 1`] = `
 {
-  "chargePower": 3,
   "credits": 3,
   "knowledge": undefined,
   "ore": 1,
+  "powerCharge": 3,
   "powerNodes": undefined,
   "qic": undefined,
 }
@@ -90,10 +90,10 @@ exports[`Income Phase State will award income from research progress: Economics 
 
 exports[`Income Phase State will award income from research progress: Economics 4, Science 2 1`] = `
 {
-  "chargePower": 4,
   "credits": 4,
   "knowledge": 2,
   "ore": 2,
+  "powerCharge": 4,
   "powerNodes": undefined,
   "qic": undefined,
 }
@@ -101,10 +101,10 @@ exports[`Income Phase State will award income from research progress: Economics 
 
 exports[`Income Phase State will award income from research progress: Economics 5, Science 0 1`] = `
 {
-  "chargePower": undefined,
   "credits": undefined,
   "knowledge": undefined,
   "ore": undefined,
+  "powerCharge": undefined,
   "powerNodes": undefined,
   "qic": undefined,
 }
@@ -112,10 +112,10 @@ exports[`Income Phase State will award income from research progress: Economics 
 
 exports[`Income Phase State will award income from round boosters: dual income 1`] = `
 {
-  "chargePower": undefined,
   "credits": 4,
   "knowledge": 2,
   "ore": 7,
+  "powerCharge": undefined,
   "powerNodes": 2,
   "qic": undefined,
 }
@@ -123,10 +123,10 @@ exports[`Income Phase State will award income from round boosters: dual income 1
 
 exports[`Income Phase State will award income from round boosters: no income 1`] = `
 {
-  "chargePower": undefined,
   "credits": undefined,
   "knowledge": undefined,
   "ore": undefined,
+  "powerCharge": undefined,
   "powerNodes": undefined,
   "qic": undefined,
 }
@@ -134,10 +134,10 @@ exports[`Income Phase State will award income from round boosters: no income 1`]
 
 exports[`Income Phase State will award income from round boosters: single income 1`] = `
 {
-  "chargePower": undefined,
   "credits": undefined,
   "knowledge": undefined,
   "ore": undefined,
+  "powerCharge": undefined,
   "powerNodes": 2,
   "qic": 1,
 }

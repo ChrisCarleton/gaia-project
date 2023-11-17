@@ -58,7 +58,7 @@ export const DefaultStructureIncome: Readonly<FactionIncome> = {
   [StructureType.PlanetaryInstitute]: [
     {},
     {
-      chargePower: 4,
+      powerCharge: 4,
       powerNodes: 1,
     },
   ],

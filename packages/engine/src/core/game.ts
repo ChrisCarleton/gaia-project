@@ -6,6 +6,7 @@ import {
   ObserverPublisher,
 } from '../events';
 import {
+  FreeAction,
   GameContext,
   GameState,
   MapHex,
@@ -133,8 +134,8 @@ export class Game implements State {
     this._state.specialAction();
   }
 
-  freeAction(): void {
-    this._state.freeAction();
+  freeAction(action: FreeAction): void {
+    this._state.freeAction(action);
   }
 
   pass(roundBooster: RoundBooster): void {
