@@ -48,7 +48,7 @@ const ResearchOneTimeBonuses: Record<
     {
       type: ResearchOneTimeBonusType.Resources,
       resources: {
-        chargePower: 6,
+        powerCharge: 6,
         credits: 6,
         ore: 3,
       },
@@ -141,7 +141,7 @@ export class ResearchAction {
 
     // 3. If the player is advancing to level 3 in any given track then they automatically get to charge three power nodes.
     if (levelAchieved === 3) {
-      bonusResources.push({ chargePower: 3 });
+      bonusResources.push({ powerCharge: 3 });
     }
 
     /*

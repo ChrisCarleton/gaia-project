@@ -15,7 +15,7 @@ function addResource(
 
 function reducer(total: Income, currrentValue: Income): Income {
   return {
-    chargePower: addResource(total.chargePower, currrentValue.chargePower),
+    powerCharge: addResource(total.powerCharge, currrentValue.powerCharge),
     credits: addResource(total.credits, currrentValue.credits),
     knowledge: addResource(total.knowledge, currrentValue.knowledge),
     ore: addResource(total.ore, currrentValue.ore),

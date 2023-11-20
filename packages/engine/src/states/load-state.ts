@@ -9,6 +9,7 @@ import {
 import { ActionPhaseState } from './action-phase-state';
 import { BuildFirstMinesState } from './build-first-mines-state';
 import { ChooseFirstRoundBoostersState } from './choose-first-round-boosters-state';
+import { FreeActionPhaseState } from './free-action-phase-state';
 import { GaiaPhaseState } from './gaia-phase-state';
 import { GameCompletedState } from './game-completed-state';
 import { GameNotStartedState } from './game-not-started-state';
@@ -23,6 +24,14 @@ export function loadState(
   switch (data.type) {
     case GameState.ActionPhase:
       return new ActionPhaseState(
+        context,
+        events,
+        changeState,
+        context.players[data.player],
+      );
+
+    case GameState.FreeActionPhase:
+      return new FreeActionPhaseState(
         context,
         events,
         changeState,

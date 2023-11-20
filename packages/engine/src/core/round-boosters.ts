@@ -73,7 +73,7 @@ export const RoundBoosters: Readonly<RoundBooster[]> = [
     a: {
       type: RoundBoosterBonusType.Income,
       income: {
-        chargePower: 2,
+        powerCharge: 2,
       },
     },
     b: {
@@ -132,7 +132,7 @@ export const RoundBoosters: Readonly<RoundBooster[]> = [
     a: {
       type: RoundBoosterBonusType.Income,
       income: {
-        chargePower: 4,
+        powerCharge: 4,
       },
     },
     b: {

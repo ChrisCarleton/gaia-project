@@ -1,8 +1,18 @@
-import { GameState } from '../../../../src';
+import { ObserverPublisher } from '../../../../src';
 import { NextStateDetermination } from '../../../../src/states/action-phase/determine-next-state';
-import { createTestContext, createTestPlayer } from '../../../util';
+import {
+  TestObserver,
+  createTestContext,
+  createTestPlayer,
+} from '../../../util';
 
 describe('Next State Determination For Action Phase', () => {
+  let events: ObserverPublisher;
+
+  beforeEach(() => {
+    events = new TestObserver();
+  });
+
   it('will advance to the next player in turn order (first player)', () => {
     const players = [
       createTestPlayer(),
@@ -12,12 +22,13 @@ describe('Next State Determination For Action Phase', () => {
     ];
     const context = createTestContext({ players });
 
-    const options = NextStateDetermination.determineNextState(context);
+    const options = NextStateDetermination.determineNextState(
+      context,
+      events,
+      jest.fn(),
+    );
 
-    expect(options).toEqual({
-      nextState: GameState.ActionPhase,
-      nextPlayer: players[1],
-    });
+    expect(options).toMatchSnapshot();
   });
 
   it('will advance to the next player in turn order (third player)', () => {
@@ -29,12 +40,13 @@ describe('Next State Determination For Action Phase', () => {
     ];
     const context = createTestContext({ players, currentPlayer: players[2] });
 
-    const options = NextStateDetermination.determineNextState(context);
+    const options = NextStateDetermination.determineNextState(
+      context,
+      events,
+      jest.fn(),
+    );
 
-    expect(options).toEqual({
-      nextState: GameState.ActionPhase,
-      nextPlayer: players[3],
-    });
+    expect(options).toMatchSnapshot();
   });
 
   it('will return back to the start of turn order if we reach the end and not all players have passed', () => {
@@ -46,12 +58,13 @@ describe('Next State Determination For Action Phase', () => {
     ];
     const context = createTestContext({ players, currentPlayer: players[3] });
 
-    const options = NextStateDetermination.determineNextState(context);
+    const options = NextStateDetermination.determineNextState(
+      context,
+      events,
+      jest.fn(),
+    );
 
-    expect(options).toEqual({
-      nextState: GameState.ActionPhase,
-      nextPlayer: players[0],
-    });
+    expect(options).toMatchSnapshot();
   });
 
   it('will skip over players who have already previously passed', () => {
@@ -63,12 +76,13 @@ describe('Next State Determination For Action Phase', () => {
     ];
     const context = createTestContext({ players, currentPlayer: players[0] });
 
-    const options = NextStateDetermination.determineNextState(context);
+    const options = NextStateDetermination.determineNextState(
+      context,
+      events,
+      jest.fn(),
+    );
 
-    expect(options).toEqual({
-      nextState: GameState.ActionPhase,
-      nextPlayer: players[3],
-    });
+    expect(options).toMatchSnapshot();
   });
 
   it('will skip over players who have already passed AND loop back to the beginning of turn order if necessary', () => {
@@ -80,12 +94,13 @@ describe('Next State Determination For Action Phase', () => {
     ];
     const context = createTestContext({ players, currentPlayer: players[1] });
 
-    const options = NextStateDetermination.determineNextState(context);
+    const options = NextStateDetermination.determineNextState(
+      context,
+      events,
+      jest.fn(),
+    );
 
-    expect(options).toEqual({
-      nextState: GameState.ActionPhase,
-      nextPlayer: players[0],
-    });
+    expect(options).toMatchSnapshot();
   });
 
   for (let round = 1; round < 6; round++) {
@@ -102,9 +117,13 @@ describe('Next State Determination For Action Phase', () => {
         currentRound: round,
       });
 
-      const options = NextStateDetermination.determineNextState(context);
+      const options = NextStateDetermination.determineNextState(
+        context,
+        events,
+        jest.fn(),
+      );
 
-      expect(options).toEqual({ nextState: GameState.IncomePhase });
+      expect(options).toMatchSnapshot();
     });
   }
 
@@ -121,8 +140,12 @@ describe('Next State Determination For Action Phase', () => {
       currentRound: 6,
     });
 
-    const options = NextStateDetermination.determineNextState(context);
+    const options = NextStateDetermination.determineNextState(
+      context,
+      events,
+      jest.fn(),
+    );
 
-    expect(options).toEqual({ nextState: GameState.GameEnded });
+    expect(options).toMatchSnapshot();
   });
 });

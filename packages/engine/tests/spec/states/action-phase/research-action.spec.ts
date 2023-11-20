@@ -125,7 +125,7 @@ describe('Action Phase: Research', () => {
           ? incomeEvent
           : { income: null, player: null };
 
-      expect(income?.chargePower).toBe(3);
+      expect(income?.powerCharge).toBe(3);
       expect(player).toBe(players[0]);
     });
   });

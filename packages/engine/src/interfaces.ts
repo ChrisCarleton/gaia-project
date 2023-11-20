@@ -85,7 +85,7 @@ export interface Resources {
 
 export interface Income extends Partial<Resources> {
   powerNodes?: number;
-  chargePower?: number;
+  powerCharge?: number;
 }
 
 export interface PowerCycle {
@@ -94,6 +94,12 @@ export interface PowerCycle {
   level3: number;
   gaia: number;
   brainStonePosition?: 'gaia' | 1 | 2 | 3;
+}
+
+export interface PowerCycleStatus extends PowerCycle {
+  readonly totalUncharged: number;
+  readonly totalCharged: number;
+  readonly totalNodesInCycle: number;
 }
 
 export type ResearchProgress = {
@@ -109,28 +115,28 @@ export type FactionIncome = {
 };
 
 export enum FreeAction {
-  // Spend 4 power to generate 1 QIC.
+  /** Spend 4 power to generate 1 QIC. */
   GenerateQIC = 'generateQIC',
 
-  // Spend 3 power to generate 1 ore.
+  /** Spend 3 power to generate 1 ore. */
   GenerateOre = 'generateOre',
 
-  // Spend 4 power to generate 1 knowledge.
+  /** Spend 4 power to generate 1 knowledge. */
   GenerateKnowledge = 'generateKnowledge',
 
-  // Spend 1 power to generate 1 credit.
+  /** Spend 1 power to generate 1 credit. */
   GenerateCredit = 'generateCredit',
 
-  // Exchange 1 ore for 1 credit.
+  /** Exchange 1 ore for 1 credit. */
   TradeOreForCredit = 'tradeOreForCredit',
 
-  // Exchange 1 ore for 1 power node.
+  /** Exchange 1 ore for 1 power node. */
   TradeOreForPowerNode = 'tradeOreForPowerNode',
 
-  // Exchange 1 QIC for 1 ore.
+  /** Exchange 1 QIC for 1 ore. */
   TradeQICForOre = 'tradeQICForOre',
 
-  // Exchange 1 knowledge for 1 credit.
+  /** Exchange 1 knowledge for 1 credit. */
   TradeKnowledgeForCredit = 'tradeKnowledgeForCredit',
 }
 
@@ -284,12 +290,49 @@ export interface GameContext {
 }
 
 export enum GameState {
-  ActionPhase,
+  /**
+   * The game is waiting on a player to perform an action.
+   */
+  ActionPhase = 'actionPhase',
+
+  /**
+   * The game is waiting on a player to select their first round booster before
+   * the game formally begins.
+   */
   ChooseFirstRoundBoosters = 'chooseFirstRoundBoosters',
+
+  /**
+   * The current player has already performed an action but are still allowed
+   * to perform free actions before they yield their turn by passing.
+   */
+  FreeActionPhase = 'freeActionsPhase',
+
+  /**
+   * The game is converting transdim planets with Gaiaformers on them to Gaia planets and returning
+   * power nodes to players' power cycles.
+   */
   GaiaPhase = 'gaiaPhase',
+
+  /**
+   * The game has ended and final VP has been calculated for each player. This is the terminal state.
+   */
   GameEnded = 'gameEnded',
+
+  /**
+   * This is the initial state. The game instance has been created but is waiting for a new game to
+   * begin or a previous game context to be loaded.
+   */
   GameNotStarted = 'gameNotStarted',
+
+  /**
+   * The game is waiting for a player to place one of their two initial mines.
+   */
   BuildFirstMines = 'pickFirstMines',
+
+  /**
+   * The game is cleaning up from the previous round, initiating a new round, and awarding players
+   * income.
+   */
   IncomePhase = 'incomePhase',
 }
 
@@ -321,7 +364,7 @@ export interface State {
   advanceResearch(area: ResearchArea): void;
   powerOrQicAction(): void;
   specialAction(): void;
-  freeAction(): void;
+  freeAction(action: FreeAction): void;
   pass(roundBooster?: RoundBooster): void;
 
   toJSON(): SerializedState;

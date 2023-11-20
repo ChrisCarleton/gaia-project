@@ -4,6 +4,7 @@ import { ErrorCode, GPError } from '../errors';
 import { ObserverPublisher } from '../events';
 import {
   ChangeStateFunction,
+  FreeAction,
   GameContext,
   GameState,
   MapHex,
@@ -56,7 +57,7 @@ export abstract class StateBase implements State {
     throw ActionNotSupportedError;
   }
 
-  freeAction(): void {
+  freeAction(action: FreeAction): void {
     throw ActionNotSupportedError;
   }
 

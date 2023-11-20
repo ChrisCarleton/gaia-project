@@ -2,6 +2,7 @@ import { SerializedState } from '../core/serialization';
 import { EventType, ObserverPublisher } from '../events';
 import {
   ChangeStateFunction,
+  FreeAction,
   GameAction,
   GameContext,
   GameState,
@@ -10,11 +11,13 @@ import {
   ResearchArea,
   RoundBooster,
 } from '../interfaces';
-import { NextStateDetermination } from './action-phase/determine-next-state';
-import { PassAction } from './action-phase/pass-action';
-import { ResearchAction } from './action-phase/research-action';
-import { GameCompletedState } from './game-completed-state';
-import { IncomePhaseState } from './income-phase-state';
+import {
+  FreeActions,
+  NextStateDetermination,
+  PassAction,
+  ResearchAction,
+} from './action-phase';
+import { FreeActionPhaseState } from './free-action-phase-state';
 import { StateBase } from './state-base';
 
 export class ActionPhaseState extends StateBase {
@@ -22,40 +25,29 @@ export class ActionPhaseState extends StateBase {
     context: GameContext,
     events: ObserverPublisher,
     changeState: ChangeStateFunction,
-    private readonly player: Player,
+    readonly player: Player,
   ) {
     super(context, events, changeState);
   }
 
+  private advanceToFreeActions(): void {
+    this.changeState(
+      new FreeActionPhaseState(
+        this.context,
+        this.events,
+        this.changeState,
+        this.player,
+      ),
+    );
+  }
+
   private advanceGameState(): void {
-    const options = NextStateDetermination.determineNextState(this.context);
-    switch (options.nextState) {
-      case GameState.ActionPhase:
-        this.changeState(
-          new ActionPhaseState(
-            this.context,
-            this.events,
-            this.changeState,
-            options.nextPlayer,
-          ),
-        );
-        break;
-
-      case GameState.IncomePhase:
-        this.changeState(
-          new IncomePhaseState(this.context, this.events, this.changeState),
-        );
-        break;
-
-      case GameState.GameEnded:
-        this.changeState(
-          new GameCompletedState(this.context, this.events, this.changeState),
-        );
-        break;
-
-      default:
-        throw new Error('Unexpected game state');
-    }
+    const nextState = NextStateDetermination.determineNextState(
+      this.context,
+      this.events,
+      this.changeState,
+    );
+    this.changeState(nextState);
   }
 
   get currentState(): GameState {
@@ -85,7 +77,7 @@ export class ActionPhaseState extends StateBase {
   advanceResearch(area: ResearchArea): void {
     const action = new ResearchAction();
     action.research(this.context, this.player, this.events, area);
-    this.advanceGameState();
+    this.advanceToFreeActions();
   }
 
   buildMine(location: MapHex): void {
@@ -112,7 +104,13 @@ export class ActionPhaseState extends StateBase {
           b. They have built their planetary institute
           c. The new mine that was just built was built on a planet occupied by another player,
     */
-    // TODO: Next action!
+    this.advanceToFreeActions();
+  }
+
+  // Players may perform multiple free actions on their turn. They do not count as their one
+  // primary action that they may take per turn.
+  freeAction(action: FreeAction): void {
+    FreeActions.performFreeAction(this.player, this.events, action);
   }
 
   startGaiaProject(location: MapHex): void {
@@ -130,6 +128,7 @@ export class ActionPhaseState extends StateBase {
       2. Any QICs used to extend range are used up.
       3. Gaiaformer is placed on the trandim planet.
     */
+    this.advanceToFreeActions();
   }
 
   pass(roundBooster?: RoundBooster): void {

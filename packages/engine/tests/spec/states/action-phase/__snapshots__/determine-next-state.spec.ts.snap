@@ -1,0 +1,72 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Next State Determination For Action Phase will advance to clean up phase if all players have passed in round 1 1`] = `
+{
+  "type": "incomePhase",
+}
+`;
+
+exports[`Next State Determination For Action Phase will advance to clean up phase if all players have passed in round 2 1`] = `
+{
+  "type": "incomePhase",
+}
+`;
+
+exports[`Next State Determination For Action Phase will advance to clean up phase if all players have passed in round 3 1`] = `
+{
+  "type": "incomePhase",
+}
+`;
+
+exports[`Next State Determination For Action Phase will advance to clean up phase if all players have passed in round 4 1`] = `
+{
+  "type": "incomePhase",
+}
+`;
+
+exports[`Next State Determination For Action Phase will advance to clean up phase if all players have passed in round 5 1`] = `
+{
+  "type": "incomePhase",
+}
+`;
+
+exports[`Next State Determination For Action Phase will advance to game ended phase if all players have passed in the final round 1`] = `
+{
+  "type": "gameEnded",
+}
+`;
+
+exports[`Next State Determination For Action Phase will advance to the next player in turn order (first player) 1`] = `
+{
+  "player": 1,
+  "type": "actionPhase",
+}
+`;
+
+exports[`Next State Determination For Action Phase will advance to the next player in turn order (third player) 1`] = `
+{
+  "player": 3,
+  "type": "actionPhase",
+}
+`;
+
+exports[`Next State Determination For Action Phase will return back to the start of turn order if we reach the end and not all players have passed 1`] = `
+{
+  "player": 0,
+  "type": "actionPhase",
+}
+`;
+
+exports[`Next State Determination For Action Phase will skip over players who have already passed AND loop back to the beginning of turn order if necessary 1`] = `
+{
+  "player": 0,
+  "type": "actionPhase",
+}
+`;
+
+exports[`Next State Determination For Action Phase will skip over players who have already previously passed 1`] = `
+{
+  "player": 3,
+  "type": "actionPhase",
+}
+`;

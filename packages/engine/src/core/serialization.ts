@@ -48,6 +48,10 @@ const RoundBoosterSchema = z.object({
   b: RoundBoosterBonusSchema,
 });
 
+const FreeActionPhaseStateSchema = z.object({
+  type: z.literal(GameState.FreeActionPhase),
+  player: z.number().int(),
+});
 const ActionPhaseStateSchema = z.object({
   type: z.literal(GameState.ActionPhase),
   player: z.number().int(),
@@ -79,6 +83,7 @@ const IncomePhaseStateSchema = z.object({
 });
 
 const StateSchema = z.discriminatedUnion('type', [
+  FreeActionPhaseStateSchema,
   ActionPhaseStateSchema,
   BuildFirstMinesStateSchema,
   ChooseFirstRoundBoostersStateSchema,

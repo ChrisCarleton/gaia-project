@@ -33,5 +33,7 @@ const genericStrategy = new GenericHighlightStrategy();
 
 export const HighlightStrategies: Record<MenuPanelState, HighlightStrategy> = {
   [MenuPanelState.BuildFirstMine]: new BuildFirstMinesHighlightStrategy(),
+  [MenuPanelState.BuildMine]: genericStrategy, // TODO
   [MenuPanelState.Players]: genericStrategy,
+  [MenuPanelState.FreeActions]: genericStrategy,
 } as const;
