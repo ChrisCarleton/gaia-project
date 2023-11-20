@@ -14,7 +14,11 @@ class BuildFirstMineClickStrategy implements ClickStrategy {
   }
 }
 
+const genericStrategy = new GenericClickStrategy();
+
 export const ClickStrategies: Record<MenuPanelState, ClickStrategy> = {
-  [MenuPanelState.Players]: new GenericClickStrategy(),
   [MenuPanelState.BuildFirstMine]: new BuildFirstMineClickStrategy(),
+  [MenuPanelState.BuildMine]: genericStrategy,
+  [MenuPanelState.Players]: genericStrategy,
+  [MenuPanelState.FreeActions]: genericStrategy,
 } as const;

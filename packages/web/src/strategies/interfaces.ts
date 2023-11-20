@@ -2,8 +2,10 @@ import { HexHighlightStatus } from '@/graphics/map';
 import { Game, MapHex, Player } from '@gaia-project/engine';
 
 export enum MenuPanelState {
-  Players,
   BuildFirstMine,
+  BuildMine,
+  FreeActions,
+  Players,
 }
 
 export interface HighlightStrategy {

@@ -28,6 +28,13 @@
         >
 
         <a
+          v-if="allowedActions.has(GameAction.Free)"
+          class="panel-block"
+          @click="$emit('freeAction')"
+          >Free Actions</a
+        >
+
+        <a
           v-if="allowedActions.has(GameAction.Pass)"
           class="panel-block"
           @click="$emit('pass')"
@@ -51,7 +58,8 @@ defineProps<ActionMenuTileProps>();
 
 defineEmits<{
   (e: 'buildmine'): void;
-  (e: 'research'): void;
+  (e: 'freeAction'): void;
   (e: 'pass'): void;
+  (e: 'research'): void;
 }>();
 </script>

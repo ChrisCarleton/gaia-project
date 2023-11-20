@@ -1,6 +1,6 @@
 <template>
-  <div v-if="visible" class="modal is-active">
-    <div class="modal-background"></div>
+  <div class="modal is-active">
+    <div class="modal-background" @click="onBackgroundClick"></div>
     <div class="modal-card">
       <!-- Header -->
       <header class="modal-card-head">
@@ -19,7 +19,9 @@
 
       <!-- Footer -->
       <footer class="modal-card-foot">
-        <slot name="buttons"></slot>
+        <div class="buttons is-text-right">
+          <slot name="buttons"></slot>
+        </div>
       </footer>
     </div>
   </div>
@@ -29,15 +31,19 @@
 interface DialogBaseProps {
   title: string;
   showClose?: boolean;
-  visible?: boolean;
 }
 
-withDefaults(defineProps<DialogBaseProps>(), {
+const props = withDefaults(defineProps<DialogBaseProps>(), {
   showClose: true,
-  visible: false,
 });
 
-defineEmits<{
+const emit = defineEmits<{
   (e: 'close'): void;
 }>();
+
+function onBackgroundClick() {
+  if (props.showClose) {
+    emit('close');
+  }
+}
 </script>

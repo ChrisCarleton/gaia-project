@@ -74,7 +74,10 @@ export abstract class PlayerBase implements Player {
       EventType.ResearchCompleted,
       this.onResearchCompleted.bind(this),
     );
-    events.subscribe(EventType.ResourcesSpent, this.onResourcesSpent);
+    events.subscribe(
+      EventType.ResourcesSpent,
+      this.onResourcesSpent.bind(this),
+    );
     events.subscribe(
       EventType.RoundBoosterSelected,
       this.onRoundBoosterSelected.bind(this),

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="visible" class="modal is-active">
+  <div class="modal is-active">
     <div class="modal-background"></div>
     <div class="modal-card">
       <header class="modal-card-head">
@@ -42,11 +42,9 @@ import { Player } from '@gaia-project/engine';
 
 interface GameEndedDialogProps {
   playerRankings?: Readonly<Player[]>;
-  visible?: boolean;
 }
 
 withDefaults(defineProps<GameEndedDialogProps>(), {
   playerRankings: () => new Array<Player>(),
-  visible: false,
 });
 </script>

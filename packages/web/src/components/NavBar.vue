@@ -1,6 +1,6 @@
 <template>
   <LoadGameDialog
-    :visible="state.showLoadGameDialog"
+    v-if="state.showLoadGameDialog"
     @cancel="state.showLoadGameDialog = false"
     @load="onLoad"
   />
