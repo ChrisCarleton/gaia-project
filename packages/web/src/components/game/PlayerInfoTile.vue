@@ -58,7 +58,7 @@
           <div class="level-item icon-text">
             <abbr title="Knowledge">
               <span class="icon">
-                <i class="fas fa-brain"></i>
+                <i class="fas fa-book"></i>
               </span>
               <span class="is-family-code">{{
                 player.resources.knowledge

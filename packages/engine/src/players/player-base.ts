@@ -74,7 +74,10 @@ export abstract class PlayerBase implements Player {
       EventType.ResearchCompleted,
       this.onResearchCompleted.bind(this),
     );
-    events.subscribe(EventType.ResourcesSpent, this.onResourcesSpent);
+    events.subscribe(
+      EventType.ResourcesSpent,
+      this.onResourcesSpent.bind(this),
+    );
     events.subscribe(
       EventType.RoundBoosterSelected,
       this.onRoundBoosterSelected.bind(this),
@@ -179,6 +182,14 @@ export abstract class PlayerBase implements Player {
       this.resources.knowledge -= e.resources.knowledge ?? 0;
       this.resources.ore -= e.resources.ore ?? 0;
       this.resources.qic -= e.resources.qic ?? 0;
+
+      if (e.resources.powerCharge) {
+        this.powerCycleManager.spendNodes(e.resources.powerCharge);
+      }
+
+      if (e.resources.powerNodes) {
+        this.powerCycleManager.removeNodes(e.resources.powerNodes);
+      }
     }
   }
 

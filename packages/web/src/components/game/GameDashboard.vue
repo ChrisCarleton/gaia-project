@@ -1,7 +1,7 @@
 <template>
   <GameEndedDialog
+    v-if="dashboardState.gameOver"
     :player-rankings="dashboardState.playerRankings"
-    :visible="dashboardState.gameOver"
   />
   <ResearchDetails
     :visible="dashboardState.showResearch"
@@ -27,10 +27,7 @@
       </div>
     </div>
     <div class="tile is-ancestor">
-      <div
-        v-if="dashboardState.menuPanelState === MenuPanelState.Players"
-        class="tile is-parent is-vertical is-4"
-      >
+      <div class="tile is-parent is-vertical is-4">
         <div class="tile is-parent">
           <GameStatusTile
             :current-player="currentPlayer"
@@ -39,13 +36,35 @@
         </div>
         <div class="tile is-parent">
           <ActionMenuTile
+            v-if="dashboardState.menuPanelState === MenuPanelState.Players"
             :current-player="currentPlayer"
             :allowed-actions="dashboardState.allowedActions"
             @buildmine="
               dashboardState.menuPanelState = MenuPanelState.BuildFirstMine
             "
+            @free-action="
+              dashboardState.menuPanelState = MenuPanelState.FreeActions
+            "
             @pass="onPass"
             @research="onResearch"
+          />
+
+          <BuildFirstMineTile
+            v-else-if="
+              dashboardState.menuPanelState === MenuPanelState.BuildFirstMine
+            "
+            :player="currentPlayer"
+            @cancel="dashboardState.menuPanelState = MenuPanelState.Players"
+          />
+
+          <FreeActionTile
+            v-else-if="
+              dashboardState.menuPanelState === MenuPanelState.FreeActions
+            "
+            :resources="currentPlayer.resources"
+            :power-cycle="currentPlayer.powerCycle"
+            @cancel="dashboardState.menuPanelState = MenuPanelState.Players"
+            @action="onFreeAction"
           />
         </div>
 
@@ -63,18 +82,6 @@
             </div>
           </div>
         </div>
-      </div>
-
-      <div
-        v-else-if="
-          dashboardState.menuPanelState === MenuPanelState.BuildFirstMine
-        "
-        class="tile is-parent is-4"
-      >
-        <BuildFirstMineTile
-          :player="currentPlayer"
-          @cancel="dashboardState.menuPanelState = MenuPanelState.Players"
-        />
       </div>
 
       <div class="tile is-parent is-8">
@@ -112,6 +119,7 @@ import {
 } from '@/strategies';
 import {
   EventType,
+  FreeAction,
   GameAction,
   Player,
   RoundBooster,
@@ -123,6 +131,7 @@ import { SerializedGameContext } from '@gaia-project/engine/src/core/serializati
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
 
 import RoundBoosterDetails from '../details/RoundBoosterDetails.vue';
+import FreeActionTile from './FreeActionTile.vue';
 import GameStatusTile from './GameStatusTile.vue';
 
 interface GameDashboardProps {
@@ -191,6 +200,11 @@ async function onHexClick(mapHex: MapHex): Promise<void> {
   } catch (error) {
     await store.dispatch(Action.ToastError, (error as Error).message);
   }
+}
+
+function onFreeAction(action: FreeAction) {
+  dashboardState.menuPanelState = MenuPanelState.Players;
+  game?.freeAction(action);
 }
 
 function onPass() {

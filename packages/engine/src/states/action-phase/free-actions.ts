@@ -44,13 +44,6 @@ export class FreeActions {
   } as const;
 
   private static validateCost(player: Player, cost: Partial<Income>): void {
-    if (cost.credits && player.resources.credits < cost.credits) {
-      throw new GPError(
-        ErrorCode.InsufficientCredits,
-        `Insufficient credits. You need ${cost.credits} credits to perform this action.`,
-      );
-    }
-
     if (cost.knowledge && player.resources.knowledge < cost.knowledge) {
       throw new GPError(
         ErrorCode.InsufficientKnowledge,

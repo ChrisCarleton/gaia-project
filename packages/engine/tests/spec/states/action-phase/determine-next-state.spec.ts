@@ -1,4 +1,4 @@
-import { GameState, ObserverPublisher } from '../../../../src';
+import { ObserverPublisher } from '../../../../src';
 import { NextStateDetermination } from '../../../../src/states/action-phase/determine-next-state';
 import {
   TestObserver,

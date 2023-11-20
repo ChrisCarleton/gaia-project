@@ -1,10 +1,5 @@
 <template>
-  <DialogBase
-    title="Load Game"
-    :visible="visible"
-    rows="12"
-    @close="$emit('cancel')"
-  >
+  <DialogBase title="Load Game" rows="12" @close="$emit('cancel')">
     <template #default>
       <div class="field">
         <label class="label">Paste context JSON:</label>
@@ -56,16 +51,8 @@ interface LoadGameDialogState {
   parsedContext?: SerializedGameContext;
 }
 
-interface LoadGameDialogProps {
-  visible?: boolean;
-}
-
 const data = reactive<LoadGameDialogState>({
   contextText: '',
-});
-
-withDefaults(defineProps<LoadGameDialogProps>(), {
-  visible: true,
 });
 
 const emit = defineEmits<{
