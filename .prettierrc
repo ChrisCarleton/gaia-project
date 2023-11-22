@@ -17,7 +17,7 @@
   "importOrder": ["^@src(.*)$", "^[./]"],
   "importOrderSeparation": true,
   "importOrderSortSpecifiers": true,
-  "importOrderParserPlugins": ["typescript"],
+  "importOrderParserPlugins": ["typescript", "decorators"],
 
   "plugins": ["@trivago/prettier-plugin-sort-imports"]
 }
