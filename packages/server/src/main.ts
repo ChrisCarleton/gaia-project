@@ -1,22 +1,40 @@
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
+import Bunyan from 'bunyan';
 
 import { AppModule } from './app.module';
-import { GlobalExceptionFilter } from './global-exception-filter';
+import { BunyanLogger, Config, createLogger } from './common';
+import {
+  GenericExceptionFilter,
+  HttpExceptionFilter,
+  ValidationExceptionFilter,
+} from './global-exception-filter';
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+const logger = createLogger();
+
+async function bootstrap(logger: Bunyan) {
+  const logService = new BunyanLogger(logger);
+
+  const app = await NestFactory.create(AppModule, {
+    logger: logService,
+  });
 
   const httpAdapterHost = app.get(HttpAdapterHost);
-  app.useGlobalFilters(new GlobalExceptionFilter(httpAdapterHost));
+  app.useGlobalFilters(
+    new HttpExceptionFilter(logService, httpAdapterHost),
+    new ValidationExceptionFilter(logService, httpAdapterHost),
+    new GenericExceptionFilter(logService, httpAdapterHost),
+  );
 
-  await app.listen(3000);
+  await app.listen(Config.port);
 }
 
-bootstrap()
+bootstrap(logger)
   .then(() => {
-    // TODO: App has started. Log a message.
+    logger.info(
+      `🎉 Application has started and is listening on port ${Config.port} 🎉`,
+    );
   })
   .catch((error) => {
-    // TODO: App failed to initialize. Throw an error and kill the process.
+    logger.fatal('Application failed to start. Halting process.', error);
     process.exit(1);
   });

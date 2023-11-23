@@ -1,4 +1,4 @@
-import { ErrorResponse } from '@gaia-project/api';
+import { ErrorResponse, ValidationErrorDetails } from '@gaia-project/api';
 import {
   ArgumentsHost,
   Catch,
@@ -6,21 +6,69 @@ import {
   HttpException,
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
-import { Request, Response } from 'express';
+import { ZodError } from 'zod';
 
-@Catch()
-export class GlobalExceptionFilter implements ExceptionFilter {
-  constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
+import { BunyanLogger, Config } from './common';
+
+abstract class ExceptionFilterBase implements ExceptionFilter {
+  constructor(
+    protected readonly log: BunyanLogger,
+    private readonly httpAdapterHost: HttpAdapterHost,
+  ) {}
+
+  protected abstract getResponse(
+    exception: unknown,
+    response: ErrorResponse,
+  ): void;
 
   catch(exception: unknown, host: ArgumentsHost) {
-    // Log the exception.
-    // Return a standardized response.
+    const { httpAdapter } = this.httpAdapterHost;
     const ctx = host.switchToHttp();
-    const req = ctx.getRequest<Request>();
-    const res = ctx.getResponse<Response>();
+    const request = ctx.getRequest();
+    const response = ctx.getResponse();
 
-    const errorResponse: ErrorResponse = {};
+    const responseBody: ErrorResponse = {
+      method: httpAdapter.getRequestMethod(request),
+      path: httpAdapter.getRequestUrl(request),
+      status: 500,
+      message: 'An unhandled server error has occurred.',
+    };
 
-    res.status(500).json(errorResponse);
+    if (exception instanceof Error) {
+      response.message = exception.message;
+      if (!Config.isProduction) response.stack = exception.stack;
+    }
+
+    this.getResponse(exception, responseBody);
+
+    httpAdapter.reply(response, responseBody, responseBody.status);
+  }
+}
+
+@Catch(HttpException)
+export class HttpExceptionFilter extends ExceptionFilterBase {
+  protected getResponse(
+    exception: HttpException,
+    response: ErrorResponse,
+  ): void {
+    this.log.error(exception);
+    response.status = exception.getStatus();
+  }
+}
+
+@Catch(ZodError)
+export class ValidationExceptionFilter extends ExceptionFilterBase {
+  protected getResponse(exception: ZodError, response: ErrorResponse): void {
+    this.log.debug(exception);
+    const details: ValidationErrorDetails = { issues: exception.issues };
+    response.details = details;
+    response.status = 400;
+  }
+}
+
+@Catch()
+export class GenericExceptionFilter extends ExceptionFilterBase {
+  protected getResponse(exception: unknown): void {
+    this.log.error(exception);
   }
 }

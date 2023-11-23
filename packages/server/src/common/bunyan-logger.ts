@@ -1,15 +1,30 @@
-import { LogLevel, LoggerService } from '@nestjs/common';
+import { LoggerService } from '@nestjs/common';
 import Bunyan from 'bunyan';
+import { z } from 'zod';
+
+import { Config } from './config';
+
+const LogLevel = z.enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']);
+type LogLevel = z.infer<typeof LogLevel>;
+
+export function createLogger(): Bunyan {
+  let level: LogLevel = 'info';
+
+  const parsed = LogLevel.safeParse(Config.logLevel);
+  if (parsed.success) {
+    level = parsed.data;
+  }
+
+  const logger = Bunyan.createLogger({
+    name: 'gaia-project',
+    level,
+  });
+
+  return logger;
+}
 
 export class BunyanLogger implements LoggerService {
-  private readonly logger: Bunyan;
-
-  constructor() {
-    this.logger = Bunyan.createLogger({
-      name: 'gaia-project',
-      level: 'info',
-    });
-  }
+  constructor(private readonly logger: Bunyan) {}
 
   log(message: unknown, ...optionalParams: unknown[]) {
     this.logger.info(message, ...optionalParams);

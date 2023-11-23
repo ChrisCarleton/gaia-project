@@ -3,13 +3,16 @@ import { z } from 'zod';
 export const ValidationIssueSchema = z.object({
   code: z.string(),
   message: z.string(),
-  path: z.string(),
+  path: z.union([z.string(), z.number()]).array(),
 });
 export type ValidationIssue = z.infer<typeof ValidationIssueSchema>;
 
 export const ValidationErrorDetailsSchema = z.object({
   issues: ValidationIssueSchema.array(),
 });
+export type ValidationErrorDetails = z.infer<
+  typeof ValidationErrorDetailsSchema
+>;
 
 export const ConflictErrorDetailsSchema = z.object({
   conflictingFields: z.union([z.string(), z.string().array()]),
