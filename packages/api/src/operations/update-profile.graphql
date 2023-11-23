@@ -1,5 +1,0 @@
-mutation UpdateProfile($update: ProfileUpdateDTO!) {
-  usersUpdateProfile(update: $update) {
-    ...FullUser
-  }
-}

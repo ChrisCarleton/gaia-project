@@ -1,8 +1,0 @@
-query GetCurrentUser {
-  usersGetCurrent {
-    anonymous
-    user {
-      ...FullUser
-    }
-  }
-}
