@@ -1,5 +1,5 @@
 <template>
-  <GameDashboard :context="store.state.loadedGame" />
+  <GameDashboard :context="store.state.loadedGame"></GameDashboard>
 </template>
 
 <script lang="ts" setup>

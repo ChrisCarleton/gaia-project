@@ -2,18 +2,18 @@
   <GameEndedDialog
     v-if="dashboardState.gameOver"
     :player-rankings="dashboardState.playerRankings"
-  />
+  ></GameEndedDialog>
   <ResearchDetails
     :visible="dashboardState.showResearch"
     :player="currentPlayer"
     @close="dashboardState.showResearch = false"
-  />
+  ></ResearchDetails>
   <RoundBoosterDetails
     :boosters="dashboardState.roundBoosters"
     :visible="dashboardState.selectingRoundBooster"
     @cancel="dashboardState.selectingRoundBooster = false"
     @confirm="onSelectRoundBooster"
-  />
+  ></RoundBoosterDetails>
 
   <section v-if="gameContext && game && currentPlayer" class="section">
     <div class="tile is-ancestor">
@@ -23,7 +23,7 @@
           :key="player.name"
           :player="player"
           :is-active="player.id === currentPlayer.id"
-        />
+        ></PlayerInfoTile>
       </div>
     </div>
     <div class="tile is-ancestor">
@@ -32,7 +32,7 @@
           <GameStatusTile
             :current-player="currentPlayer"
             :round="gameContext.currentRound"
-          />
+          ></GameStatusTile>
         </div>
         <div class="tile is-parent">
           <ActionMenuTile
@@ -47,7 +47,7 @@
             "
             @pass="onPass"
             @research="onResearch"
-          />
+          ></ActionMenuTile>
 
           <BuildFirstMineTile
             v-else-if="
@@ -55,7 +55,7 @@
             "
             :player="currentPlayer"
             @cancel="dashboardState.menuPanelState = MenuPanelState.Players"
-          />
+          ></BuildFirstMineTile>
 
           <FreeActionTile
             v-else-if="
@@ -65,7 +65,7 @@
             :power-cycle="currentPlayer.powerCycle"
             @cancel="dashboardState.menuPanelState = MenuPanelState.Players"
             @action="onFreeAction"
-          />
+          ></FreeActionTile>
         </div>
 
         <div class="tile is-parent">
@@ -92,7 +92,7 @@
           :highlight-status="dashboardState.highlightStatus"
           @hexhighlight="onHexHighlight"
           @hexclick="onHexClick"
-        />
+        ></RenderWindow>
       </div>
     </div>
   </section>

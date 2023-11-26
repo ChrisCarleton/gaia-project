@@ -10,16 +10,35 @@ import { ZodError } from 'zod';
 
 import { BunyanLogger, Config } from './common';
 
-abstract class ExceptionFilterBase implements ExceptionFilter {
+@Catch()
+export class GenericExceptionFilter implements ExceptionFilter {
   constructor(
     protected readonly log: BunyanLogger,
     private readonly httpAdapterHost: HttpAdapterHost,
   ) {}
 
-  protected abstract getResponse(
-    exception: unknown,
-    response: ErrorResponse,
-  ): void;
+  private handleError(exception: Error, response: ErrorResponse) {
+    response.message = exception.message;
+    if (!Config.isProduction) response.stack = exception.stack;
+
+    if (exception instanceof HttpException) {
+      response.status = exception.getStatus();
+      if (response.status < 500) {
+        this.log.warn(exception);
+      } else {
+        this.log.error(exception);
+      }
+    }
+
+    if (exception instanceof ZodError) {
+      this.log.debug(exception);
+
+      const details: ValidationErrorDetails = { issues: exception.issues };
+      response.details = details;
+      response.status = 400;
+      response.message = exception.message;
+    }
+  }
 
   catch(exception: unknown, host: ArgumentsHost) {
     const { httpAdapter } = this.httpAdapterHost;
@@ -35,40 +54,11 @@ abstract class ExceptionFilterBase implements ExceptionFilter {
     };
 
     if (exception instanceof Error) {
-      response.message = exception.message;
-      if (!Config.isProduction) response.stack = exception.stack;
+      this.handleError(exception, responseBody);
+    } else {
+      this.log.error('Unexpected server error', exception);
     }
 
-    this.getResponse(exception, responseBody);
-
     httpAdapter.reply(response, responseBody, responseBody.status);
-  }
-}
-
-@Catch(HttpException)
-export class HttpExceptionFilter extends ExceptionFilterBase {
-  protected getResponse(
-    exception: HttpException,
-    response: ErrorResponse,
-  ): void {
-    this.log.error(exception);
-    response.status = exception.getStatus();
-  }
-}
-
-@Catch(ZodError)
-export class ValidationExceptionFilter extends ExceptionFilterBase {
-  protected getResponse(exception: ZodError, response: ErrorResponse): void {
-    this.log.debug(exception);
-    const details: ValidationErrorDetails = { issues: exception.issues };
-    response.details = details;
-    response.status = 400;
-  }
-}
-
-@Catch()
-export class GenericExceptionFilter extends ExceptionFilterBase {
-  protected getResponse(exception: unknown): void {
-    this.log.error(exception);
   }
 }

@@ -3,7 +3,7 @@
     v-if="state.showLoadGameDialog"
     @cancel="state.showLoadGameDialog = false"
     @load="onLoad"
-  />
+  ></LoadGameDialog>
   <nav class="navbar is-black" role="navigation">
     <div class="container">
       <div class="navbar-brand">

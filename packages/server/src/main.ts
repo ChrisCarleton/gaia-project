@@ -1,13 +1,10 @@
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import Bunyan from 'bunyan';
+import cookieParser from 'cookie-parser';
 
 import { AppModule } from './app.module';
 import { BunyanLogger, Config, createLogger } from './common';
-import {
-  GenericExceptionFilter,
-  HttpExceptionFilter,
-  ValidationExceptionFilter,
-} from './global-exception-filter';
+import { GenericExceptionFilter } from './global-exception-filter';
 
 const logger = createLogger();
 
@@ -18,12 +15,10 @@ async function bootstrap(logger: Bunyan) {
     logger: logService,
   });
 
+  app.use(cookieParser());
+
   const httpAdapterHost = app.get(HttpAdapterHost);
-  app.useGlobalFilters(
-    new HttpExceptionFilter(logService, httpAdapterHost),
-    new ValidationExceptionFilter(logService, httpAdapterHost),
-    new GenericExceptionFilter(logService, httpAdapterHost),
-  );
+  app.useGlobalFilters(new GenericExceptionFilter(logService, httpAdapterHost));
 
   await app.listen(Config.port);
 }

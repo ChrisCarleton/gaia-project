@@ -22,23 +22,44 @@
     <div class="content block box">
       <p class="title is-size-5">Resources</p>
       <div class="level block">
-        <StatWithHeading heading="Credits" :stat="player.resources.credits" />
+        <StatWithHeading
+          heading="Credits"
+          :stat="player.resources.credits"
+        ></StatWithHeading>
         <StatWithHeading
           heading="Knowledge"
           :stat="player.resources.knowledge"
-        />
-        <StatWithHeading heading="Ore" :stat="player.resources.ore" />
-        <StatWithHeading heading="QIC" :stat="player.resources.qic" />
+        ></StatWithHeading>
+        <StatWithHeading
+          heading="Ore"
+          :stat="player.resources.ore"
+        ></StatWithHeading>
+        <StatWithHeading
+          heading="QIC"
+          :stat="player.resources.qic"
+        ></StatWithHeading>
       </div>
     </div>
 
     <div class="content block box">
       <p class="title is-size-5">Power Cycle</p>
       <div class="level block">
-        <StatWithHeading heading="Level 1" :stat="player.powerCycle.level1" />
-        <StatWithHeading heading="Level 2" :stat="player.powerCycle.level2" />
-        <StatWithHeading heading="Level 3" :stat="player.powerCycle.level3" />
-        <StatWithHeading heading="Gaia" :stat="player.powerCycle.gaia" />
+        <StatWithHeading
+          heading="Level 1"
+          :stat="player.powerCycle.level1"
+        ></StatWithHeading>
+        <StatWithHeading
+          heading="Level 2"
+          :stat="player.powerCycle.level2"
+        ></StatWithHeading>
+        <StatWithHeading
+          heading="Level 3"
+          :stat="player.powerCycle.level3"
+        ></StatWithHeading>
+        <StatWithHeading
+          heading="Gaia"
+          :stat="player.powerCycle.gaia"
+        ></StatWithHeading>
       </div>
     </div>
 

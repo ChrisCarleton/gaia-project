@@ -3,7 +3,7 @@
     :player="player"
     :visible="showDetails"
     @close="toggleDetailsVisible"
-  />
+  ></PlayerDetails>
   <div class="tile is-parent is-3">
     <div class="tile is-child card">
       <!-- Header -->

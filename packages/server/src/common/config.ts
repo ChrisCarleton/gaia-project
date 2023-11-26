@@ -1,5 +1,10 @@
 import 'dotenv/config';
 
+export type GoogleConfig = {
+  clientId: string;
+  clientSecret: string;
+};
+
 export class Config {
   private static tryParseNumber(
     value: string | undefined,
@@ -10,8 +15,23 @@ export class Config {
     return isNaN(parsed) ? defaultValue : parsed;
   }
 
+  static get baseUrl(): string {
+    return process.env.GP_BASE_URL ?? 'http://localhost:3021/';
+  }
+
+  static get cookieName(): string {
+    return process.env.GP_COOKIE_NAME ?? 'gaia-project.dev';
+  }
+
   static get environment(): string {
     return process.env.NODE_ENV ?? 'dev';
+  }
+
+  static get google(): Readonly<GoogleConfig> {
+    return {
+      clientId: process.env.GP_GOOGLE_CLIENT_ID ?? '',
+      clientSecret: process.env.GP_GOOGLE_CLIENT_SECRET ?? '',
+    };
   }
 
   static get isProduction(): boolean {
@@ -31,5 +51,9 @@ export class Config {
 
   static get port(): number {
     return Config.tryParseNumber(process.env.GP_PORT, 3020);
+  }
+
+  static get sessionSecret(): string {
+    return process.env.GP_SESSION_SECRET ?? 'shhhhh!!~secret';
   }
 }
